@@ -9,19 +9,16 @@
  *
  *************************************************************/
 
-// ** GET CONFIGURATION DATA **
-	require_once('constants.inc');
-	require_once(FILE_FUNCTIONS);
-	require_once(FILE_CLASS_OPTIONS);
-	require_once(FILE_CLASS_CONTACTLIST);
-	require_once(FILE_CLASSES);
-	session_start();
+require_once('.\lib\Core.php');
 
 // ** OPEN CONNECTION TO THE DATABASE **
-	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+//	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+
+global $globalSqlLink;
+global $globalUsers;
 
 // ** CHECK FOR LOGIN **
-	checkForLogin();
+$globalUsers->checkForLogin();
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
@@ -29,7 +26,7 @@
 // ** END INITIALIZATION *******************************************************
 
 	// CREATE THE LIST.	
-	$list = &new ContactList();
+	$list = ContactList();
 	
 	// THIS PAGE TAKES SEVERAL GET VARIABLES
 	// ie. list.php?group_id=6&page=2&letter=c&limit=20
@@ -200,15 +197,18 @@
     // -- GENERATE GROUP SELECTION LIST --
 	// Only admins can view hidden entries.
 	if ($_SESSION['usertype'] == "admin") {
-		$groupsql = "SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid >= 0 ORDER BY groupname";
+
+        $where = "groupid >= 0";
 	}
 	else {
-		$groupsql = "SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid >= 0 AND groupid != 2 ORDER BY groupname";
+        $where = "WHERE groupid >= 0 AND groupid != 2";
 	}
-    $r_grouplist = mysql_query($groupsql, $db_link);
-    while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
-        $selectGroupID = $tbl_grouplist['groupid'];
-        $selectGroupName = $tbl_grouplist['groupname'];
+
+	$globalSqlLink->SelectQuery( 'roupid, groupname',  TABLE_GROUPLIST ,  $where,  'order by groupname', NULL);
+    $r_grouplist = $globalSqlLink->FetchMultiQueryResult();
+    foreach ($tbl_grouplist as $rbl_grouplist){
+        $selectGroupID = $rbl_grouplist['groupid'];
+        $selectGroupName = $rbl_grouplist['groupname'];
         echo("                       <OPTION VALUE=$selectGroupID");
         if ($selectGroupID == $list->group_id) {
             echo(" SELECTED");
@@ -236,14 +236,14 @@
 <?php
 
 	// DISPLAY IF NO ENTRIES UNDER GROUP
-	if (mysql_num_rows($r_contact)<1) {
+	if (count($r_contact)<1) {
         echo("                 <TR VALIGN=\"top\">\n");
         echo("                   <TD WIDTH=560 COLSPAN=4 CLASS=\"listEntry\">$lang[NO_ENTRIES]</TD>\n");
 
         echo("                 </TR>\n");
 	}
 	// DISPLAY ENTRIES
-    while ($tbl_contact = mysql_fetch_array($r_contact)) {
+    foreach ($r_contact as $tbl_contact) {
 
         $contact_fullname = stripslashes( $tbl_contact['fullname'] );
         $contact_lastname = stripslashes( $tbl_contact['lastname'] );
@@ -305,8 +305,10 @@
         echo("&nbsp;</TD>\n");
 		// DISPLAY E-MAILS
         echo("<TD WIDTH=150 CLASS=\"listEntry\">");
-        $r_email = mysql_query("SELECT id, email FROM " . TABLE_EMAIL . " AS email WHERE id=$contact_id", $db_link);
-        $tbl_email = mysql_fetch_array($r_email);
+        $globalSqlLink->SelectQuery('id, email', TABLE_EMAIL, "id=".$contact_id, NULL);
+        $tbl_email = $globalSqlLink->FetchQueryResults();
+        //$r_email = mysql_query("SELECT id, email FROM " . TABLE_EMAIL . " AS email WHERE id=$contact_id", $db_link);
+        //$tbl_email = mysql_fetch_array($r_email);
         $email_address = $tbl_email['email'];
 		if ($options->useMailScript == 1) {
 			echo("<A HREF=\"" .FILE_MAILTO. "?to=$email_address\">$email_address</A>");
@@ -314,13 +316,13 @@
 		else {
 			echo("<A HREF=\"mailto:$email_address\">$email_address</A>");
 		}
-        while ($tbl_email = mysql_fetch_array($r_email)) {
-            $email_address = $tbl_email['email'];
+        foreach ($tbl_email as $rbl_email) {
+            $email_address = $rbl_email['email'];
 			if ($options->useMailScript == 1) {
-				echo("<BR><A HREF=\"" .FILE_MAILTO. "?to=$email_address\">$email_address</A>");
+				echo("<BR><A HREF=\"" .FILE_MAILTO. "?to=".$rbl_email['email']."\">".$rbl_email['email']."</A>");
 			}
 			else {
-				echo("<BR><A HREF=\"mailto:$email_address\">$email_address</A>");
+				echo("<BR><A HREF=\"mailto:".$rbl_email['email']."\">".$rbl_email['email']."</A>");
 			}       
 		}
         echo("&nbsp;</TD>\n");

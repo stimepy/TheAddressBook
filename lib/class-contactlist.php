@@ -34,13 +34,15 @@ class ContactList {
 		// RESULTANT VARIABLES -- Values for these variables start out blank and will be filled in by this object's methods
 		$this->group_name = "";                    // determined in $this->group_name()
 		$this->total_pages = 1;                    // total # of pages, determined in $this->retrieve()
-		$this->sql = "";                           // determined in $this->retrieve(), useful for debugging purposes
+		$this->select = "";                           // determined in $this->retrieve(), useful for debugging purposes
+        $this->tables = "";
+        $this->where = "";
 		$this->title = "";                         // determined in $this->title()
 		$this->nav_menu = "";                      // determined in $this->create_nav()
 	}
 	
 	function group_name() {
-		global $db_link;
+		global $globalSqlLink;
 		global $lang;
 		
 		// OBTAIN NAME OF GROUP IN DISPLAYED LIST
@@ -63,7 +65,10 @@ class ContactList {
 		}
 		// group_id >= 3 --> Check the database for user-defined group
 		else {
-			$tbl_grouplist = mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid=$this->group_id", $db_link));
+		    $globalSqlLink->SelectQuery( '*', TABLE_GROUPLIST, 'groupid='.$this->group_id, NULL);
+            $tbl_grouplist = $globalSqlLink->FetchQueryResult();
+
+//                mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid=$this->group_id", $db_link));
 			$this->group_name = $tbl_grouplist['groupname'];
 			// Reassign to "All Entries" if given a groupid that doesn't exist
 			if ($this->group_name == "") {
@@ -88,7 +93,9 @@ class ContactList {
 
 
 	function retrieve() {
-		global $db_link;
+		global $globalSqlLink;
+
+        $sql_limit = '';
 		
 	 	// The following needs to be set to retrieve correctly
 	 	// $this->group_id
@@ -97,52 +104,56 @@ class ContactList {
 	 	// $this->current_page
 	 	
 	 	// CREATE INITIAL SQL FRAGMENT
-		$this->sql = "SELECT contact.id, CONCAT(lastname,', ',firstname) AS fullname, lastname, firstname,
-						refid, line1, line2, city, state, zip, phone1, phone2, country, whoAdded
-						FROM " . TABLE_CONTACT . " AS contact";
+		$this->select = "contact.id, CONCAT(lastname,', ',firstname) AS fullname, lastname, firstname, refid, line1, line2, city, state, zip, phone1, phone2, country, whoAdded";
+		$this->tables = TABLE_CONTACT . " AS contact";
 
 	    // CREATE SQL FRAGMENTS TO FILTER BY GROUP
-		// group_id = 0 --> "All Entries"
-		if ($this->group_id == 0) {
-			$sql_group = " LEFT JOIN " . TABLE_ADDRESS . " AS address ON contact.id=address.id AND contact.primaryAddress=address.refid
-						WHERE contact.hidden != 1";
+		// group_id = 0 --> "All Entries"  // group_id = 2 --> "Hidden Entries"
+		if ($this->group_id == 0 || $this->group_id == 2) {
+            $this->tables = $this->tables." LEFT JOIN " . TABLE_ADDRESS . " AS address ON contact.id=address.id AND contact.primaryAddress=address.refid";
+
+            // group_id = 0 --> "All Entries"
+            if($this->group_id == 0) {
+                $this->where = "contact.hidden != 1";
+            }
+            // group_id = 2 --> "Hidden Entries"
+            else{
+                $this->where = "contact.hidden = 1";
+            }
     	}
 		// group_id = 1 --> "Ungrouped Entries"
 	    elseif ($this->group_id == 1) {
-			$sql_group = " LEFT JOIN " . TABLE_ADDRESS . " AS address ON contact.id=address.id AND contact.primaryAddress=address.refid
-						LEFT JOIN " . TABLE_GROUPS . " AS groups ON groups.id=contact.id
-						WHERE groups.id IS NULL AND contact.hidden != 1";
-	    }
-		// group_id = 2 --> "Hidden Entries"
-	    elseif ($this->group_id == 2) {
-			$sql_group = " LEFT JOIN " . TABLE_ADDRESS . " AS address ON contact.id=address.id AND contact.primaryAddress=address.refid
-						WHERE contact.hidden = 1";
+            $this->tables = $this->tables." LEFT JOIN " . TABLE_ADDRESS . " AS address ON contact.id=address.id AND contact.primaryAddress=address.refid 
+                            LEFT JOIN " . TABLE_GROUPS . " AS groups ON groups.id=contact.id";
+            $this->where = "groups.id IS NULL AND contact.hidden != 1";
 	    }
 	    // group_id >= 3 --> Specified user-defined group
-	    else { 
-			$sql_group = ", " . TABLE_GROUPS . " AS groups
-						LEFT JOIN ". TABLE_ADDRESS ." AS address ON contact.id=address.id AND contact.primaryAddress=address.refid
-						WHERE contact.id=groups.id AND groups.groupid=$this->group_id AND contact.hidden != 1";
+	    else {
+            $this->tables  = $this->tables.", " . TABLE_GROUPS . " AS groups
+						LEFT JOIN ". TABLE_ADDRESS ." AS address ON contact.id=address.id AND contact.primaryAddress=address.refid";
+			$this->where =  "contact.id=groups.id AND groups.groupid=$this->group_id AND contact.hidden != 1";
 	
 	    }
-
 		// CREATE SQL FRAGMENTS TO FILTER BY LETTER
 		switch ($this->current_letter) {
 			case "":	// No letter filter
-				$sql_letter = "";  
-				break;	
+				break;
 			case "1":	// If selecting non-alphabetical characters
-				$sql_letter = " AND lastname REGEXP  '^[^[:alpha:]]'";
+                $this->where = $this->where." AND lastname REGEXP  '^[^[:alpha:]]'";
 				break;	
 			default:	// If a letter is set
-				$sql_letter = " AND lastname LIKE '$this->current_letter%'";
+                $this->where = $this->where." AND lastname LIKE '$this->current_letter%'";
 				break;
 		}
 
 		// CREATE SQL FRAGMENTS TO LIMIT NUMBER OF ENTRIES PER PAGE
 		if ($this->max_entries > 0) { //if this option is set, limit the number of entries shown per page
 			// Count number of rows (this uses group and letter sql fragments, determined previously)
-			$count = mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM " . TABLE_CONTACT . " AS contact" . $sql_group . $sql_letter, $db_link));
+
+			$globalSqlLink->SelectQuery->SelectQuery( 'COUNT(*)', TABLE_CONTACT, $this->tables, $this->where, NULL);
+            $count =$globalSqlLink->FetchQueryResults();
+
+                //mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM " . TABLE_CONTACT . " AS contact" . $sql_group . $sql_letter, $db_link));
 			$this->total_pages = intval(ceil($count[0]/$this->max_entries)); //divide the total entries by the limit per page. Round up to an integer
 		
 			// Users like to start counting from 1 in stead of 0
@@ -152,11 +163,13 @@ class ContactList {
 		}
 
 		// ASSEMBLE THE SQL QUERY
-		$this->sql .= $sql_group . $sql_letter . " ORDER BY fullname" . $sql_limit;
+		//$this->sql .= $sql_group . $sql_letter . " ORDER BY fullname" . $sql_limit;
 		
 		// EXECUTE THE SQL QUERY
-		$r_contact = mysql_query($this->sql, $db_link)
-			or die(reportSQLError($this->sql));
+        $globalSqlLink->SelectQuery($this->select, $this->tables, $this->where,  " ORDER BY fullname" . $sql_limit );
+		$r_contact = FetchQueryResults();
+           //  = mysql_query($this->sql, $db_link)
+			//or die(reportSQLError($this->sql));
 			
 		// RETURN RESULTS OF QUERY
 		return $r_contact;
