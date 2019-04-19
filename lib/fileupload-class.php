@@ -201,7 +201,7 @@ class uploader {
 				default:
 					$this->file["extention"] = $extention; break;
 			}
-		} elseif(!ereg("(\.)([a-z0-9]{3,5})$", $this->file["name"]) && !$extention) {
+		} elseif(!preg_match("/(\.)([a-z0-9]{3,5})$/", $this->file["name"]) && !$extention) {
 			// Try and autmatically figure out the file type
 			// For more on mime-types: http://httpd.apache.org/docs/mod/mod_mime_magic.html
 			switch($this->file["type"]) {
@@ -261,7 +261,7 @@ class uploader {
 				
 		if($this->accepted) {
 			// Clean up file name (only lowercase letters, numbers and underscores)
-			$this->file["name"] = ereg_replace("[^a-z0-9._]", "", str_replace(" ", "_", str_replace("%20", "_", strtolower($this->file["name"]))));
+			$this->file["name"] = preg_replace("/[^a-z0-9._]/", "", str_replace(" ", "_", str_replace("%20", "_", strtolower($this->file["name"]))));
 			
 			// Clean up text file breaks
 			if(stristr($this->file["type"], "text")) {
@@ -269,7 +269,7 @@ class uploader {
 			}
 			
 			// get the raw name of the file (without its extenstion)
-			if(ereg("(\.)([a-z0-9]{2,5})$", $this->file["name"])) {
+			if(preg_match("/(\.)([a-z0-9]{2,5})$/", $this->file["name"])) {
 				$pos = strrpos($this->file["name"], ".");
 				if(!$this->file["extention"]) { 
 					$this->file["extention"] = substr($this->file["name"], $pos, strlen($this->file["name"]));
@@ -466,7 +466,7 @@ class uploader {
 		$new_file  = '';
 		$old_file  = '';
 		$fcontents = file($file);
-		while (list ($line_num, $line) = each($fcontents)) {
+		foreach ($fcontents as $line_num => $line) {
 			$old_file .= $line;
 			$new_file .= str_replace(chr(13), chr(10), $line);
 		}

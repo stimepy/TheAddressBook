@@ -34,6 +34,10 @@ class Mysql_Connect_I
         $this->myHost = $hostName;
     }
 
+    private function SetRowCount($rowCount){
+        $this->mySQLRowCount = $rowCount;
+    }
+
     // Main connection
     public function __construct($hostName, $databaseName, $username, $password)
     {
@@ -78,7 +82,7 @@ class Mysql_Connect_I
 
     public Function SelectQuery($select, $table, $where, $orderby)
     {
-        $query = $this->buildquery($select, $table, $where, $orderby);
+        $query = $this->buildquery($select, $table, $where, $orderby, 'SELECT');
         if($query == -1){
             die('Badly Formed Query in Database_Mysql_Connect_I.');
         }
@@ -90,9 +94,9 @@ class Mysql_Connect_I
 
     public Function FetchQueryResult(){
         $results = array();
-
-        if($this->mySQLresults->num_rows > 0) {
-            if($this->mySQLresults->num_rows = 1) {
+        $this->SetRowCount($this->mySQLresults->num_rows);
+        if($this->GetRowCount() > 0) {
+            if($this->GetRowCount() == 1) {
                 $results = $this->mySQLresults->fetch_array();
             }
             else{
@@ -101,24 +105,31 @@ class Mysql_Connect_I
                 }
             }
             //free results
-            //free results
             $this->mySQLresults->free();
             return $results;
         }
         //free results
         $this->mySQLresults->free();
         return -1;  // Something went horribly wrong.
+    }
 
+    public function GetRowCount(){
+        return $this->mySQLRowCount;
     }
 
     private function buildquery($wants, $table, $where, $other, $type){
         switch($type){
-            case 'select':
+            case 'SELECT':
                     if($wants == '' || $wants == NULL || $table == '' || $table == NULL){
                         return -1;
                     }
                     return $this->buildSelect ($wants, $table, $where, $other);
                     break;
+            case 'UPDATE':
+                if(!is_array($wants) || count($wants) == 0 || $wants == NULL || $table == '' || $table == NULL){
+                    return -1;
+                }
+                return $this->buildUpdate ($wants, $table, $where);
             default:
                 return -1;
                 break;
@@ -138,6 +149,39 @@ class Mysql_Connect_I
             $query = $query. ' '.$orderby;
         }
         return $query;
+    }
+
+
+
+    public function UpdateQuery($toUpdate, $table, $where){
+        $query = $this->buildquery($toUpdate, $table, $where, '', 'UPDATE');
+        if($query == -1){
+            die('Badly Formed Query in Database_Mysql_Connect_I.');
+        }
+        $this->mySQLresults=$this->mySQLConnection->query($query);
+        if($this->mySQLresults == false){
+            die('query error.');
+        }
+        $this->SetRowCount($this->mySQLConnection->affected_rows);
+        //Clear Results;
+        $this->mySQLConnection->free();
+    }
+
+    private function  buildUpdate($toUpdate, $table, $where){
+        $Select = '';
+        $countOfSelects = 0;
+        foreach ($toUpdate as $key => $value){
+            $Select .= " ".$key."=".$value;
+            $countOfSelects++;
+            if(count($toUpdate) !=  $countOfSelects){
+                $Select .=",";
+            }
+        }
+        $Query = "Update ". $table ." Set ". $Select;
+        if($where !='' || $where != NULL){
+            $Query .= " Where ".$where;
+        }
+        return $Query;
     }
 
 }

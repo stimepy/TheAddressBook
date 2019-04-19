@@ -56,10 +56,12 @@ class Options {
 		// Call this function when you need to ignore the user-specified settings.
 		// Note: If you do not call this function, you can still obtain global settings
 		// directly using the $this->global_options variable.
-		global $db_link;
-		
-		$this->global_options = mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
-				or die(reportScriptError("Unable to retrieve global options."));
+		global $globalSqlLink;
+
+		$globalSqlLink->SelectQuery('*',TABLE_OPTIONS, '',   " LIMIT 1" );
+		$this->global_options = $globalSqlLink->FetchQueryResults();
+		 // =mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
+		 //		or die(reportScriptError("Unable to retrieve global options."));
 
 		$this->bdayInterval     = $this->global_options['bdayInterval'];
 		$this->bdayDisplay      = $this->global_options['bdayDisplay'];
@@ -88,10 +90,12 @@ class Options {
 		// to global settings.
 		// Note: If you do not call this function, you can still obtain the user settings
 		// directly using the $this->user_options variable.
-		global $db_link;
-		
-		$this->user_options = mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_USERS . " WHERE username='" . $_SESSION['username'] . "' LIMIT 1", $db_link))
-				or die(reportScriptError("Unable to retrieve user options."));
+		global $globalSqlLink;
+
+		$globalSqlLink->SelectQuery('*', TABLE_USERS, "username='" . $_SESSION['username'] . "' LIMIT 1", '');
+		$this->user_options =$globalSqlLink->FetchQueryResults();
+		//$this->user_options = mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_USERS . " WHERE username='" . $_SESSION['username'] . "' LIMIT 1", $db_link))
+			//	or die(reportScriptError("Unable to retrieve user options."));
 
 		if (!is_null($this->user_options['bdayInterval']))   $this->bdayInterval = $this->user_options['bdayInterval'];
 		if (!is_null($this->user_options['bdayDisplay']))    $this->bdayDisplay = $this->user_options['bdayDisplay'];
@@ -105,7 +109,7 @@ class Options {
 	function save_global() {
 		// This function saves global settings to the database, in the options table.
 		// It assumes that the options have already been placed in the $_POST superglobal.
-		global $db_link;
+		global $globalSqlLink;
 		global $lang;
 
 		// CHECK NUMERICAL INPUT
@@ -143,29 +147,33 @@ class Options {
 		$this->requireLogin     = (empty($_POST['requireLogin'])) ? 0 : 1;
 
 		// CREATES THE QUERY AND UPDATES THE OPTIONS TABLE
-		$sql = "UPDATE " . TABLE_OPTIONS . " SET 
-				bdayInterval      = $this->bdayInterval,
-				bdayDisplay       = $this->bdayDisplay,
-				displayAsPopup    = $this->displayAsPopup,
-				useMailScript     = $this->useMailScript,
-				picAlwaysDisplay  = $this->picAlwaysDisplay,
-				picWidth          = $this->picWidth,
-				picHeight         = $this->picHeight,
-				picDupeMode       = $this->picDupeMode,
-				picAllowUpload    = $this->picAllowUpload,
-				modifyTime        = $this->modifyTime,
-				msgLogin          = '$this->msgLogin',
-				msgWelcome        = '$this->msgWelcome',
-				countryDefault    = '$this->countryDefault',
-				allowUserReg      = $this->allowUserReg,
-				requireLogin      = $this->requireLogin,
-				eMailAdmin        = $this->eMailAdmin,
-				language          = '$this->language',
-				defaultLetter     = '$this->defaultLetter',
-				limitEntries      = $this->limitEntries";
+		//$sql = "UPDATE " . TABLE_OPTIONS . " SET
+		$updates['bdayInterval']     = $this->bdayInterval;
+		$updates['bdayDisplay']       = $this->bdayDisplay;
+		$updates['displayAsPopup']    = $this->displayAsPopup;
+		$updates['useMailScript']     = $this->useMailScript;
+		$updates['picAlwaysDisplay']  = $this->picAlwaysDisplay;
+		$updates['picWidth']          = $this->picWidth;
+		$updates['picHeight']        = $this->picHeight;
+		$updates['picDupeMode']       = $this->picDupeMode;
+		$updates['picAllowUpload']    = $this->picAllowUpload;
+		$updates['modifyTime']        = $this->modifyTime;
+		$updates['msgLogin']          = '$this->msgLogin';
+		$updates['msgWelcome']        = '$this->msgWelcome';
+		$updates['countryDefault']    = '$this->countryDefault';
+		$updates['allowUserReg']     = $this->allowUserReg;
+		$updates['requireLogin']      = $this->requireLogin;
+		$updates['eMailAdmin']        = $this->eMailAdmin;
+		$updates['language']          = '$this->language';
+		$updates['defaultLetter']     = '$this->defaultLetter';
+		$updates['limitEntries']      = $this->limitEntries;
 
-		mysql_query($sql, $db_link)
-			or die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
+		$globalSqlLink->UpdateQuery( $updates , TABLE_OPTIONS, '');
+		if($globalSqlLink->GetRowCount() == 0){
+			die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
+		}
+		//mysql_query($sql, $db_link)
+			//or die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
 
 		$this->get();
 		$this->message = $lang['OPT_SAVED'];
@@ -179,7 +187,7 @@ class Options {
 		// This is largely similar in function to save_global() except that there are much fewer
 		// options to deal with. It may be better to condense the two functions into 
 		// one function so as to avoid repetition of code but we can worry about that later.
-		global $db_link;
+		global $globalSqlLink;
 		global $lang;
 		
 		// CHECK INPUT
@@ -193,17 +201,21 @@ class Options {
 		$this->useMailScript    = (empty($_POST['useMailScript'])) ? 0 : 1;
 
 		// CREATES THE QUERY AND UPDATES THE OPTIONS TABLE
-		$sql = "UPDATE " . TABLE_USERS . " SET 
-				bdayInterval      = $this->bdayInterval,
-				bdayDisplay       = $this->bdayDisplay,
-				displayAsPopup    = $this->displayAsPopup,
-				useMailScript     = $this->useMailScript,
-				language          = '$this->language',
-				defaultLetter     = '$this->defaultLetter',
-				limitEntries      = $this->limitEntries
-				WHERE username='" . $_SESSION['username'] . "'";
-		mysql_query($sql, $db_link)
-			or die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
+		//$sql = "UPDATE " . TABLE_USERS . " SET
+		$updates['bdayInterval']      = $this->bdayInterval;
+		$updates['bdayDisplay']       = $this->bdayDisplay;
+		$updates['displayAsPopup']    = $this->displayAsPopup;
+		$updates['useMailScript']     = $this->useMailScript;
+		$updates['language']          = $this->language;
+		$updates['defaultLetter']     = $this->defaultLetter;
+		$updates['limitEntries']      = $this->limitEntries;
+
+		$globalSqlLink->UpdateQuery($updates, TABLE_USERS,  "username='" . $_SESSION['username']."'");
+		if($globalSqlLink->GetRowCount() == 0){
+			die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
+		}
+		//mysql_query($sql, $db_link)
+		//	or die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
 		
 		$this->get();
 		$this->message = $lang['OPT_SAVED_USER'];
@@ -215,21 +227,25 @@ class Options {
 		// This function is designed to clear the user's settings and have all option variables
 		// set to NULL in the database. NULL means neither yes or no, and will force the
 		// script to look to the global options table for information.
-		global $db_link;
+		global $globalSqlLink;
 		global $lang;
 
 		// QUERY
-		$sql = "UPDATE " . TABLE_USERS . " SET 
-				bdayInterval      = NULL,
-				bdayDisplay       = NULL,
-				displayAsPopup    = NULL,
-				useMailScript     = NULL,
-				language          = NULL,
-				defaultLetter     = NULL,
-				limitEntries      = NULL
-				WHERE username='" . $_SESSION['username'] . "'";
-		mysql_query($sql, $db_link)
-			or die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
+		//$sql = "UPDATE " . TABLE_USERS . " SET
+		$updates['bdayInterval']      = 'NULL';
+		$updates['bdayDisplay']       = 'NULL';
+		$updates['displayAsPopup']    = 'NULL';
+		$updates['useMailScript']     = 'NULL';
+		$updates['language']          = 'NULL';
+		$updates['defaultLetter']     = 'NULL';
+		$updates['limitEntries']      = 'NULL';
+		//		WHERE username='" . $_SESSION['username'] . "'";
+		$globalSqlLink->UpdateQuery($updates, TABLE_USERS,  "username='" . $_SESSION['username']."'");
+		if($globalSqlLink->GetRowCount() == 0){
+			die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
+		}
+		// mysql_query($sql, $db_link)
+		//	or die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
 		
 		// RESET MEMBER VARIABLES
 		$this->set_global();	
