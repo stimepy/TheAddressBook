@@ -17,8 +17,6 @@ require_once('.\lib\Core.php');
 global $globalSqlLink;
 global $globalUsers;
 
-// ** CHECK FOR LOGIN **
-$globalUsers->checkForLogin();
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
@@ -27,7 +25,8 @@ $globalUsers->checkForLogin();
 
 	// CREATE THE LIST.	
 	$list = ContactList();
-	
+
+
 	// THIS PAGE TAKES SEVERAL GET VARIABLES
 	// ie. list.php?group_id=6&page=2&letter=c&limit=20
 	if ($_GET['groupid'])         $list->group_id = $_GET['groupid'];

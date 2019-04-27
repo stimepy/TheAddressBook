@@ -57,7 +57,7 @@ define('FILE_USERS', 'users.' . $php_ext);
 define('PATH_MUGSHOTS', 'mugshots/');
 define('PATH_LANGUAGES', 'languages/');
 
-require_once(FILE_CONFIG);
+
 
 // DEFINE TABLE NAMES
 define('TABLE_ADDITIONALDATA', $db_prefix . 'additionaldata');

@@ -9,7 +9,8 @@
  *************************************************************/
 
 class Contact {
-	
+
+
 	// DECLARE MEMBER VARIABLES
 	var $contact;
 	var $id;
@@ -30,11 +31,13 @@ class Contact {
 	
 	// CONSTRUCTOR
 	function Contact($id) {
-		global $db_link;
+        global $globalSqlLink;
 
 		$this->id = $id; // Assume the ID given is legit. No checks are performed.
-		$this->contact = mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=" . $this->id, $db_link))
-			or die(reportSQLError());
+        $globalSqlLink->SelectQuery('*', TABLE_CONTACT, "WHERE contact.id=" . $this->id, NULL);
+        $this->contact = $globalSqlLink->FetchQueryResult();
+		//$this->contact = mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=" . $this->id, $db_link))
+		//	or die(reportSQLError());
 
 		// Fill in variables from database			
 		$this->firstname        = stripslashes( $this->contact['firstname'] );
@@ -58,20 +61,26 @@ class Contact {
 	// METHODS!
 	
 	function last_update($format) {
-		global $db_link;
+		global $globalSqlLink;
 		global $options;
-		
-		$tbl_lastUpdate = mysql_fetch_array(mysql_query("SELECT DATE_FORMAT(DATE_ADD(lastUpdate, INTERVAL " . $options->modifyTime . " HOUR), \"$format\") AS last_update FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=$this->id", $db_link))
-			or die(reportSQLError());
+
+        $globalSqlLink->SelectQuery("DATE_FORMAT(DATE_ADD(lastUpdate, INTERVAL " . $options->modifyTime . " HOUR), \"$format\") AS last_update",TABLE_CONTACT, "contact.id=".$this->id, NULL );
+		$tbl_lastUpdate = $globalSqlLink->FetchQueryResult();
+          //  mysql_fetch_array(mysql_query("SELECT DATE_FORMAT(DATE_ADD(lastUpdate, INTERVAL " . $options->modifyTime . " HOUR), \"$format\") AS last_update FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=$this->id", $db_link))
+//			or die(reportSQLError());
 		return $tbl_lastUpdate['last_update'];
 	}
 	
 	function birthday($format) {
-		global $db_link;
-		
-		$tbl_birthday = mysql_fetch_array(mysql_query("SELECT DATE_FORMAT(birthday, \"$format\") AS birthday FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=$this->id", $db_link))
-			or die(reportSQLError());
-		return $tbl_birthday['birthday'];
+		global $globalSqlLink;
+        $globalSqlLink->SelectQuery("DATE_FORMAT(birthday, \"$format\") AS birthday", TABLE_CONTACT, "contact.id=.".$this->id, NULL);
+        $tbl_birthday = $globalSqlLink->FetchQueryResult();
+		//$tbl_birthday = mysql_fetch_array(mysql_query("SELECT DATE_FORMAT(birthday, \"$format\") AS birthday FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=$this->id", $db_link))
+		//	or die(reportSQLError());
+        if($globalSqlLink->GetRowCount() > 0) {
+            return $tbl_birthday['birthday'];
+        }
+        die(reportSQLError());
 		/*
 		Note on saving birthdays.
 		We can use strtotime() (see http://us2.php.net/manual/en/function.strtotime.php)

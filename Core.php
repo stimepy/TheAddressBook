@@ -6,6 +6,7 @@
  * Time: 8:54 PM
  */
 
+ error_reporting (E_ALL);
 
 // ** GET CONFIGURATION DATA **
 require_once('constants.inc');
@@ -13,8 +14,12 @@ require_once(FILE_FUNCTIONS);
 require_once(FILE_CLASS_OPTIONS);
 require_once(FILE_CLASS_CONTACTLIST);
 require_once(FILE_CLASSES);
+require_once(FILE_CONFIG);
+
+
 require_once('./lib/Database_Connect_I.php');
 require_once('./lib/class.users.php');
+
 session_start();
 
 // Open Database Connection

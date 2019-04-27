@@ -10,21 +10,17 @@
  *************************************************************/
 
 
-// ** GET CONFIGURATION DATA **
-    require_once('constants.inc');
-    require_once(FILE_FUNCTIONS);
-    require_once(FILE_CLASS_OPTIONS);
+	require_once('.\lib\Core.php');
 
-// ** START SESSION **
-	session_start();
-	
-// ** OPEN CONNECTION TO THE DATABASE **
-    $db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
-    
+	// ** OPEN CONNECTION TO THE DATABASE **
+	//	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+
+	global $globalSqlLink;
+	global $globalUsers;
+
     $options = new Options();
 
-// ** CHECK FOR LOGIN **
-	checkForLogin();
+
 
 // ** EXPORT FORMATS **
 	switch($_GET['format']) {
@@ -35,32 +31,6 @@
  **
  ********************************************************************************/
 		case "mysql":
-
-			// FUNCTION DECLARATION
-			function createInsertQuery($table) {
-				global $db_link;
-				// Obtain the information from the table
-				$result = mysql_query("SELECT * FROM " . $table, $db_link);
-						// Note on this query -- previously, it had the additional statement ORDER BY id at the end of it, which created a very clean export
-						// But the Options and Scratchpad tables don't have an id field, so you can't tell it to ORDER BY id -- you'd get no results from the query if you did
-						// So it has been removed and that way it works for any table that don't have an id field... unfortunately the output is now not as clean. But 
-						// it's not as important to have it that way.
-			    // Create the Insert Query
-				while ($resultrow = mysql_fetch_row($result)) {
-					echo "INSERT INTO " . $table . " VALUES(";
-					for ($i=0; $i < count($resultrow); $i++) {
-						if ($i != 0) {
-							echo ",";  // As long as it's not the first element, print a comma separation
-						}
-						echo (is_numeric($resultrow[$i]) ? "$resultrow[$i]" : "\"" . addslashes($resultrow[$i]) . "\""); // outputs numbers without quotes, strings with addslashes/double-quotes
-					}
-					echo ");\n";
-				}
-				// Clear the result from memory -- we don't need it anymore
-				mysql_free_result($result);
-			// end function
-			}
-
 			// OUTPUT
 		    header("Content-type: text/plain");
 			header("Content-disposition: attachment; filename=tab_mysql.txt");
@@ -113,8 +83,9 @@
 
 			// GET AND OUTPUT ALL THE DATA
 			$tables = array(TABLE_ADDITIONALDATA, TABLE_ADDRESS, TABLE_CONTACT, TABLE_EMAIL, TABLE_GROUPLIST, TABLE_GROUPS, TABLE_MESSAGING, TABLE_OPTIONS, TABLE_OTHERPHONE, TABLE_WEBSITES, TABLE_USERS, TABLE_SCRATCHPAD);
-			while ($a = each($tables)) {
-				createInsertQuery($a[1]);
+			foreach($tables as $table){
+			//while ($a = each($tables)) {
+				 echo createInsertQuery($table);
 			}
 
 			// END
@@ -128,9 +99,16 @@
 
 			// Retrieve data associated with given ID
 		    $nnListQuery = "SELECT contact.id, CONCAT(firstname,' ', lastname) AS fullname, email FROM " . TABLE_CONTACT . " AS contact, " . TABLE_EMAIL . " AS email WHERE contact.id=email.id ORDER BY contact.id";
-
-		    $r_contact = mysql_query($nnListQuery, $db_link)
-				or die(reportSQLError($nnListQuery));
+			$select = "contact.id, CONCAT(firstname,' ', lastname) AS fullname, email";
+			$table = TABLE_CONTACT . " AS contact, " . TABLE_EMAIL . " AS email";
+			$where = "contact.id=email.id";
+			$orderby =  "ORDER BY contact.id";
+			$globalSqlLink->SelectQuery($select, $table, $where, $orderby);
+			$r_contact = $globalSqlLink->FetchQueryResult();
+		    //$r_contact = mysql_query($nnListQuery, $db_link)
+			if($globalSqlLink->GetRowCount() == 0) {
+				die(reportSQLError($nnListQuery));
+			}
 
 			// OUTPUT
 		    header("Content-type: text/plain");
@@ -139,8 +117,8 @@
 			header("Cache-Control: post-check=0, pre-check=0", false);
 			header("Pragma: no-cache");
 			header("Expires: 0");
-
-		    while ($tbl_contact = mysql_fetch_array($r_contact)) {
+			foreach ($r_contact as $tbl_contact){
+		    //while ($tbl_contact = mysql_fetch_array($r_contact)) {
 		        echo("\n");
 		        echo('alias "' . 
 		              $tbl_contact['fullname'] . '" ' .
@@ -159,16 +137,30 @@
 		case "csv":
 
 			// QUERY
-		    $csvQuery = "SELECT contact.id, firstname, middlename, lastname, birthday, notes, 
-		    		           	email.email, address.line1, address.line2, address.city, address.state, address.zip, 
-								address.phone1, address.phone2, otherphone.phone, websites.webpageURL
-				     	FROM ". TABLE_CONTACT ." AS contact
-						LEFT JOIN ". TABLE_EMAIL ." AS email ON contact.id=email.id
-			        	LEFT JOIN ". TABLE_ADDRESS ." AS address ON address.id=contact.id
-						LEFT JOIN ". TABLE_OTHERPHONE ." AS otherphone ON contact.id=otherphone.id
-						LEFT JOIN ". TABLE_WEBSITES ." AS websites ON contact.id=websites.id";
-		    $r_contact = mysql_query($csvQuery, $db_link)
-				or die(reportSQLError($csvQuery));
+		    //$csvQuery = "SELECT contact.id, firstname, middlename, lastname, birthday, notes,
+		    //		           	email.email, address.line1, address.line2, address.city, address.state, address.zip,
+			//					address.phone1, address.phone2, otherphone.phone, websites.webpageURL
+		//		     	FROM ". TABLE_CONTACT ." AS contact
+			//			LEFT JOIN ". TABLE_EMAIL ." AS email ON contact.id=email.id
+			//       	LEFT JOIN ". TABLE_ADDRESS ." AS address ON address.id=contact.id
+			//			LEFT JOIN ". TABLE_OTHERPHONE ." AS otherphone ON contact.id=otherphone.id
+			//			LEFT JOIN ". TABLE_WEBSITES ." AS websites ON contact.id=websites.id";
+			$select = " contact.id, firstname, middlename, lastname, birthday, notes, email.email, address.line1, address.line2, address.city, address.state, address.zip, 
+								address.phone1, address.phone2, otherphone.phone, websites.webpageURL";
+			$table = TABLE_CONTACT . " AS contact, " . TABLE_EMAIL . " AS email 
+			LEFT JOIN ". TABLE_ADDRESS ." AS address ON address.id=contact.id 
+			LEFT JOIN ". TABLE_OTHERPHONE ." AS otherphone ON contact.id=otherphone.id 
+			LEFT JOIN ". TABLE_WEBSITES ." AS websites ON contact.id=websites.id";
+			$where = NULL;
+			$orderby =  NULL;
+			$globalSqlLink->SelectQuery($select, $table, $where, $orderby);
+			$r_contact = $globalSqlLink->FetchQueryResult();
+			if($globalSqlLink->GetRowCount() == 0) {
+				die(reportSQLError($nnListQuery));
+			}
+
+			// $r_contact = mysql_query($csvQuery, $db_link)
+			//	or die(reportSQLError($csvQuery));
 
 			// OUTPUT
 			header("Content-Type: text/comma-separated-values");
@@ -179,7 +171,8 @@
 			header("Expires: 0");
 
 		    echo("firstname,middlename,lastname,birthday,email,address1,address2,city,state,zip,phone1,phone2,phone3,website,notes\n");
-		    while ($tbl_contact = mysql_fetch_array($r_contact)) {
+		    foreach ($r_contact as $tbl_contact){
+		    //while ($tbl_contact = mysql_fetch_array($r_contact)) {
 				// Most  variables are checked for the comma (,) character, which will be
 				// removed if found. This is to prevent these fields from breaking the CSV format.
 				echo(str_replace(",","",$tbl_contact['firstname']) . "," .
@@ -206,11 +199,12 @@
 /********************************************************************************
  ** TEXT FORMAT
  **
- ** (thanks to David Léonard) -- Beta, but working. -- broken pending existence of acessBD.php
+ ** (thanks to David Lï¿½onard) -- Beta, but working. -- broken pending existence of acessBD.php
+ *   Deprecating 4-27-2019
  ********************************************************************************/
-		case "text":
+		case "text":  // Deprecrated
 
-			// QUERY
+			/*// QUERY
 				$query ="
 					SELECT 
 					  `address_contact`.`id`,
@@ -254,7 +248,7 @@
 
 		    
 		    //affichage des entetes communs
-		    echo "NUMERO\tPRENOM\tNOM\tTITRE\tANNIVERSAIRE\tMÀJ LE\tPROPRIETAIRE\tTYPE ADRESSE\tADRESSE1\tADRESSE2\tVILLE\tETAT\tNPA\tPAYS\tTEL1\tTEL2\t";
+		    echo "NUMERO\tPRENOM\tNOM\tTITRE\tANNIVERSAIRE\tMï¿½J LE\tPROPRIETAIRE\tTYPE ADRESSE\tADRESSE1\tADRESSE2\tVILLE\tETAT\tNPA\tPAYS\tTEL1\tTEL2\t";
 		    
 		    //affichage des entetes correspondant aux noms des groupes
 		    foreach ($entete->row as $courant) {
@@ -266,18 +260,18 @@
 		    }
 		    echo"\n";
 		    
-		    //remplissage des données suivant les entetes
+		    //remplissage des donnï¿½es suivant les entetes
 		    foreach ($data->row as $donnee) {
 		    	if ($donnee == NULL) break;
-		    	//sélection du nom du pays
+		    	//sï¿½lection du nom du pays
 		    	$query 				= "SELECT countryname FROM address_country WHERE id = ".$donnee->country." ";
 		    	$pays 				= new accesBDlecture($query,"","");
 		    	$paysCourant 	= $pays->row[0]->countryname;
 		    	
-		    	//affichage des données communes
+		    	//affichage des donnï¿½es communes
 		    	echo "$donnee->id\t$donnee->firstname\t$donnee->lastname\t$donnee->nickname\t$donnee->birthday\t$donnee->lastUpdate\t$donnee->whoAdded\t$donnee->type\t$donnee->line1\t$donnee->line2\t$donnee->city\t$donnee->state\t$donnee->zip\t$paysCourant\t$donnee->phone1\t$donnee->phone2\t";
 		    	
-		    	//sélection des des groupes dont fait partie l'adresse courante
+		    	//sï¿½lection des des groupes dont fait partie l'adresse courante
 		    	$query = "SELECT * FROM address_groups WHERE id =".$donnee->id." ";
 		    	$groupe = new accesBDlecture($query,"","");
 		    	$query	= "SELECT * FROM address_grouplist WHERE 1 ORDER BY 1";
@@ -302,7 +296,7 @@
 
 		    }
 
-			// END
+			// END*/
 			break;
 
 
@@ -335,154 +329,154 @@
 
 			while ($tbl_contact = mysql_fetch_array($r_contact)) {
 
-			# short id
-			$XID = $tbl_contact['id'];
+				# short id
+				$XID = $tbl_contact['id'];
 
-			echo "<CONTACT id=\"".$XID."\" update=\"".$tbl_contact['lastUpdate']."\">\n";
+				echo "<CONTACT id=\"".$XID."\" update=\"".$tbl_contact['lastUpdate']."\">\n";
 
-			# personal data from TABLE_CONTACT
-			echo "<PERSONALDATA>\n";
-			echo "<firstname>".$tbl_contact['firstname']."</firstname>\n";
-			echo "<middlename>".$tbl_contact['middlename']."</middlename>\n";
-			echo "<lastname>".$tbl_contact['lastname']."</lastname>\n";
-			echo "<birthday>".$tbl_contact['birthday']."</birthday>\n";
-			echo "<nick>".$tbl_contact['nickname']."</nick>\n";
-			echo "<notes><![CDATA[\n".$tbl_contact['notes']."\n]]></notes>\n";
-			echo "</PERSONALDATA>\n";
+				# personal data from TABLE_CONTACT
+				echo "<PERSONALDATA>\n";
+				echo "<firstname>".$tbl_contact['firstname']."</firstname>\n";
+				echo "<middlename>".$tbl_contact['middlename']."</middlename>\n";
+				echo "<lastname>".$tbl_contact['lastname']."</lastname>\n";
+				echo "<birthday>".$tbl_contact['birthday']."</birthday>\n";
+				echo "<nick>".$tbl_contact['nickname']."</nick>\n";
+				echo "<notes><![CDATA[\n".$tbl_contact['notes']."\n]]></notes>\n";
+				echo "</PERSONALDATA>\n";
 
-			# below this line you can move
-			# up or down section data
+				# below this line you can move
+				# up or down section data
 
-			# ********************
-			# TABLE_EMAIL
-			# ********************
-			echo "<EMAIL>\n";
-			$xmlMail = "SELECT * FROM ". TABLE_EMAIL . " WHERE id=$XID";
-			$r_mail = mysql_query($xmlMail, $db_link);
+				# ********************
+				# TABLE_EMAIL
+				# ********************
+				echo "<EMAIL>\n";
+				$xmlMail = "SELECT * FROM ". TABLE_EMAIL . " WHERE id=$XID";
+				$r_mail = mysql_query($xmlMail, $db_link);
 
-			while ($tbl_mail = mysql_fetch_array($r_mail)) {
-				echo "<mail type=\"".$tbl_mail['type']."\">".$tbl_mail['email']."</mail>\n";
-			} 
+				while ($tbl_mail = mysql_fetch_array($r_mail)) {
+					echo "<mail type=\"".$tbl_mail['type']."\">".$tbl_mail['email']."</mail>\n";
+				}
 
-			echo "</EMAIL>\n";
-			# ********************
-			# /END TABLE_EMAIL 
-			# ********************
+				echo "</EMAIL>\n";
+				# ********************
+				# /END TABLE_EMAIL
+				# ********************
 
-			# ********************
-			# TABLE_ADDRESS 
-			# ********************
-			echo "<ADDRESS>\n";
+				# ********************
+				# TABLE_ADDRESS
+				# ********************
+				echo "<ADDRESS>\n";
 
-			$xmlAddr = "SELECT * FROM ". TABLE_ADDRESS . " WHERE id=$XID";
-			$r_addr = mysql_query($xmlAddr, $db_link);
+				$xmlAddr = "SELECT * FROM ". TABLE_ADDRESS . " WHERE id=$XID";
+				$r_addr = mysql_query($xmlAddr, $db_link);
 
-			while ($tbl_addr = mysql_fetch_array($r_addr)) {
+				while ($tbl_addr = mysql_fetch_array($r_addr)) {
 
-			echo "<address type=\"".$tbl_addr['type']."\">\n";
-			echo "<line1>".$tbl_addr['line1']."</line1>\n";
-			echo "<line2>".$tbl_addr['line2']."</line2>\n";
-			echo "<city>".$tbl_addr['city']."</city>\n";
-			echo "<state>".$tbl_addr['state']."</state>\n";
-			echo "<zip>".$tbl_addr['zip']."</zip>\n";
+				echo "<address type=\"".$tbl_addr['type']."\">\n";
+				echo "<line1>".$tbl_addr['line1']."</line1>\n";
+				echo "<line2>".$tbl_addr['line2']."</line2>\n";
+				echo "<city>".$tbl_addr['city']."</city>\n";
+				echo "<state>".$tbl_addr['state']."</state>\n";
+				echo "<zip>".$tbl_addr['zip']."</zip>\n";
 
-			# TABLE_COUNTRY
-			$xmlCountry = $tbl_addr['country'];
+				# TABLE_COUNTRY
+				$xmlCountry = $tbl_addr['country'];
 
-			echo "<country>".$country[$xmlCountry]."</country>\n";
-			echo "<phone1>".$tbl_addr['phone1']."</phone1>\n";
-			echo "<phone2>".$tbl_addr['phone2']."</phone2>\n";
-			echo "</address>\n";
+				echo "<country>".$country[$xmlCountry]."</country>\n";
+				echo "<phone1>".$tbl_addr['phone1']."</phone1>\n";
+				echo "<phone2>".$tbl_addr['phone2']."</phone2>\n";
+				echo "</address>\n";
 
-			} 
+				}
 
-			echo "</ADDRESS>\n";
-			# ********************
-			# /END TABLE_ADDRESS 
-			# ********************
+				echo "</ADDRESS>\n";
+				# ********************
+				# /END TABLE_ADDRESS
+				# ********************
 
-			# ********************
-			# TABLE_OTHERPHONE 
-			# ********************
-			echo "<OTHER-PHONE>\n";
-			$xmlPhone = "SELECT * FROM ". TABLE_OTHERPHONE . " WHERE id=$XID";
-			$r_phone = mysql_query($xmlPhone, $db_link);
-
-
-
-			while ($tbl_phone = mysql_fetch_array($r_phone)) {
-
-			echo "<phone type=\"".$tbl_phone['type']."\">".$tbl_phone['phone']."</phone>\n";
-
-			} 
-
-			echo "</OTHER-PHONE>\n";
-			# ********************
-			# /END TABLE_OTHERPHONE
-			# ********************
-
-			# ********************
-			# TABLE_WEBSITES 
-			# ********************
-			echo "<WEBSITES>\n";
-			$xmlWWW = "SELECT * FROM ". TABLE_WEBSITES . " WHERE id=$XID";
-			$r_www = mysql_query($xmlWWW, $db_link);
-
-			while ($tbl_www = mysql_fetch_array($r_www)) {
-
-			echo "<www label=\"".$tbl_www['webpageName']."\">".$tbl_www['webpageURL']."</www>\n";
-
-			} 
-
-			echo "</WEBSITES>\n";
-			# ********************
-			# /END TABLE_WEBSITES 
-			# ********************
-
-			# ********************
-			# TABLE_ADDITIONALDATA
-			# ********************
-			echo "<ADDITIONAL-DATA>\n";
-			$xmlData = "SELECT * FROM ". TABLE_ADDITIONALDATA . " WHERE id=$XID";
-			$r_data = mysql_query($xmlData, $db_link);
-
-			while ($tbl_data = mysql_fetch_array($r_data)) {
-
-			echo "<data type=\"".$tbl_data['type']."\">".$tbl_data['value']."</data>\n";
-
-			} 
-
-			echo "</ADDITIONAL-DATA>\n";
-			# ************************
-			# /END TABLE_ADDITIONALDATA 
-			# ************************
-
-			# ********************
-			# GROUPS SUBSCRIPTIONS
-			# ********************
-			echo "<GROUPS>\n";
-			$xmlGroups = "SELECT * FROM ". TABLE_GROUPS . " WHERE id=$XID";
-			$r_groups = mysql_query($xmlGroups, $db_link);
-
-			while ($tbl_groups = mysql_fetch_array($r_groups)) {
-
-			# groups name
-			$xmlGN = "SELECT * FROM ". TABLE_GROUPLIST . " WHERE groupid=".$tbl_groups['groupid']."";
-			$r_gn = mysql_query($xmlGN, $db_link);
-			$tbl_gn = mysql_fetch_array($r_gn);
+				# ********************
+				# TABLE_OTHERPHONE
+				# ********************
+				echo "<OTHER-PHONE>\n";
+				$xmlPhone = "SELECT * FROM ". TABLE_OTHERPHONE . " WHERE id=$XID";
+				$r_phone = mysql_query($xmlPhone, $db_link);
 
 
-			echo "<group id=\"".$tbl_gn['groupid']."\" name=\"".$tbl_gn['groupname']."\"/>\n";
 
-			} 
+				while ($tbl_phone = mysql_fetch_array($r_phone)) {
 
-			echo "</GROUPS>\n";
-			# ***********************
-			# /END GROUPS SUBSCRIPTION
-			# ***********************
+					echo "<phone type=\"".$tbl_phone['type']."\">".$tbl_phone['phone']."</phone>\n";
 
-			#### do not move ########
-			echo "</CONTACT>\n\n";
+				}
+
+				echo "</OTHER-PHONE>\n";
+				# ********************
+				# /END TABLE_OTHERPHONE
+				# ********************
+
+				# ********************
+				# TABLE_WEBSITES
+				# ********************
+				echo "<WEBSITES>\n";
+				$xmlWWW = "SELECT * FROM ". TABLE_WEBSITES . " WHERE id=$XID";
+				$r_www = mysql_query($xmlWWW, $db_link);
+
+				while ($tbl_www = mysql_fetch_array($r_www)) {
+
+					echo "<www label=\"".$tbl_www['webpageName']."\">".$tbl_www['webpageURL']."</www>\n";
+
+				}
+
+				echo "</WEBSITES>\n";
+				# ********************
+				# /END TABLE_WEBSITES
+				# ********************
+
+				# ********************
+				# TABLE_ADDITIONALDATA
+				# ********************
+				echo "<ADDITIONAL-DATA>\n";
+				$xmlData = "SELECT * FROM ". TABLE_ADDITIONALDATA . " WHERE id=$XID";
+				$r_data = mysql_query($xmlData, $db_link);
+
+				while ($tbl_data = mysql_fetch_array($r_data)) {
+
+					echo "<data type=\"".$tbl_data['type']."\">".$tbl_data['value']."</data>\n";
+
+				}
+
+				echo "</ADDITIONAL-DATA>\n";
+				# ************************
+				# /END TABLE_ADDITIONALDATA
+				# ************************
+
+				# ********************
+				# GROUPS SUBSCRIPTIONS
+				# ********************
+				echo "<GROUPS>\n";
+				$xmlGroups = "SELECT * FROM ". TABLE_GROUPS . " WHERE id=$XID";
+				$r_groups = mysql_query($xmlGroups, $db_link);
+
+				while ($tbl_groups = mysql_fetch_array($r_groups)) {
+
+					# groups name
+					$xmlGN = "SELECT * FROM ". TABLE_GROUPLIST . " WHERE groupid=".$tbl_groups['groupid']."";
+					$r_gn = mysql_query($xmlGN, $db_link);
+					$tbl_gn = mysql_fetch_array($r_gn);
+
+
+					echo "<group id=\"".$tbl_gn['groupid']."\" name=\"".$tbl_gn['groupname']."\"/>\n";
+
+				}
+
+				echo "</GROUPS>\n";
+				# ***********************
+				# /END GROUPS SUBSCRIPTION
+				# ***********************
+
+				#### do not move ########
+				echo "</CONTACT>\n\n";
 			} 
 			### close xmlQuery ######
 
@@ -662,6 +656,36 @@
 
 	// END SWITCH
 	}
+
+
+
+// FUNCTION DECLARATION
+function createInsertQuery($table) {
+	global $globalSqlLink;
+	// Obtain the information from the table
+	$globalSqlLink->SelectQuery('*', $table, NULL, NULL);
+	$result = $globalSqlLink->FetchQueryResult();
+	//$result = mysql_query("SELECT * FROM " . $table, $db_link);
+	// Note on this query -- previously, it had the additional statement ORDER BY id at the end of it, which created a very clean export
+	// But the Options and Scratchpad tables don't have an id field, so you can't tell it to ORDER BY id -- you'd get no results from the query if you did
+	// So it has been removed and that way it works for any table that don't have an id field... unfortunately the output is now not as clean. But
+	// it's not as important to have it that way.
+	// Create the Insert Query
+	$statement = '';
+	foreach($result as $resultrow){
+	//while ($resultrow = mysql_fetch_row($result)) {
+		$statement .= "INSERT INTO " . $table . " VALUES(";
+		for ($i=0; $i < count($resultrow); $i++) {
+			if ($i != 0) {
+				$statement .= ",";  // As long as it's not the first element, print a comma separation
+			}
+			$statement .= (is_numeric($resultrow[$i]) ? "$resultrow[$i]" : "\"" . addslashes($resultrow[$i]) . "\""); // outputs numbers without quotes, strings with addslashes/double-quotes
+		}
+		$statement .= ");\n";
+	}
+	// end function
+	return $statement;
+}
 
 
 ?>

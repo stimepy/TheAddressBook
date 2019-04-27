@@ -11,16 +11,13 @@
 // This file is called within list.php to display birthdays.
 // It may also be called independently for more options.
 
-// ** GET CONFIGURATION DATA **
-    require_once('constants.inc');
-    require_once(FILE_FUNCTIONS);
-	require_once(FILE_CLASSES);
+require_once('.\lib\Core.php');
 
 // ** OPEN CONNECTION TO THE DATABASE **
-    $db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+//	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
-// ** CHECK FOR LOGIN **
-	checkForLogin();
+global $globalSqlLink;
+global $globalUsers;
 
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
@@ -46,14 +43,27 @@
 				WHERE birthday != ''
 					AND (TO_DAYS((birthday + INTERVAL (YEAR(CURRENT_DATE)-YEAR(birthday) + (RIGHT(CURRENT_DATE,5)>RIGHT(birthday,5)) ) YEAR)) - TO_DAYS(CURRENT_DATE)) < $options->bdayInterval 
 					AND contact.hidden != 1
-				ORDER BY daysAway ASC, age DESC"; 
-	$r_bday = mysql_query($bdaysql, $db_link); 
+				ORDER BY daysAway ASC, age DESC";
+	$select = 'id, CONCAT(firstname,\' \',lastname) AS fullname, 
+					   DATE_FORMAT(birthday, \'%M %e, %Y\') AS birthday, 
+                       MONTHNAME(birthday) AS month,
+                       DAYOFMONTH(birthday) AS day,
+                       YEAR(birthday) AS year,
+					   (YEAR(NOW()) - YEAR(birthday) + (RIGHT(CURRENT_DATE,5)>RIGHT(birthday,5))) AS age, 
+				       (TO_DAYS((birthday + INTERVAL (YEAR(CURRENT_DATE)-YEAR(birthday) + (RIGHT(CURRENT_DATE,5)>RIGHT(birthday,5))) YEAR)) - TO_DAYS(CURRENT_DATE)) as daysAway';
+	$where = 'birthday != \'\'
+					AND (TO_DAYS((birthday + INTERVAL (YEAR(CURRENT_DATE)-YEAR(birthday) + (RIGHT(CURRENT_DATE,5)>RIGHT(birthday,5)) ) YEAR)) - TO_DAYS(CURRENT_DATE)) < '.$options->bdayInterval.' 
+					AND contact.hidden != 1';
+	$globalSqlLink->SelectQuery($select, TABLE_CONTACT, $where, "ORDER BY daysAway ASC, age DESC");
+	$r_bday =$globalSqlLink->FetchQueryResult();
+        //mysql_query($bdaysql, $db_link);
 
 	// DISPLAY THE LIST
     echo("                <TABLE WIDTH=\"100%\" BORDER=0 CELLPADDING=0 CELLSPACING=0>\n");
     echo("                  <TR><TD CLASS=\"headText\" COLSPAN=3>". $lang[BIRTHDAY_UPCOMING1] ." $options->bdayInterval ". $lang[BIRTHDAY_UPCOMING2]."</TD></TR>\n");
 
-    while ($tbl_birthday = mysql_fetch_array($r_bday)) {
+    foreach($r_bday as $tbl_birthday){
+    //while ($tbl_birthday = mysql_fetch_array($r_bday)) {
         $birthday_id = $tbl_birthday['id'];
         $birthday_fullname = stripslashes($tbl_birthday['fullname']);
         //$birthday_birthday = $tbl_birthday['birthday'];

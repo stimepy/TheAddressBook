@@ -9,19 +9,16 @@
  *
  *************************************************************/
 
-error_reporting (E_ALL);
 
-// ** GET CONFIGURATION DATA **
-	require_once('constants.inc');
-	require_once(FILE_FUNCTIONS);
-	require_once(FILE_CLASS_OPTIONS);
-	session_start();
+
+require_once('.\lib\Core.php');
 
 // ** OPEN CONNECTION TO THE DATABASE **
-	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+//	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
-// ** CHECK FOR LOGIN **
-	checkForLogin("admin","user");
+global $globalSqlLink;
+global $globalUsers;
+
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
@@ -40,22 +37,18 @@ error_reporting (E_ALL);
 
 	// RETRIEVE ENTRY INFORMATION GIVEN AN ID
 	if (isset($id)) {
-		
-		$r_contact = mysql_query("SELECT * FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=$id", $db_link)
-			or die(reportSQLError());
-		$r_additionalData = mysql_query("SELECT * FROM " . TABLE_ADDITIONALDATA . " AS additionaldata WHERE additionaldata.id=$id", $db_link);
-		$r_address = mysql_query("SELECT * FROM " . TABLE_ADDRESS . " AS address WHERE address.id=$id", $db_link);
-		$r_email = mysql_query("SELECT * FROM " . TABLE_EMAIL . " AS email WHERE email.id=$id", $db_link);
-		$r_messaging = mysql_query("SELECT * FROM " . TABLE_MESSAGING . " AS messaging WHERE messaging.id=$id", $db_link);
-		$r_otherPhone = mysql_query("SELECT * FROM " . TABLE_OTHERPHONE . " AS otherphone WHERE otherphone.id=$id", $db_link);
-		$r_websites = mysql_query("SELECT * FROM " . TABLE_WEBSITES . " AS websites WHERE websites.id=$id", $db_link);
-		$r_lastUpdate = mysql_query("SELECT DATE_FORMAT(lastUpdate, \"%W, %M %e %Y (%h:%i %p)\") AS lastUpdate FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=$id", $db_link);
-			
 		// NOTE: Groups is determined with a special query that will be run at the bottom of the page.
 	
 		// Turns query results into an array from where variables can then be extracted from it.
-		$tbl_contact = mysql_fetch_array($r_contact); 
-		$tbl_lastUpdate = mysql_fetch_array($r_lastUpdate); 
+        //$r_lastUpdate = mysql_query("SELECT DATE_FORMAT(lastUpdate, \"%W, %M %e %Y (%h:%i %p)\") AS lastUpdate FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=$id", $db_link);
+        $globalSqlLink->SelsectQuery("DATE_FORMAT(lastUpdate, \"%W, %M %e %Y (%h:%i %p)\") AS lastUpdate" ,TABLE_CONTACT, " contact.id=".$id, NULL);
+        $tbl_contact = $globalSqlLink->FetchQueryResult();
+
+        $globalSqlLink->SelsectQuery('*',TABLE_CONTACT, " contact.id=".$id, NULL);
+        $tbl_contact = $globalSqlLink->FetchQueryResult();
+            //= mysql_query("SELECT * FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=$id", $db_link)
+        	//$tbl_contact = mysql_fetch_array($r_contact);
+		//$tbl_lastUpdate = mysql_fetch_array($r_lastUpdate);
 	
 	
 		// Put data into variable holders -- taken from arrays that are created from query results.
@@ -214,9 +207,12 @@ error_reporting (E_ALL);
 <?php
 	// ADDRESSES
 	// A do-while loop is made to ensure that there is 2 blank entries if person has NO address information.
-	$tbl_address = mysql_fetch_array($r_address);
+    $globalSqlLink->SelectQuery('*', TABLE_ADDRESS, "address.id=".$id, NULL);
+    $r_address = $globalSqlLink->FetchQueryResult();
+	//$r_address = mysql_query("SELECT * FROM " . TABLE_ADDRESS . " AS address WHERE address.id=$id", $db_link);
+	//$tbl_address = mysql_fetch_array($r_address);
 	$addnum = 0;
-	do {
+	foreach($r_address as $tbl_address) {
 		$address_refid = $tbl_address['refid'];
 		$address_type = stripslashes( $tbl_address['type'] );
 		$address_line1 = stripslashes( $tbl_address['line1'] );
@@ -314,7 +310,7 @@ error_reporting (E_ALL);
 <?php
 		// drop back into PHP mode and close off the loop
 		$addnum++;
-	} while ($tbl_address = mysql_fetch_array($r_address));
+	} //while ($tbl_address = mysql_fetch_array($r_address));
 	
 	// PRINT A BLANK ADDRESS FIELD
 ?>
@@ -401,7 +397,11 @@ error_reporting (E_ALL);
 <TEXTAREA STYLE="width:150px;" ROWS=6 CLASS="formTextarea" NAME="<?php echo(TABLE_EMAIL); ?>" WRAP=off>
 <?php
 	// E-mail
-	while ($tbl_email = mysql_fetch_array($r_email)) {
+    $globalSqlLink->SelectQuery('*', TABLE_EMAIL, "email.id=".$id, NULL);
+    $r_email = $globalSqlLink->FetchQueryResult();
+    // = mysql_query("SELECT * FROM " . TABLE_EMAIL . " AS email WHERE email.id=$id", $db_link);
+    foreach ( $r_email as $tbl_email ){
+	//while ($tbl_email = mysql_fetch_array($r_email)) {
 		$email_address = stripslashes( $tbl_email['email']);
 		$email_type = stripslashes( $tbl_email['type']);
 		echo("$email_address|$email_type\n");
@@ -424,7 +424,11 @@ error_reporting (E_ALL);
 <TEXTAREA STYLE="width:150px;" ROWS=6 CLASS="formTextarea" NAME="<?php echo(TABLE_OTHERPHONE); ?>" WRAP=off>
 <?php
 	// Other Phone Numbers
-	while ($tbl_otherPhone = mysql_fetch_array($r_otherPhone)) {
+    $globalSqlLink->SelectQuery('*', TABLE_OTHERPHONE, "otherphone.id=".$id, NULL);
+    $r_otherPhone = $globalSqlLink->FetchQueryResult();
+    //$r_otherPhone = mysql_query("SELECT * FROM " . TABLE_OTHERPHONE . " AS otherphone WHERE otherphone.id=$id", $db_link);
+    foreach($r_otherPhone as $tbl_otherPhone){
+	//while ($tbl_otherPhone = mysql_fetch_array($r_otherPhone)) {
 		$otherphone_phone = stripslashes( $tbl_otherPhone['phone'] );
 		$otherphone_type = stripslashes( $tbl_otherPhone['type'] );
 		echo("$otherphone_phone|$otherphone_type\n");
@@ -446,7 +450,11 @@ error_reporting (E_ALL);
 <TEXTAREA STYLE="width:150px;" ROWS=6 CLASS="formTextarea" NAME="<?php echo(TABLE_MESSAGING); ?>" WRAP=off>
 <?php
 	// Messaging
-	while ($tbl_messaging = mysql_fetch_array($r_messaging)) {
+    $globalSqlLink->SelectQuery('*', TABLE_MESSAGING, "messaging.id=".$id, NULL);
+    $r_messaging= $globalSqlLink->FetchQueryResult();
+    //$r_messaging = mysql_query("SELECT * FROM " . TABLE_MESSAGING . " AS messaging WHERE ", $db_link);
+    foreach($r_messaging as $tbl_messaging){
+	//while ($tbl_messaging = mysql_fetch_array($r_messaging)) {
 		$messaging_handle = stripslashes( $tbl_messaging['handle'] );
 		$messaging_type = stripslashes( $tbl_messaging['type'] );
 		echo("$messaging_handle|$messaging_type\n");
@@ -470,7 +478,11 @@ error_reporting (E_ALL);
 <TEXTAREA STYLE="width:340px;" ROWS=6 CLASS="formTextarea" NAME="<?php echo(TABLE_WEBSITES); ?>" WRAP=off>
 <?php
 	// Websites
-	while ($tbl_websites = mysql_fetch_array($r_websites)) {
+    $globalSqlLink->SelectQuery('*',TABLE_WEBSITES,"websites.id=".$id);
+    $r_websites = $globalSqlLink->FetchQueryResult();
+    //$r_websites = mysql_query("SELECT * FROM " . TABLE_WEBSITES . " AS websites WHERE websites.id=$id", $db_link);
+    foreach ($r_websites as $tbl_websites){
+	//while ($tbl_websites = mysql_fetch_array($r_websites)) {
 		$website_URL = stripslashes( $tbl_websites['webpageURL'] );
 		$website_name = stripslashes( $tbl_websites['webpageName'] );
 		echo("$website_URL|$website_name\n");
@@ -514,7 +526,11 @@ error_reporting (E_ALL);
 <TEXTAREA STYLE="width:340px;" ROWS=9 CLASS="formTextarea" NAME="<?php echo(TABLE_ADDITIONALDATA); ?>" WRAP=off>
 <?php
 	// AdditionalData
-	while ( $tbl_additionalData = mysql_fetch_array($r_additionalData) ) {
+    $globalSqlLink->SelsectQuery('*', TABLE_ADDITIONALDATA, "additionaldata.id=".$id, NULL);
+   $r_additionalData = $globalSqlLink->FetchQueryResult();
+       //= mysql_query("SELECT * FROM " . TABLE_ADDITIONALDATA . " AS additionaldata WHERE additionaldata.id=$id", $db_link);
+    foreach($r_additionalData as $tbl_additionalData){
+	//while ( $tbl_additionalData = mysql_fetch_array($r_additionalData) ) {
 		$additionaldata_type = stripslashes( $tbl_additionalData['type'] );
 		$additionaldata_value = stripslashes( $tbl_additionalData['value'] );
 		echo("$additionaldata_type|$additionaldata_value\n");
@@ -554,47 +570,43 @@ error_reporting (E_ALL);
 <?php
 
 	// Display Group Checkboxes.
-	$groupsql = "SELECT grouplist.groupid, groupname, id 
-				 FROM " . TABLE_GROUPLIST . " AS grouplist
-				 LEFT JOIN " . TABLE_GROUPS . " AS groups
-				 ON grouplist.groupid=groups.groupid AND id=$id
-				 WHERE grouplist.groupid >= 3
-				 ORDER BY groupname";
-	$r_grouplist = mysql_query($groupsql, $db_link);
-	$numGroups = mysql_num_rows($r_grouplist);
-	$numGroups = round($numGroups/2);  // assigns to $numGroups the number of Groups to display in the first column.
+	//$groupsql = "SELECT grouplist.groupid, groupname, id
+	//			 FROM " . TABLE_GROUPLIST . " AS grouplist
+	//			 LEFT JOIN " . TABLE_GROUPS . " AS groups
+	//			 ON grouplist.groupid=groups.groupid AND id=$id
+	//			 WHERE grouplist.groupid >= 3
+	//			 ORDER BY groupname";
+	$tables = TABLE_GROUPLIST . " AS grouplist LEFT JOIN " . TABLE_GROUPS . " AS groups ON grouplist.groupid=groups.groupid AND id=".$id;
+
+	$globalSqlLink->SelectQuery('grouplist.groupid, groupname, id', $tables, "grouplist.groupid >= 3", "ORDER BY groupname" );
+    $r_grouplist = $globalSqlLink->FetchQueryResult();
+	//$r_grouplist = mysql_query($groupsql, $db_link);
+	//$numGroups = mysql_num_rows($r_grouplist);
+	$numGroups = round($globalSqlLink->GetRowCount()/2);  // assigns to $numGroups the number of Groups to display in the first column.
 	$x = 0;
 	$groupCheck = ""; 
 
 	// COLUMN 1
 	// $x is checked FIRST because if that fails, $tbl_grouplist will have already been evaluated
-	while ( ($x < $numGroups) && ($tbl_grouplist = mysql_fetch_array($r_grouplist)) ) {
-		$group_id = $tbl_grouplist['groupid'];
-		$group_name = $tbl_grouplist['groupname'];
-		if ( $tbl_grouplist['id'] == $id ) {
-			$groupCheck = " CHECKED";
-		}
-		echo("<INPUT TYPE=\"checkbox\" NAME=\"groups[]\" VALUE=\"$group_id\"$groupCheck><B>$group_name</B>\n<BR>");
-		//reset $groupCheck so that it doesn't stay set if the next ID does not equal $id.
-		$groupCheck = "";
-		$x++;
+    foreach($r_grouplist as $tbl_grouplist){
+	//while ( ($x < $numGroups) && ($tbl_grouplist = mysql_fetch_array($r_grouplist)) ) {
+        $group_id = $tbl_grouplist['groupid'];
+        $group_name = $tbl_grouplist['groupname'];
+        if ($tbl_grouplist['id'] == $id) {
+            $groupCheck = " CHECKED";
+        }
+        if($x == $numGroups){
+            echo" 			  </TD>			  <TD WIDTH=185 CLASS=\"data\">";
+        }
+
+        echo("<INPUT TYPE=\"checkbox\" NAME=\"groups[]\" VALUE=\"$group_id\"$groupCheck><B>$group_name</B>\n<BR>");
+        //reset $groupCheck so that it doesn't stay set if the next ID does not equal $id.
+        $groupCheck = "";
+        $x++;
+
 	}
 
-?>
-			  </TD>
-			  <TD WIDTH=185 CLASS="data">
-<?php
-	// COLUMN 2
-	while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
-		$group_id = $tbl_grouplist['groupid'];
-		$group_name = $tbl_grouplist['groupname'];
-		if ( $tbl_grouplist['id'] == $id ) {
-			$groupCheck = " CHECKED";
-		}
-		echo("<INPUT TYPE=\"checkbox\" NAME=\"groups[]\" VALUE=\"$group_id\"$groupCheck><B>$group_name</B>\n<BR>");
-		//reset $groupCheck so that it doesn't stay set if the next ID does not equal $id.
-		$groupCheck = "";
-	}
+
 ?>
 			  </TD>
 			  <TD WIDTH=185 CLASS="data">

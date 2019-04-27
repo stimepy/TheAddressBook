@@ -7,46 +7,50 @@
  *
  *************************************************************/
 
-// ** GET CONFIGURATION DATA **
-	require_once('constants.inc');
-	require_once(FILE_FUNCTIONS);
-	require_once(FILE_CLASS_OPTIONS);
-	require_once(FILE_CLASSES); // test Contact class in this file.
-	session_start();
-	
-// ** OPEN CONNECTION TO THE DATABASE **
-	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
-// ** CHECK FOR LOGIN **
-	checkForLogin();
+    require_once('.\lib\Core.php');
 
-// ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
-	$options = new Options();
+    // ** OPEN CONNECTION TO THE DATABASE **
+    //	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
-// ** CHECK FOR ID **
-	$id = check_id();
+    global $globalSqlLink;
+    global $globalUsers;
 
-// ** END INITIALIZATION *******************************************************
 
-// ** RETRIEVE CONTACT INFORMATION **
+    // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
+        $options = new Options();
+
+    // ** CHECK FOR ID **
+        $id = check_id();
+
+    // ** END INITIALIZATION *******************************************************
+
+    // ** RETRIEVE CONTACT INFORMATION **
 	$contact = new Contact($id);
-		$r_additionalData = mysql_query("SELECT * FROM " . TABLE_ADDITIONALDATA . " AS additionaldata WHERE additionaldata.id=$id", $db_link);
-		$r_address = mysql_query("SELECT * FROM " . TABLE_ADDRESS . " AS address WHERE address.id=$id", $db_link);
-		$r_email = mysql_query("SELECT * FROM " . TABLE_EMAIL . " AS email WHERE email.id=$id", $db_link);
-		$r_groups = mysql_query("SELECT grouplist.groupid, groupname FROM " . TABLE_GROUPS . " AS groups LEFT JOIN " . TABLE_GROUPLIST . " AS grouplist ON groups.groupid=grouplist.groupid WHERE id=$id", $db_link);
-		$r_messaging = mysql_query("SELECT * FROM " . TABLE_MESSAGING . " AS messaging WHERE messaging.id=$id", $db_link);
-		$r_otherPhone = mysql_query("SELECT * FROM " . TABLE_OTHERPHONE . " AS otherphone WHERE otherphone.id=$id", $db_link);
-		$r_websites = mysql_query("SELECT * FROM " . TABLE_WEBSITES . " AS websites WHERE websites.id=$id", $db_link);
-		
+
+    //$r_additionalData = mysql_query("SELECT * FROM " . TABLE_ADDITIONALDATA . " AS additionaldata WHERE additionaldata.id=$id", $db_link);
+    //$r_address = mysql_query("SELECT * FROM " . TABLE_ADDRESS . " AS address WHERE address.id=$id", $db_link);
+    //$r_email = mysql_query("SELECT * FROM " . TABLE_EMAIL . " AS email WHERE email.id=$id", $db_link);
+    //$r_groups = mysql_query("SELECT grouplist.groupid, groupname FROM " . TABLE_GROUPS . " AS groups LEFT JOIN " . TABLE_GROUPLIST . " AS grouplist ON groups.groupid=grouplist.groupid WHERE id=$id", $db_link);
+    //$r_messaging = mysql_query("SELECT * FROM " . TABLE_MESSAGING . " AS messaging WHERE messaging.id=$id", $db_link);
+    //$r_otherPhone = mysql_query("SELECT * FROM " . TABLE_OTHERPHONE . " AS otherphone WHERE otherphone.id=$id", $db_link);
+    //$r_websites = mysql_query("SELECT * FROM " . TABLE_WEBSITES . " AS websites WHERE websites.id=$id", $db_link);
+
 // CALCULATE 'NEXT' AND 'PREVIOUS' ADDRESS ENTRIES
-	$r_prev = mysql_query("SELECT id, CONCAT(lastname,', ',firstname) AS fullname FROM " . TABLE_CONTACT . " AS contact WHERE CONCAT(lastname, ', ', firstname) < \"" . $contact->fullname . "\" AND contact.hidden != 1 ORDER BY fullname DESC LIMIT 1", $db_link)
-		or die(reportSQLError());
-	$t_prev = mysql_fetch_array($r_prev); 
-	$prev = $t_prev['id']; 
-	if ($prev<1) $prev = $id; 
-	$r_next = mysql_query("SELECT id, CONCAT(lastname,', ',firstname) AS fullname FROM " . TABLE_CONTACT . " AS contact WHERE CONCAT(lastname, ', ', firstname) > \"" . $contact->fullname . "\" AND contact.hidden != 1 ORDER BY fullname ASC LIMIT 1", $db_link)
-		or die(reportSQLError());
-	$t_next = mysql_fetch_array($r_next); 
+    $globalSqlLink->SelectQuery("id, CONCAT(lastname,', ',firstname) AS fullname",TABLE_CONTACT,  "CONCAT(lastname, ', ', firstname) < \"" . $contact->fullname . "\" AND contact.hidden != 1", "ORDER BY fullname DESC LIMIT 1");
+    $r_prev =$globalSqlLink->FetchQueryResult();
+	// $r_prev = mysql_query("SELECT id, CONCAT(lastname,', ',firstname) AS fullname FROM " . TABLE_CONTACT . " AS contact WHERE CONCAT(lastname, ', ', firstname) < \"" . $contact->fullname . "\" AND contact.hidden != 1 ORDER BY fullname DESC LIMIT 1", $db_link)
+	//	or die(reportSQLError());
+	//$t_prev = mysql_fetch_array($r_prev);
+	$prev = $r_prev['id'];
+	if ($prev<1) {
+	    $prev = $id;
+    }
+    $globalSqlLink->SelectQuery("id, CONCAT(lastname,', ',firstname) AS fullname",TABLE_CONTACT,  "CONCAT(lastname, ', ', firstname) > \"" . $contact->fullname . "\" AND contact.hidden != 1", "ORDER BY fullname DESC LIMIT 1");
+    $r_next =$globalSqlLink->FetchQueryResult();
+	//$r_next = mysql_query("SELECT id, CONCAT(lastname,', ',firstname) AS fullname FROM " . TABLE_CONTACT . " AS contact WHERE CONCAT(lastname, ', ', firstname) > \"" . $contact->fullname . "\" AND contact.hidden != 1 ORDER BY fullname ASC LIMIT 1", $db_link)
+	//	or die(reportSQLError());
+	//$t_next = mysql_fetch_array($r_next);
 	$next = $t_next['id']; 
 	if ($next<1) $next=$id;
 
@@ -125,21 +129,22 @@
 	}
 
 	// LIST GROUPS
-	$tbl_groups = mysql_fetch_array($r_groups);
-	$groupname = stripslashes( $tbl_groups['groupname'] );
-	$group_id = $tbl_groups['groupid'];
+    $globalSqlLink->SelectQuery('grouplist.groupid, groupname', TABLE_GROUPS . " AS groups LEFT JOIN " . TABLE_GROUPLIST. " AS grouplist ON groups.groupid=grouplist.groupid", 'id='.$id, NULL );
+    $r_groups = $globalSqlLink->FetchQueryResult();
+    //$r_groups = mysql_query("SELECT grouplist.groupid, groupname FROM " . TABLE_GROUPS . " AS groups LEFT JOIN " . TABLE_GROUPLIST . " AS grouplist ON groups.groupid=grouplist.groupid WHERE id=$id", $db_link);
+	//$tbl_groups = mysql_fetch_array($r_groups);
 	 // check if no groups
-	if ( !$groupname ) {
+	if ( $globalSqlLink->GetRowCount() == 0 ) {
 		 echo("<IMG SRC=\"spacer.gif\" WIDTH=1 HEIGHT=1 BORDER=0 ALT=\"\">");  // leaves a spacer image if no groups is assigned to the person.
 	}
-	 // format for group links
-	$Groups = "<A HREF=\"" . FILE_LIST . "?groupid=" . $group_id . "\" CLASS=\"group\">" . $groupname . "</A>";
-	while ( $tbl_groups = mysql_fetch_array($r_groups) ) {
+	 // format for group links\
+    foreach($r_groups as $tbl_groups){
+	//while ( $tbl_groups = mysql_fetch_array($r_groups) ) {
 		$groupname = stripslashes( $tbl_groups['groupname'] );
 		$group_id = $tbl_groups['groupid'];
-		$Groups = $Groups . ", <A HREF=\"" . FILE_LIST . "?groupid=" . $group_id . "\" CLASS=\"group\">" . $groupname . "</A>";
+        echo $Groups = $Groups . ", <A HREF=\"" . FILE_LIST . "?groupid=" . $group_id . "\" CLASS=\"group\">" . $groupname . "</A>";
 	}
-	echo($Groups);
+	//echo($Groups);
 ?>
 			 </TD>
 		   </TR>
@@ -168,7 +173,10 @@
 	echo("          <TD WIDTH=$tableColumnWidth CLASS=\"data\">\n");
 
 	// ** ADDRESSES **
-	while ($tbl_address = mysql_fetch_array($r_address)) {
+    $globalSqlLink->SelectQuery('*', TABLE_ADDRESS, 'address.id='.$id, NULL);
+    $r_address = $globalSqlLink->FetchQueryResult();
+    foreach( $r_address as $tbl_address){
+	//while ($tbl_address = mysql_fetch_array($r_address)) {
 		$address_refid = $tbl_address['refid'];
 		$address_type = stripslashes( $tbl_address['type'] );
 		$address_line1 = stripslashes( $tbl_address['line1'] );
@@ -201,22 +209,17 @@
 	// ** E-MAIL **
 	// First check to see that the result set is filled. If so, create E-mail section header.
 	// Then start pulling data out of the result set and displaying them.
-	$tbl_email = mysql_fetch_array($r_email);
-	$email_address = stripslashes( $tbl_email['email'] );
-	$email_type = stripslashes( $tbl_email['type'] );
-	if ($email_address) {
+    $globalSqlLink->SelectQuery('*',TABLE_EMAIL, 'email.id='.$id, NULL);
+    $r_email->$globalSqlLink->FetchQueryResult();
+
+    //$r_email = mysql_query("SELECT * FROM " . TABLE_EMAIL . " AS email WHERE email.id=$id", $db_link);
+	//$tbl_email = mysql_fetch_array($r_email);
+	//$email_address = stripslashes( $tbl_email['email'] );
+	//$email_type = stripslashes( $tbl_email['type'] );
+	if ($globalSqlLink->GetRowCount() > 0) {
 		echo("<P>\n<B>$lang[LBL_EMAIL]</B>\n");
-			if ($options->useMailScript == 1) {
-				echo("<BR><A HREF=\"" .FILE_MAILTO. "?to=$email_address\">$email_address</A>");
-			}
-			else {
-				echo("<BR><A HREF=\"mailto:$email_address\">$email_address</A>");
-			}
-			if ($email_type) {
-				echo(" ($email_type)");
-			}
-			echo("\n");
-		while ($tbl_email = mysql_fetch_array($r_email)) {
+		foreach( $r_email as $tbl_email){
+		//while ($tbl_email = mysql_fetch_array($r_email)) {
 			$email_address = stripslashes( $tbl_email['email'] );
 			$email_type = stripslashes( $tbl_email['type'] );
 			if ($options->useMailScript == 1) {
@@ -239,13 +242,15 @@
 
 
 	// ** OTHER PHONE NUMBERS **
-	$tbl_otherPhone = mysql_fetch_array($r_otherPhone);
-	$otherphone_phone = stripslashes( $tbl_otherPhone['phone'] );
-	$otherphone_type = stripslashes( $tbl_otherPhone['type'] );
-	if ($otherphone_phone) {
-		echo("<P>\n<B>$lang[LBL_OTHERPHONE]</B>\n");
-			echo("<BR>$otherphone_type: $otherphone_phone\n");
-		while ($tbl_otherPhone = mysql_fetch_array($r_otherPhone)) {
+    $globalSqlLink->SelectQuery('*', TABLE_OTHERPHONE, "otherphone.id=".$id, NULL);
+    $globalSqlLink->FetchQueryResult();
+    //$r_otherPhone = mysql_query("SELECT * FROM " . TABLE_OTHERPHONE . " AS otherphone WHERE otherphone.id=$id", $db_link);
+	//$tbl_otherPhone = mysql_fetch_array($r_otherPhone);
+	//$otherphone_phone = stripslashes( $tbl_otherPhone['phone'] );
+	//$otherphone_type = stripslashes( $tbl_otherPhone['type'] );
+	if ($globalSqlLink->GetRowCount() > 0) {
+		foreach ($r_otherPhone as $tbl_otherPhone){
+	    //while ($tbl_otherPhone = mysql_fetch_array($r_otherPhone)) {
 			$otherphone_phone = stripslashes( $tbl_otherPhone['phone'] );
 			$otherphone_type = stripslashes( $tbl_otherPhone['type'] );
 			echo("<BR>$otherphone_type: $otherphone_phone\n");
@@ -257,14 +262,14 @@
 	// Would like it to be:
 	//         <BR>AIM: name1, name2
 	//         <BR>ICQ: something
+    $globalSqlLink->SelectQuery( '*', TABLE_MESSAGING, 'messaging.id='.$id, NULL);
+    $tbl_messaging = $globalSqlLink->FetchQueryResult();
+    //$r_messaging = mysql_query("SELECT * FROM " . TABLE_MESSAGING . " AS messaging WHERE messaging.id=$id", $db_link);
+	//$tbl_messaging = mysql_fetch_array($r_messaging);
 
-	$tbl_messaging = mysql_fetch_array($r_messaging);
-	$messaging_handle = stripslashes( $tbl_messaging['handle'] );
-	$messaging_type = stripslashes( $tbl_messaging['type'] );
-	if ($messaging_handle) {
-		echo("<P>\n<B>$lang[LBL_MESSAGING]</B>\n");
-		echo("<BR>$messaging_type: $messaging_handle\n");
-		while ($tbl_messaging = mysql_fetch_array($r_messaging)) {
+	if ($globalSqlLink->GetRowCount()) {
+	    foreach($r_messaging as $tbl_messaging){
+		//while ($tbl_messaging = mysql_fetch_array($r_messaging)) {
 		   	$messaging_handle = stripslashes( $tbl_messaging['handle'] );
 		   	$messaging_type = stripslashes( $tbl_messaging['type'] );
 		   	echo("<BR>$messaging_type: $messaging_handle\n");
@@ -291,7 +296,10 @@
 	}
 
 	// ** ADDITIONAL DATA **
-	while ( $tbl_additionalData = mysql_fetch_array($r_additionalData) ) {
+    $globalSqlLink->SelectQuery('*', TABLE_ADDITIONALDATA,  'additionaldata.id='.$id, NULL);
+    $r_additionalData =$globalSqlLink->FetchQueryResult();
+	foreach ($r_additionalData as $tbl_additionalData){
+    //while ( $tbl_additionalData = mysql_fetch_array($r_additionalData) ) {
 		$adddataType = stripslashes( $tbl_additionalData['type'] );
 		$adddataValue = stripslashes( $tbl_additionalData['value'] );
 		echo("                 <TR VALIGN=\"top\">\n");
@@ -301,22 +309,26 @@
 	}
 
 	// ** WEBSITES **
-	$tbl_websites = mysql_fetch_array($r_websites);
-	$websiteURL = stripslashes( $tbl_websites['webpageURL'] );
-	$websiteName = stripslashes( $tbl_websites['webpageName'] );
-	if ($websiteURL) {
+    $globalSqlLink->SelectQuery('*', TABLE_WEBSITES, 'websites.id='.$id, NULL);
+    $r_websites = $globalSqlLink->FetchQueryResult();
+    //$r_websites = mysql_query("SELECT * FROM " . TABLE_WEBSITES . " AS websites WHERE websites.id=$id", $db_link);
+	//$tbl_websites = mysql_fetch_array($r_websites);
+	//$websiteURL = stripslashes( $tbl_websites['webpageURL'] );
+	//$websiteName = stripslashes( $tbl_websites['webpageName'] );
+	if ($globalSqlLink->GetRowCount() > 0) {
 		echo("                 <TR VALIGN=\"top\">\n");
 		echo("                   <TD WIDTH=120 CLASS=\"data\"><B>$lang[LBL_WEBSITES]</B></TD>\n");
 		echo("                   <TD WIDTH=440 CLASS=\"data\">\n");
-		echo("                      <A HREF=\"$websiteURL\" TARGET=\"out\">");
+		//echo("                      <A HREF=\"$websiteURL\" TARGET=\"out\">");
 			// Displays URL if no name is given
-			if ($websiteName) {
-				echo($websiteName);
-			} else {
-				echo($websiteURL);
-			}
-			echo("</A>\n");
-		while ($tbl_websites = mysql_fetch_array($r_websites)) {
+		//	if ($websiteName) {
+				//echo($websiteName);
+			//} else {
+//				echo($websiteURL);
+//			}
+//			echo("</A>\n");
+        foreach($r_websites as $r_websites){
+		// while ($tbl_websites = mysql_fetch_array($r_websites)) {
 			$websiteURL = stripslashes( $tbl_websites['webpageURL'] );
 			$websiteName = stripslashes( $tbl_websites['webpageName'] );
 			echo("                      <BR><A HREF=\"$websiteURL\" TARGET=\"out\">");
