@@ -10,16 +10,14 @@
  *  
  *************************************************************/
 
-// ** GET CONFIGURATION DATA **
-	require_once('constants.inc');
-	require_once(FILE_FUNCTIONS);
-	require_once(FILE_CLASS_OPTIONS);
-
-// ** START SESSION **
-	session_start();
+require_once('.\lib\Core.php');
 
 // ** OPEN CONNECTION TO THE DATABASE **
-	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+//	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+
+global $globalSqlLink;
+global $globalUsers;
+
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
@@ -40,14 +38,16 @@
 		case "auth":
 		
 			// LOOK FOR USERNAME AND PASSWORD IN THE DATABASE.
-			$usersql = "SELECT username, usertype, password, is_confirmed FROM " . TABLE_USERS . " AS users WHERE username='" . $_POST['username'] . "' AND password=MD5('" . $_POST['password'] . "') LIMIT 1";
-			$r_getUser = mysql_query($usersql, $db_link)
-				or die(ReportSQLError($usersql));
-			$numrows = mysql_num_rows($r_getUser);
-		    $t_getUser = mysql_fetch_array($r_getUser); 
+            $globalSqlLink->SelectQuery('username, usertype, is_confirmed', TABLE_USERS, "username='" . $_POST['username'] . "' AND password=MD5('" . $_POST['password'] . "')", NULL);
+			//$usersql = "SELECT username, usertype, is_confirmed FROM " . TABLE_USERS . " AS users WHERE username='" . $_POST['username'] . "' AND password=MD5('" . $_POST['password'] . "') LIMIT 1";
+			//$r_getUser = mysql_query($usersql, $db_link)
+			//	or die(ReportSQLError($usersql));
+            $t_getUser = $globalSqlLink->FetchQueryResult();
+			//$numrows = mysql_num_rows($r_getUser);
+		    //$t_getUser = mysql_fetch_array($r_getUser);
 		    
 			// THE USERNAME IS FOUND AND ACCOUNT IS CONFIRMED
-			if (($numrows != 0) && ($t_getUser['is_confirmed'] == 1)) {
+			if (($globalSqlLink->GetRowCount() != 0) && ($t_getUser['is_confirmed'] == 1)) {
 				
 				// REGISTER SESSION VARIABLES
 				$_SESSION['username'] = $t_getUser['username'];

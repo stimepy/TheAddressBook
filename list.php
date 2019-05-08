@@ -11,12 +11,11 @@
 
 require_once('.\lib\Core.php');
 
-// ** OPEN CONNECTION TO THE DATABASE **
-//	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
 global $globalSqlLink;
 global $globalUsers;
 
+$globalUsers->checkForLogin();
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();

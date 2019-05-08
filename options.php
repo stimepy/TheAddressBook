@@ -7,18 +7,14 @@
  *	Sets options for address book.
  *
  *************************************************************/
-// ** GET CONFIGURATION DATA **
-	require_once('constants.inc');
-	require_once(FILE_FUNCTIONS);
-	require_once(FILE_CLASS_OPTIONS);
-	session_start();
+require_once('.\lib\Core.php');
 
-// ** OPEN CONNECTION TO THE DATABASE **
-	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
-// ** CHECK FOR LOGIN **
-	checkForLogin("admin");
-	
+global $globalSqlLink;
+global $globalUsers;
+
+$globalUsers->checkForLogin("admin");
+
 // ** GET OPTIONS
 	$options = new Options();
 	

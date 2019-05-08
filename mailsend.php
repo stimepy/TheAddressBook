@@ -13,17 +13,10 @@
  *************************************************************/
 
 
-// ** GET CONFIGURATION DATA **
-	require_once('constants.inc');
-	require_once(FILE_FUNCTIONS);
-	require_once(FILE_LIB_MAIL);	
-	require_once(FILE_CLASS_OPTIONS);
+require_once('.\lib\Core.php');
 
-// ** START SESSION **
-	session_start();
-	
-// ** OPEN CONNECTION TO THE DATABASE **
-	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+global $globalUsers;
+
 
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
@@ -31,7 +24,7 @@
 	
 // ** CHECK FOR LOGIN **
 //    list($userGroup, $userHomeName, $userHomePage, $userCapabilities) = checkForLogin($address_session_name, CAP_USER);
-	checkForLogin('admin','user');
+$globalUsers->checkForLogin('admin','user');
 
 // ** GET SOME INFORMATION **
 	if(empty($_POST['mail_from'])) {

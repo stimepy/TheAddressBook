@@ -9,53 +9,61 @@
  *************************************************************/
 
 // ** GET CONFIGURATION DATA **
-	require_once('constants.inc');
-	require_once(FILE_FUNCTIONS);
+require_once('.\lib\Core.php');
 
-// ** OPEN CONNECTION TO THE DATABASE **
-	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
+global $globalSqlLink;
+global $globalUsers;
+
+$globalUsers->checkForLogin();
 // ** CHECK FOR LOGIN **
-	checkForLogin("admin","user");
+	$globalUsers->checkForLogin("admin","user");
 
+function init(){
+	global $globalSqlLink, $id;
 // ** CHECK FOR ID **
 	$mode = $_GET['mode'];
 	if ($mode != 'new') {
 		$id = check_id();
 		// Check user for whoAdded
-		$tbl_contact = mysql_fetch_array(mysql_query("SELECT whoAdded FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=$id", $db_link))
-			or die(reportSQLError());
+		$globalSqlLink->SelectQuery('whoAdded', TABLE_CONTACTm, "contact.id=".$id);
+		$tbl_contact = $globalSqlLink->FetchQueryResults();
+		//$tbl_contact = mysql_fetch_array(mysql_query("SELECT whoAdded FROM " . TABLE_CONTACT . " AS contact WHERE contact.id=$id", $db_link))
+		//	or die(reportSQLError());
 		$contact_whoAdded = stripslashes($tbl_contact['whoAdded']);
 		if ((($contact_whoAdded != $_SESSION['username']) AND ($_SESSION['usertype'] != 'admin')) OR ($_SESSION['usertype'] == 'guest')){
 			$_SESSION = array();
 		 	session_destroy();
 			reportScriptError("URL tampering detected. You have been logged out.");
 		}
-	}else{
+	}
+	else{
 		$contact_whoAdded = $_SESSION['username'];
 	}	
- 
+ }
+
+
 // ** END INITIALIZATION *******************************************************
 // *****************************************************************************
 // -- FUNCTION DECLARATIONS --
 
 
-function runQuery($sql) {
-	global $db_link;
-	$result = mysql_query($sql, $db_link)
-		or die(reportSQLError($sql));
-	return $result;
+//function runQuery($sql) {
+//	global $db_link;
+//	$result = mysql_query($sql, $db_link)
+//		or die(reportSQLError($sql));
+//	return $result;
 	// end function
-}
+//}
 
 
-function parseTextArea($table) {
+function parseTextArea($table, $ids) {
 	// make outside variables accessible within the function scope
-	global $id, $db_link;
+	global $id, $globalSqlLink, $numOldRows;
 
 	// Get number of existing (old) rows so we know how many to remove later.
-	global $numOldRows;
-	$numOldRows = mysql_num_rows(mysql_query("SELECT * FROM $table WHERE ID=$id", $db_link)); 
+	$numOldRows  = $globalSqlLink->SelectCount($table, "ID=".$id);
+	//$numOldRows = mysql_num_rows(mysql_query("SELECT * FROM $table WHERE ID=$id", $db_link));
 
 	// trim any whitespace characters from the beginning and end of the textarea string
 	// this removes, for instance, any extra newline characters at the end of the string
@@ -77,10 +85,10 @@ function parseTextArea($table) {
 	// Obtain the number of new entries.
 
 	$x = 0;
-	while (each($newEntry)) {
-		$x++;
+	if(is_array($newEntry)) {
+		$x = sizeof($newEntry);
 	} 
-	reset($newEntry);
+	//reset($newEntry);
 
 	// pulls the rows out of the array.
 	// then splits up the rows into values which are then added to the database.
@@ -142,27 +150,32 @@ function parseTextArea($table) {
 		
 		// Insert
 		if ($newRowArray[0] != "") {
-			$sql = "INSERT INTO $table VALUES ($id, '$newRowArray[0]', '$newRowArray[1]')";
-			runQuery($sql);
+			$data[$ids[0]]=$id;
+			$data[$ids[1]]="'".$newRowArray[0]."'";
+			$data[$ids[2]]="'".$newRowArray[1]."'";
+			$globalSqlLink->InsertQuery($data, $table);
+			//$sql = "INSERT INTO $table VALUES ($id, '$newRowArray[0]', '$newRowArray[1]')";
+			//runQuery($sql);
 		}
 	}
 
 	// remove old entries, which should exist in the table before the new entries, and optimize
 	removeOldRows($table, $numOldRows);
-	optimizeTable($table);
+	//optimizeTable($table);
 
 	//end function
 }
 
 
 function removeOldRows($table, $numOldRows) {
-	global $id, $db_link;
+	global $id, $globalSqlLink, $numOldRows;
 
 	// Once additions are completed, remove old rows.
 	// This must check to make sure old rows actually exist, otherwise it'll delete everything you just added. 
 	// Deleting is done only if $numOldRows is greater than 0, because 'LIMIT 0' is a meaningless statement in MySQL.
 	if ($numOldRows > 0) {
-		runQuery("DELETE FROM $table WHERE ID=$id LIMIT $numOldRows");
+		$globalSqlLink-DeleteQuery("ID=".$id, $table);
+		//runQuery("DELETE FROM $table WHERE ID=$id LIMIT $numOldRows");
 	}
 
 	// reset to 0 just in case
@@ -172,12 +185,12 @@ function removeOldRows($table, $numOldRows) {
 }
 
 
-function optimizeTable($table) {
-	global $db_link;
-	mysql_query("OPTIMIZE TABLE $table", $db_link)
-		or die(reportScriptError("<B>There was a problem optimizing table $table.</B>"));
+//function optimizeTable($table) {
+//	global $db_link;
+//	mysql_query("OPTIMIZE TABLE $table", $db_link)
+//		or die(reportScriptError("<B>There was a problem optimizing table $table.</B>"));
 	// end function
-}
+//}
 
 // -- END FUNCTION DECLARATION --
 // *****************************************************************************
@@ -190,6 +203,10 @@ function optimizeTable($table) {
 	2. 'edit' 	Edit an existing entry.
 	3. 'delete'	Remove the entry.
 	*/
+
+
+	init();
+	global $globalSqlLink, $id;
 	$mode = $_GET['mode'];
 	if (($mode != 'new') && ($mode != 'edit') && ($mode != 'delete')) {
 		reportScriptError("No save mode or invalid save mode.");
@@ -204,8 +221,8 @@ function optimizeTable($table) {
 		}
 
 		// Get $LastUpdate variable
-		$lastUpdate = mysql_fetch_array(mysql_query("SELECT NOW() AS lastUpdate", $db_link));
-		$lastUpdate = $lastUpdate['lastUpdate'];
+		$lastUpdate = date('m/d/Y h:i:s a', time()); // mysql_fetch_array(mysql_query("SELECT NOW() AS lastUpdate", $db_link));
+		//$lastUpdate = $lastUpdate['lastUpdate'];
 	
 		// fix up any strings
 		$contact_firstname = addslashes(strip_tags(trim( $_POST['firstname'] )));
@@ -224,12 +241,14 @@ function optimizeTable($table) {
 	// Barebones insertion only! The rest will be done at the end.
 	if ($mode == 'new') {
 		$sql = "INSERT INTO " . TABLE_CONTACT . " (id) VALUES ('')";
+		$insert['id'] = "''";
+		$globalSqlLink->InsertQuery($insert['id'],TABLE_CONTACT );
 //		$sql = "INSERT INTO " . TABLE_CONTACT . " VALUES
 //					  ('', '$contact_firstname', '$contact_lastname', '$contact_middlename', '$contact_primaryAddress',
 //					  '$contact_birthday', '$contact_nickname', '$contact_pictureURL', '$contact_notes', '$lastUpdate', $contact_hidden, '" .$_SESSION['username']. "')";
-		runQuery($sql);
-		$getID = mysql_fetch_row(mysql_query("SELECT LAST_INSERT_ID()", $db_link));
-		$id = $getID[0];  
+		// runQuery($sql);
+		//$getID = mysql_fetch_row(mysql_query("SELECT LAST_INSERT_ID()", $db_link));
+		$id = $globalSqlLink->GetLastInsertId();
 	}	
 
 
@@ -257,17 +276,42 @@ function optimizeTable($table) {
 		if (empty($address_type) && empty($address_line1) && empty($address_line2) && empty($address_city) && empty($address_state) && empty($address_zip) && empty($address_phone1) && empty($address_phone2)) {
 			// If there is a refid, that means the blank address is marked for deletion
 			if (!empty($address_refid)) {
-				runQuery("DELETE FROM " . TABLE_ADDRESS . " WHERE refid=$address_refid LIMIT 1");
+				$globalSqlLink->DeleteQuery("refid=$address_refid", TABLE_ADDRESS);
+				//runQuery("DELETE FROM " . TABLE_ADDRESS . " WHERE refid=$address_refid LIMIT 1");
 			}
 			// Else it is a unfilled blank, in which case ignore
 		}
 		else {
-			runQuery("REPLACE INTO " . TABLE_ADDRESS . " VALUES ('$address_refid', $id, '$address_type', '$address_line1', '$address_line2', '$address_city', '$address_state', '$address_zip', '$address_country', '$address_phone1', '$address_phone2')");
-			// If there is no refid already provided, obtain the new one created by auto_increment
-			if (empty($address_refid)) {
-				$address_refid = mysql_fetch_row(runQuery("SELECT LAST_INSERT_ID()"));
-				$address_refid = $address_refid[0];  
+			//runQuery("REPLACE INTO " . TABLE_ADDRESS . " VALUES ('$address_refid', $id, '$address_type', '$address_line1', '$address_line2', '$address_city', '$address_state', '$address_zip', '$address_country', '$address_phone1', '$address_phone2')");
+			$where = "refid = ".$address_refid;
+
+			$data['id'] = $id;
+			$data['type'] = "'".$address_type."'";
+			$data['line1'] = "'".$address_line1."'";
+			$data['line2'] = "\'".$address_line2."'";
+			$data['city'] = "'".$address_city."'";
+			$data['state'] = "\'".$address_state."'";
+			$data['zip'] = "'".$address_zip."'";
+			$data['country'] = "\'".$address_country."'";
+			$data['phone1'] = "'".$address_phone1."'";
+			$data['phone2'] = "'".$address_phone2."'";
+
+			$results = $globalSqlLink->SelectCount( TABLE_ADDRESS, "refid = ".$address_refid);
+
+			if($results > 0){
+
+				$globalSqlLink->UpdateQuery($data, TABLE_ADDRESS,  "refid = ".$address_refid);
 			}
+			else{
+				$globalSqlLink->InsertQuery($data, TABLE_ADDRESS);
+				$address_refid = $globalSqlLink->GetLastInsertId();
+			}
+
+			// If there is no refid already provided, obtain the new one created by auto_increment
+		//	if (empty($address_refid)) {
+		//		$address_refid = mysql_fetch_row(runQuery("SELECT LAST_INSERT_ID()"));
+		//		$address_refid = $address_refid[0];
+		//	}
 		}
 		
 		// Check to see if radio checkbox address_primary_select was selected.
@@ -281,11 +325,12 @@ function optimizeTable($table) {
 	
 	// Delete addresses if contact is to removed
 	if ($mode == 'delete') {
-		runQuery("DELETE FROM " . TABLE_ADDRESS . " WHERE id=$id");
+		$globalSqlLink->DeleteQuery("id =". $id);
+		//runQuery("DELETE FROM " . TABLE_ADDRESS . " WHERE id=$id");
 	}
 		
 	// Optimize address table.
-	optimizeTable(TABLE_ADDRESS);
+	//optimizeTable(TABLE_ADDRESS);
 
 	
 // -- END ADDRESS PROCESSING CODE --
@@ -294,21 +339,22 @@ function optimizeTable($table) {
 // -- PROCESS TEXT AREAS --
 
 	// Note that in case of entry deletion, this is treated as parsing "empty" text fields.
-	parseTextArea(TABLE_EMAIL);
-	parseTextArea(TABLE_OTHERPHONE);
-	parseTextArea(TABLE_MESSAGING);
-	parseTextArea(TABLE_WEBSITES);
-	parseTextArea(TABLE_ADDITIONALDATA);
+	parseTextArea(TABLE_EMAIL, array("id", "email", "type"));
+	parseTextArea(TABLE_OTHERPHONE,  array("id", "phone", "type"));
+	parseTextArea(TABLE_MESSAGING, array("id", "handle", "type"));
+	parseTextArea(TABLE_WEBSITES, array("id", "webpageURL", "webpageName"));
+	parseTextArea(TABLE_ADDITIONALDATA, array("id", "type", "value"));
 
 
 // -- PROCESS GROUPS --
 
 	// Get number of existing (old) rows so we know how many to remove later.
-	$numOldRows = mysql_num_rows(mysql_query("SELECT * FROM " . TABLE_GROUPS . " WHERE id=$id", $db_link));
+	$numOldRows = $globalSqlLink->SelectCount(TABLE_GROUPS, "id=".$id);
+		//mysql_num_rows(mysql_query("SELECT * FROM " . TABLE_GROUPS . " WHERE id=$id", $db_link));
 
 	// remove old entries, which should exist in the table before the new entries, and optimize
 	removeOldRows(TABLE_GROUPS, $numOldRows);
-	optimizeTable(TABLE_GROUPS);
+	//optimizeTable(TABLE_GROUPS);
 
 	// getting old rows and removing rows does not exist in the while loop because unchecking
 	// groups assumes you want to delete the associated groups.
@@ -321,8 +367,11 @@ function optimizeTable($table) {
 	// to be done on this data.
 	if ($_POST['groups']) {
 		while (list ($x_key, $x_gid) = each ($_POST['groups'])) {
-			$groupsql = "INSERT INTO " . TABLE_GROUPS . " VALUES ($id,$x_gid)";
-			runQuery($groupsql);
+			$insert['id'] = $id;
+			$insert['groupid'] = $x_gid;
+			$globalSqlLink->InsertQuery($insert, TABLE_GROUPS);
+			//$groupsql = "INSERT INTO " . TABLE_GROUPS . " VALUES ($id,$x_gid)";
+			//runQuery($groupsql);
 		}
 	}
   
@@ -331,18 +380,22 @@ function optimizeTable($table) {
 	// add the data!
 
 	if (($_POST['groupAddNew'] == "addNew") && ($_POST['groupAddName'] != "")) {
-		$r_newGroupID = mysql_query("SELECT groupid FROM " . TABLE_GROUPLIST . " ORDER BY groupid DESC LIMIT 1", $db_link);
-		$t_newGroupID = mysql_fetch_array($r_newGroupID);
+		$globalSqlLink->SelectQuery('groupid', TABLE_GROUPLIST, NULL, "ORDER BY groupid DESC LIMIT 1");
+		$t_newGroupID = $globalSqlLink->FetchQueryResult();
+		//$r_newGroupID = mysql_query("SELECT groupid FROM " . TABLE_GROUPLIST . " ORDER BY groupid DESC LIMIT 1", $db_link);
+		//$t_newGroupID = mysql_fetch_array($r_newGroupID);
 		$newGroupID = $t_newGroupID['groupid'];
 		$newGroupID = $newGroupID + 1;
 
 		// Insert New Group Data
-		$newgroupsql = "INSERT INTO " . TABLE_GROUPLIST . " VALUES ($newGroupID, '" . $_POST['groupAddName'] . "')";
-		runQuery($newgroupsql);
+		$globalSqlLink->InsertQuery(array('groupid' => "$newGroupID", 'groupname' => "'". $_POST['groupAddName'] . "'"), TABLE_GROUPLIST);
+		//$newgroupsql = "INSERT INTO " . TABLE_GROUPLIST . " VALUES ($newGroupID, '" . $_POST['groupAddName'] . "')";
+		//runQuery($newgroupsql);
 
 		// Insert New Group entry for this person into the Groups list.
-		$groupsql = "INSERT INTO " . TABLE_GROUPS . " VALUES ($id, '" . $newGroupID . "')";
-		runQuery($groupsql);
+		$globalSqlLink->InsertQuery(array('id' => "$id", 'groupid' => $_POST['groupAddName']), TABLE_GROUPS);
+		//$groupsql = "INSERT INTO " . TABLE_GROUPS . " VALUES ($id, '" . $newGroupID . "')";
+		//runQuery($groupsql);
 
 	}
 
@@ -367,7 +420,7 @@ function optimizeTable($table) {
 	// If contact is to be deleted
 	if ($mode == 'delete') {
 		removeOldRows(TABLE_CONTACT, 1);
-		optimizeTable(TABLE_CONTACT);
+		//optimizeTable(TABLE_CONTACT);
 		echo("<B>".$lang['EDIT_REMOVED']."</B>\n");
 		echo("<P><B><A HREF=\"" . FILE_LIST . "\">".$lang['BTN_LIST']."</B>\n");
 		exit();
@@ -375,20 +428,21 @@ function optimizeTable($table) {
 
 	// Update the contact if mode is 'edit' or 'new'
 	if (($mode == 'edit') || ($mode == 'new')) {
-		$sql = "UPDATE " . TABLE_CONTACT . " SET 
-								firstname = '$contact_firstname',
-								lastname = '$contact_lastname',
-								middlename = '$contact_middlename',
-								primaryAddress = '$contact_primaryAddress',
-								birthday = '$contact_birthday',
-								nickname = '$contact_nickname',
-								pictureURL = '$contact_pictureURL',
-								notes = '$contact_notes',
-								lastUpdate = '$lastUpdate',
-								hidden = $contact_hidden,
-								whoAdded = '$contact_whoAdded'
-							WHERE id=$id LIMIT 1";
-		runQuery($sql);
+		//$sql = "UPDATE " . TABLE_CONTACT . " SET
+		$update['firstname'] = '$contact_firstname';
+		$update['lastname'] = '$contact_lastname';
+		$update['middlename'] = '$contact_middlename';
+		$update['primaryAddress'] = '$contact_primaryAddress';
+		$update['birthday'] = '$contact_birthday';
+		$update['nickname'] = '$contact_nickname';
+		$update['pictureURL'] = '$contact_pictureURL';
+		$update['notes'] = '$contact_notes';
+		$update['lastUpdate'] = '$lastUpdate';
+		$update['hidden'] = $contact_hidden;
+		$update['whoAdded'] = '$contact_whoAdded';
+		//WHERE id=$id LIMIT 1";
+		//runQuery($sql);
+		$globalSqlLink->UpdateQuery($update, TABLE_CONTACT, "id=".$id);
 	}	
 
 

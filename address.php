@@ -16,7 +16,7 @@
     global $globalSqlLink;
     global $globalUsers;
 
-
+$globalUsers->checkForLogin();
     // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
         $options = new Options();
 

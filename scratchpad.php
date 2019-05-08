@@ -9,19 +9,19 @@
 
 
 // ** GET CONFIGURATION DATA **
-    require_once('constants.inc');
-    require_once(FILE_FUNCTIONS);
-	require_once(FILE_CLASS_OPTIONS);
-	session_start();
+require_once('.\lib\Core.php');
 
-// ** OPEN CONNECTION TO THE DATABASE **
-    $db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+
+global $globalSqlLink;
+global $globalUsers;
+
+$globalUsers->checkForLogin();
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
 
 // ** CHECK FOR LOGIN **
-	checkForLogin();
+//	checkForLogin();
 
 ?>
 <HTML>
@@ -43,10 +43,10 @@
 	    $notes = addslashes( trim($_POST['notes']) );
 	    
         // UPDATES THE SCRATCHPAD TABLE
-        $sql = "UPDATE ". TABLE_SCRATCHPAD ." SET notes='$notes'";
-
-        $update = mysql_query($sql, $db_link)
-			or die(reportSQLError($sql));
+        //$sql = "UPDATE ". TABLE_SCRATCHPAD ." SET notes='$notes'";
+        $globalSqlLink->UpdateQuery(array('notes'=> "'".$notes."'" ), TABLE_SCRATCHPAD, NULL);
+       //$update = mysql_query($sql, $db_link)
+		//	or die(reportSQLError($sql));
 
         echo($lang[SCRATCH_SAVED]."\n");
 /*
@@ -109,18 +109,20 @@ function saveEntry() {
 // DISPLAY CONTENTS OF SCRATCHPAD.
 
     // Retrieve data
-    $notes = mysql_query("SELECT notes FROM " . TABLE_SCRATCHPAD . " LIMIT 1", $db_link);
-    $notes = mysql_fetch_array($notes);
+    $globalSqlLink->SelectQuery('notes',TABLE_SCRATCHPAD, NULL, "limit 1" );
+    $notes = $globalSqlLink->fetchQueryResult();
+    //$notes = mysql_query("SELECT notes FROM " . TABLE_SCRATCHPAD . " LIMIT 1", $db_link);
+    //$notes = mysql_fetch_array($notes);
     $notes = stripslashes( $notes["notes"] );
 
     // Split $notes into an array by newline character
     $displayArray = explode("\n",$notes);
 
     // Determine the number of lines in the array
-    $z = 0;
-    while (each($displayArray)) {
-        $z++;
-    } 
+    //$z = 0;
+    //while (each($displayArray)) {
+    $z=size_of($displayArray);
+    //}
     reset($displayArray);
 
     // Grab each line of the array and display it

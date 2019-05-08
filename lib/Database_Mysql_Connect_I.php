@@ -15,6 +15,7 @@ class Mysql_Connect_I
   private $myDatabase;
   private $myHost;
   private $myPassword;
+  private $myInsertID;
 
 
 
@@ -38,6 +39,10 @@ class Mysql_Connect_I
         $this->mySQLRowCount = $rowCount;
     }
 
+    private function SetLastInsertID($insertID){
+        $this->myInsertID = $insertID;
+    }
+
     // Main connection
     public function __construct($hostName, $databaseName, $username, $password)
     {
@@ -46,6 +51,15 @@ class Mysql_Connect_I
         $this->SetDatabaseName($databaseName);
         $this->SetHost($hostName);
         $this->openDatabase();
+    }
+
+
+    public function GetRowCount(){
+        return $this->mySQLRowCount;
+    }
+
+    public function GetLastInsertId(){
+        return $this->myInsertID;
     }
 
 
@@ -92,6 +106,55 @@ class Mysql_Connect_I
         }
     }
 
+    public function UpdateQuery($toUpdate, $table, $where){
+        $query = $this->buildquery($toUpdate, $table, $where, '', 'UPDATE');
+        if($query == -1){
+            die('Badly Formed Query in Database_Mysql_Connect_I.');
+        }
+        $this->mySQLresults=$this->mySQLConnection->query($query);
+        if($this->mySQLresults == false){
+            die('query error.');
+        }
+        $this->SetRowCount($this->mySQLConnection->affected_rows);
+        //Clear Results;
+        $this->mySQLConnection->free();
+    }
+
+
+    public function InsertQuery($insert, $table){
+        $query = $this->buildquery($insert, $table, '','', 'INSERT');
+        $this->mySQLresults=$this->mySQLConnection->query($query);
+        if($this->mySQLresults == false){
+            die('query error.');
+        }
+        $this->MySQLLastInsertID =
+            $this->SetLastInsertID($this->mySQLConnection->insert_id);
+        $this->SetRowCount($this->mySQLConnection->affected_rows);
+
+        //Clear Results;
+        $this->mySQLConnection->free();
+    }
+
+
+    public function DeleteQuery($where, $table){
+        $query = $this->buildquery($where, $table, '','', 'DELETE');
+        $this->mySQLresults=$this->mySQLConnection->query($query);
+        if($this->mySQLresults == false){
+            die('query error.');
+        }
+        $this->SetRowCount($this->mySQLConnection->affected_rows);
+        //Clear Results;
+        $this->mySQLConnection->free();
+    }
+
+
+    public function FreeFormQueryNoErrorchecking($query, $permissions){
+        if($permissions == 1091){
+            $this->mySQLresults=$this->mySQLConnection->query($query);
+        }
+    }
+
+
     public Function FetchQueryResult(){
         $results = array();
         $this->SetRowCount($this->mySQLresults->num_rows);
@@ -113,9 +176,16 @@ class Mysql_Connect_I
         return -1;  // Something went horribly wrong.
     }
 
-    public function GetRowCount(){
-        return $this->mySQLRowCount;
+    public function SelectCount($table, $where){
+        $this->SelectQuery("1 as 'cnt'", $table, $where, NULL);
+        $count=$this->FetchQueryResult();
+        if(is_array($count) != true){
+            return 0;
+        }
+        return $count['cnt'];
     }
+
+
 
     private function buildquery($wants, $table, $where, $other, $type){
         switch($type){
@@ -130,6 +200,16 @@ class Mysql_Connect_I
                     return -1;
                 }
                 return $this->buildUpdate ($wants, $table, $where);
+            case 'INSERT':
+                if(!is_array($wants) || count($wants) == 0 || $wants == NULL || $table == '' || $table == NULL){
+                    return -1;
+                }
+                return $this->buildDelete($wants, $table);
+            case 'DELETE':
+                if($wants == "" || $wants == NULL || $table == '' || $table == NULL){
+                    return -1;
+                }
+                return $this->buildInsert($wants, $table);
             default:
                 return -1;
                 break;
@@ -153,19 +233,7 @@ class Mysql_Connect_I
 
 
 
-    public function UpdateQuery($toUpdate, $table, $where){
-        $query = $this->buildquery($toUpdate, $table, $where, '', 'UPDATE');
-        if($query == -1){
-            die('Badly Formed Query in Database_Mysql_Connect_I.');
-        }
-        $this->mySQLresults=$this->mySQLConnection->query($query);
-        if($this->mySQLresults == false){
-            die('query error.');
-        }
-        $this->SetRowCount($this->mySQLConnection->affected_rows);
-        //Clear Results;
-        $this->mySQLConnection->free();
-    }
+
 
     private function  buildUpdate($toUpdate, $table, $where){
         $Select = '';
@@ -182,6 +250,35 @@ class Mysql_Connect_I
             $Query .= " Where ".$where;
         }
         return $Query;
+    }
+
+
+
+
+
+    private function buildInsert($Toinsert, $table){
+        $insertkey = '';
+        $insertvalue = '';
+        $countOfSelects = 0;
+        foreach ($Toinsert as $key => $value){
+            $insertkey .= " ".$key;
+            $insertvalue .= " ".$value;
+            $countOfSelects++;
+            if(count($Toinsert) !=  $countOfSelects){
+                $insertkey .=",";
+                $insertvalue .=",";
+            }
+        }
+        $Query = "Insert into". $table ." (".$insertkey.") Values(".$insertvalue.")";
+
+        return $Query;
+    }
+
+
+
+    private function buildDelete($where, $table){
+        $query = 'Delete From'.$table.' where '.$where;
+        return $query;
     }
 
 }

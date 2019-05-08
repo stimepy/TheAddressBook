@@ -19,6 +19,7 @@ require_once('.\lib\Core.php');
 global $globalSqlLink;
 global $globalUsers;
 
+$globalUsers->checkForLogin('admin', 'user');
 
 
 // ** RETRIEVE INFORMATION **

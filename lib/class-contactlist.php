@@ -20,7 +20,9 @@ class ContactList {
 	var $sql; 
 	var $title;
 	var $nav_menu;
-	
+	private $myRowCount;
+
+
 	function ContactList() {
 		global $options;
 		
@@ -168,6 +170,7 @@ class ContactList {
 		// EXECUTE THE SQL QUERY
         $globalSqlLink->SelectQuery($this->select, $this->tables, $this->where,  " ORDER BY fullname" . $sql_limit );
 		$r_contact = FetchQueryResults();
+		$this->myRowCount = $globalSqlLink->GetRowCount();
            //  = mysql_query($this->sql, $db_link)
 			//or die(reportSQLError($this->sql));
 			
@@ -263,7 +266,10 @@ class ContactList {
 		
 		return $this->nav_menu;
 	}
-	
+
+	function rowcount(){
+	    return $this->myRowCount;
+    }
 
 }
 // END ContactList

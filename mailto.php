@@ -12,18 +12,16 @@
 // BUG: Mailing List displays entries without email addresses.
 
 
-// ** GET CONFIGURATION DATA **
-	require_once('constants.inc');
-	require_once(FILE_FUNCTIONS);
-	require_once(FILE_CLASS_OPTIONS);
-	require_once(FILE_CLASS_CONTACTLIST);
+require_once('.\lib\Core.php');
 
-// ** OPEN CONNECTION TO THE DATABASE **
-	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+
+global $globalSqlLink;
+global $globalUsers;
+
 
 // ** CHECK FOR LOGIN **
 //    list($userGroup, $userHomeName, $userHomePage, $userCapabilities) = checkForLogin($address_session_name, CAP_MAIL);
-	checkForLogin('admin','user');
+$globalUsers->checkForLogin('admin','user');
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options($db_link);
@@ -61,8 +59,10 @@
 	}
 	else {							// If there is no target e-mail in either, then we go to default mailing list mode.
 		// RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
-		$options = mysql_fetch_array(mysql_query("SELECT displayAsPopup, useMailScript FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
-			or die(reportScriptError("Unable to retrieve options."));
+        $globalSqlLink->SelectQuery('displayAsPopup, useMailScript', TABLE_OPTIONS, NULL, 'Limit 1' );
+        $options = $globalSqlLink->FetchQueryResult();
+		//$options = mysql_fetch_array(mysql_query("SELECT displayAsPopup, useMailScript FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
+		//	or die(reportScriptError("Unable to retrieve options."));
 		// CREATE THE LIST.	
 		$list = &new ContactList($options->defaultLetter, $options->limitEntries);
 	
@@ -83,8 +83,10 @@
 
 // ** RETRIEVE USER CONTACT INFORMATION **
 	$mail_from = '';
-	$r_user = mysql_fetch_array(mysql_query("SELECT email FROM " . TABLE_USERS . " AS users WHERE username='". $_SESSION['username'] ."' LIMIT 1", $db_link))
-		or die(reportScriptError("Unable to retrieve user email address."));
+	$globalSqlLink->SelectQuery('email', TABLE_USERS, "username='". $_SESSION['username'], "LIMIT 1");
+    $r_user = $globalSqlLink->FetchQueryResult();
+	//$r_user = mysql_fetch_array(mysql_query("SELECT email FROM " . TABLE_USERS . " AS users WHERE username='". $_SESSION['username'] ."' LIMIT 1", $db_link))
+	//	or die(reportScriptError("Unable to retrieve user email address."));
 	$mail_from = $r_user['email'];
 	$SendMailButton = "Yes";
 	if(!$mail_from){
@@ -130,13 +132,18 @@
 	// -- GENERATE GROUP SELECTION LIST --
 	// Only admins can view hidden entries.
 	if ($_SESSION['usertype'] == "admin") {
-		$groupsql = "SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid >= 0 ORDER BY groupname";
+		//$groupsql = "SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid >= 0 ORDER BY groupname";
+		$where = "groupid >= 0";
 	}
 	else {
-		$groupsql = "SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid >= 0 AND groupid != 2 ORDER BY groupname";
+		//$groupsql = "SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid >= 0 AND groupid != 2 ORDER BY groupname";
+        $where = "groupid >= 0 AND groupid != 2";
 	}
-	$r_grouplist = mysql_query($groupsql, $db_link);
-	while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
+	$globalSqlLink->SelectQuery("groupid, groupname", TABLE_GROUPLIST, $where, "order by groupname");
+    $r_grouplist = $globalSqlLink->FetchQueryResult();
+	//$r_grouplist = mysql_query($groupsql, $db_link);
+    foreach($r_grouplist as $tbl_grouplist){
+	//while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
 		$selectGroupID = $tbl_grouplist['groupid'];
 		$selectGroupName = $tbl_grouplist['groupname'];
 		echo("                       <OPTION VALUE=$selectGroupID");
@@ -181,13 +188,14 @@
 	    echo("                   <TD WIDTH=560 COLSPAN=4 CLASS=\"listHeader\">$list->group_name</TD>\n");
 	    echo("                 </TR>\n");
 		// DISPLAY IF NO ENTRIES UNDER GROUP
-		if (mysql_num_rows($r_contact)<1) {
+		if ($list->rowcount()<1) {
 	        echo("                 <TR VALIGN=\"top\">\n");
 	        echo("                   <TD WIDTH=560 COLSPAN=4 CLASS=\"listEntry\">No entries.</TD>\n");
 	        echo("                 </TR>\n");
 		}
 		// DISPLAY ENTRIES
-	    while ($tbl_contact = mysql_fetch_array($r_contact)) {
+        foreach($r_contact as $tbl_contact){
+	    //while ($tbl_contact = mysql_fetch_array($r_contact)) {
 
 	        $contact_fullname = $tbl_contact['fullname'];
 	        $contact_lastname = $tbl_contact['lastname'];
@@ -207,32 +215,39 @@
 			}
 	        // DISPLAY E-MAILS
 	        echo("<TD WIDTH=410 CLASS=\"listEntry\">");
-	        $r_email = mysql_query("SELECT id, email, type FROM " . TABLE_EMAIL . " AS email WHERE id=$contact_id", $db_link);
-	        $tbl_email = mysql_fetch_array($r_email);
-			$email_address = stripslashes( $tbl_email['email'] );
-			$email_type = stripslashes( $tbl_email['type'] );
-	        if ( (eregi("old", $email_type)) || (empty($email_address)) ) {
-	           $checkme = "";
-	        } else {
-	           $checkme = " CHECKED";
-	        }
-	        echo("<INPUT TYPE=\"checkbox\" NAME=\"mail_to[]\" VALUE=\"$email_address\"$checkme>");
-	        $cb_id++;
+	        $globalSqlLink->SelectQuery("id, email, type", TABLE_EMAIL, "id=".$contact_id, NULL );
+	        //$r_email = mysql_query("SELECT id, email, type FROM " . TABLE_EMAIL . " AS email WHERE id=$contact_id", $db_link);
+	        //$tbl_email = mysql_fetch_array($r_email);
+			//$email_address = stripslashes( $tbl_email['email'] );
+			//$email_type = stripslashes( $tbl_email['type'] );
 
-			if ($options['useMailScript'] == 1) {
-				echo("<A HREF=\"" .FILE_MAILTO. "?to=$email_address\">$email_address</A>");
-			}
-			else {
-				echo("<A HREF=\"mailto:$email_address\">$email_address</A>");
-			}
+	        //echo("<INPUT TYPE=\"checkbox\" NAME=\"mail_to[]\" VALUE=\"$email_address\"$checkme>");
+	       // $cb_id++;
 
-			if ($email_type) {
-	    		echo(" ($email_type)");
-			}
+			//if ($options['useMailScript'] == 1) {
+			//	echo("<A HREF=\"" .FILE_MAILTO. "?to=$email_address\">$email_address</A>");
+			//}
+			//else {
+			//	echo("<A HREF=\"mailto:$email_address\">$email_address</A>");
+			//}
 
-	        while ($tbl_email = mysql_fetch_array($r_email)) {
-				$email_address = stripslashes( $tbl_email['email'] );
-				$email_type = stripslashes( $tbl_email['type'] );
+			//if ($email_type) {
+	    	//	echo(" ($email_type)");
+			//}
+            $r_email = $globalSqlLink->FetchQueryResult();
+            $checkflag = true;
+            foreach($r_email as $tbl_email){
+	        //while ($tbl_email = mysql_fetch_array($r_email)) {
+                 $email_address = stripslashes( $tbl_email['email'] );
+                $email_type = stripslashes( $tbl_email['type'] );
+                if($checkflag == true) {
+                    if ((preg_match("/old/i", $email_type)) || (empty($email_address))) {
+                        $checkme = "";
+                    } else {
+                        $checkme = " CHECKED";
+                    }
+                    $checkflag = false;
+                }
 
 	            echo("<BR><INPUT TYPE=\"checkbox\" NAME=\"mail_to[]\" VALUE=\"$email_address\">");
 	            $cb_id++;

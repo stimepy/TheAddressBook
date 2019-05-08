@@ -9,16 +9,13 @@
  *************************************************************/
 
 // ** GET CONFIGURATION DATA **
-	require_once('constants.inc');
-	require_once(FILE_FUNCTIONS);
-	require_once(FILE_CLASS_OPTIONS);
-	require_once(FILE_LIB_MAIL);	
+require_once('.\lib\Core.php');
 
-// ** START SESSION **
-	session_start();
 
-// ** OPEN CONNECTION TO THE DATABASE **
-	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+global wd;
+global $globalUsers;
+
+
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
@@ -35,9 +32,12 @@
 		exit();
 	}
 	if($options->eMailAdmin = 1){
-		$sql = "SELECT * FROM ". TABLE_USERS ." WHERE usertype='admin'";
-		$admins = mysql_query($sql, $db_link);
-		while ($tbl_admins = mysql_fetch_array($admins)) {
+        $globalSqlLink->SelectQuery('*',TABLE_USERS, "usertype=\'admin\'", NULL);
+        $admins = ws$globalSqlLink->FetchQueryResult();
+		//$sql = "SELECT * FROM ". TABLE_USERS ." WHERE usertype='admin'";
+		//$admins = mysql_query($sql, $db_link);
+        foreach($admins as $tbl_admins){
+		//while ($tbl_admins = mysql_fetch_array($admins)) {
 			$mail->AddBCC($tbl_admins['email']) ;
 		}
 		$copyAdmins = "Yes";
@@ -46,7 +46,7 @@
 	$message = $lang[REG_NEW];
 
 	if ($_POST['registerSubmit'])  {	
-		global $feedback, $hidden_hash_var, $db_link;
+		global $feedback, $hidden_hash_var;
 		$username = $_POST['username'];
 		$password1 =  $_POST['password1'];
 		$password2 = $_POST['password2'];
@@ -57,17 +57,27 @@
 			if (account_namevalid($username) && account_pwvalid($password1)) {
 				$username=strtolower($username);
 				//does the name exist in the database?
-				$sql="SELECT * FROM " .TABLE_USERS. " WHERE username='$username'";
-				$result=mysql_query($sql, $db_link);
-				if ($result && mysql_numrows($result) > 0) {
+                $globalSqlLink->SelectQuery('*', TABLE_USERS ,"username='$username'", NULL);
+                $result = $globalSqlLink->FetchQueryReqults();
+				//$sql="SELECT * FROM " .TABLE_USERS. " WHERE username='$username'";
+				//$result=mysql_query($sql, $db_link);
+				if (is_array($result)  && $result[0] != NULL && $globalSqlLink->GetRowCount() > 0) {
 					$feedback .=  "ERR_USERNAME_RESERVED";
-				} else {
+				}
+				else {
 					//create a new hash to insert into the db and the confirmation email
 					$hash=md5($email.$hidden_hash_var);
-					$sql="INSERT INTO ".TABLE_USERS." (username, usertype, password, email, confirm_hash, is_confirmed) ".
-						"VALUES ('$username','user','". md5($password1) ."','$email', '$hash','0')";
-					$result=mysql_query($sql, $db_link);
-					if (!$result) {
+					//S$sql="INSERT INTO ".TABLE_USERS." (username, usertype, password, email, confirm_hash, is_confirmed) ".
+					//	"VALUES ('$username','user','". md5($password1) ."','$email', '$hash','0')";
+                    $Inserts['username'] = "'".$username."'";
+                    $Inserts['usertype'] = 'user';
+                    $Inserts['apassword'] = "'". md5($password1) ."'";
+                    $Inserts['email'] = "'$email'";
+                    $Inserts['confirm_hash'] = "'$hash'";
+                    $Inserts['is_confirmed'] = 0;
+					//$result=mysql_query($sql, $db_link);
+                    $globalSqlLink->InsertQuery($Inserts,TABLE_USERS);
+					if ($globalSqlLink->GetRowCount()== 0) {
 						$feedback .= ' MySQL ERROR - '.mysql_error();
 					} else {
 						//send the confirm email 
@@ -95,29 +105,35 @@
 	} //end if post registerSubmit	
 			
 	if ($_POST['lost'])  {
-		global $message, $hidden_hash_var, $db_link, $lang;
+		global $message, $hidden_hash_var, $lang;
 		$username = $_POST['username'];
 		$email = $_POST['email'];
 		if ($email && $username) {
 			$username=strtolower($username);
-			$sql="SELECT * FROM " .TABLE_USERS. " WHERE username='$username' AND email='$email'";
-			$result=mysql_query($sql, $db_link);
-			if (!$result || mysql_numrows($result) < 1) {
+            $globalSqlLink->SelectQuery('*', TABLE_USERS, "username='$username' AND email='$email'", NULL);
+            $result = $globalSqlLink-FetchQueryResult();
+            //$sql="SELECT * FROM " .TABLE_USERS. " WHERE username='$username' AND email='$email'";
+			//$result=mysql_query($sql, $db_link);
+			if (!is_array($result)  || $globalSqlLink->getRowCount() < 1) {
 				//no matching user found
 				$message = $lang[ERR_USER_INCORRECT_NAME_OR_EMAIL];
-			} else {
+			}
+			else {
 				//create a secure, new password
 				$new_pass=strtolower(substr(md5(time().$username.$hidden_hash_var),1,14));
 				//update the database to include the new password
 				$sql="UPDATE ".TABLE_USERS." SET password='" .md5($new_pass). "' WHERE username='$username' LIMIT 1";
-				$result=mysql_query($sql, $db_link);
+                $update[password] = "'" .md5($new_pass). "'";
+                $globalSqlLink->UpdateQuery($update,TABLE_USERS, "username='$username'" );
+				//$result=mysql_query($sql, $db_link);
 				//send a simple email with the new password
 				$mail->Subject = $lang[MAIL_LOST_PASSWORD_SUBJECT];		
 				$mail->Body  = $lang[MAIL_LOST_PASSWORD_MESSAGE]. "\n".$new_pass;
 				$mail->AddAddress($email);
 				if (!$mail->Send()) {
 					reportScriptError($lang['ERR_MAIL_NOT_SENT'] . $mail->ErrorInfo);
-				}else{
+				}
+				else{
 					$message = $lang[ERR_USER_REGISTER_SUCCESS];	
 				}
 				$message = $lang[ERR_USER_NEW_PASSWORD];

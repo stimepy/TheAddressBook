@@ -29,21 +29,26 @@ global $CHRONO_STARTTIME;
 // USED @ confirm page, accessed via confirmation e-mail
 
 function user_confirm($hash,$email) { 
-	global $feedback, $hidden_hash_var, $db_link;
+	global $feedback, $hidden_hash_var, $globalSqlLink;
 	//verify that they didn't tamper with the email address - David temporarily put != where = was due to error troubleshooting.
 	$new_hash=md5($email.$hidden_hash_var);
 	if ($new_hash && ($new_hash==$hash)) {
 		//find this record in the db
-		$sql="SELECT * FROM ".TABLE_USERS." WHERE confirm_hash LIKE '$hash'";
-		$result=mysqli_query($db_link,$sql);
-		if (mysql_numrows($result) < 1) {
+        $globalSqlLink->SelectQuery('*', TABLE_USERS, "confirm_hash LIKE '$hash'", NULL );
+        $result = $globalSqlLink->FetchQueryResult();
+		//$sql="SELECT * FROM ".TABLE_USERS." WHERE confirm_hash LIKE '$hash'";
+		//$result=mysqli_query($db_link,$sql);
+		if ($globalSqlLink->GetRowCount() < 1) {
 			$feedback = "ERR_USER_HASH_NOT_FOUND";
 			return false;
 		} else {
 			//confirm the email and set account to active
 			$feedback ="REG_CONFIRMED";
-			$sql="UPDATE ".TABLE_USERS."  SET email='$email',is_confirmed='1' WHERE confirm_hash='$hash'";
-			$result=mysql_query($sql, $db_link);
+			//$sql="UPDATE ".TABLE_USERS."  SET email='$email',is_confirmed='1' WHERE confirm_hash='$hash'";
+            $select['email'] = $email;
+            $select['is_confirmed']=1;
+            $globalSqlLink->UpdateQuery($select, TABLE_USERS, "confirm_hash=".$hash );
+			//$result=mysql_query($sql, $db_link);
 			return true;
 		}
 	} else {
@@ -89,13 +94,13 @@ function account_namevalid($name) {
 		return false;
 	}
 	// illegal names
-	if (eregi("^((root)|(bin)|(daemon)|(adm)|(lp)|(sync)|(shutdown)|(halt)|(mail)|(news)"
+	if (preg_match("/^((root)|(bin)|(daemon)|(adm)|(lp)|(sync)|(shutdown)|(halt)|(mail)|(news)/i"
 		. "|(uucp)|(operator)|(games)|(mysql)|(httpd)|(nobody)|(dummy)"
 		. "|(www)|(cvs)|(shell)|(ftp)|(irc)|(debian)|(ns)|(download))$",$name)) {
 		$feedback .= "ERR_RSRVD";
 		return 0;
 	}
-	if (eregi("^(anoncvs_)",$name)) {
+	if (preg_match("/^(anoncvs_)/i",$name)) {
 		$feedback .= "ERR_RSRVD_CVS";
 		return false;
 	}
@@ -104,7 +109,7 @@ function account_namevalid($name) {
 }
 
 function validate_email ($address) {
-	return (ereg('^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$', $address));
+	return (preg_match('/^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$/', $address));
 }
 ## end registration/mail functions
 
@@ -116,7 +121,7 @@ function validate_email ($address) {
 // Checks to see if an variable 'id' has been passed to the document, via GET or POST.
 // In addition, it checks to see if the 'id' corresponds to an entry already in the database, or else returns an error.
 function check_id() {
-	global $db_link;
+	global $globalSqlLink;
 	global $lang;
 
 	// Get 'id' if passed through GET
@@ -133,8 +138,10 @@ function check_id() {
 	}
 	
 	// Check to see if contact exists
-	$exists = mysql_num_rows(mysql_query("SELECT id FROM " . TABLE_CONTACT . " WHERE id=$id LIMIT 1", $db_link));
-	if ($exists != 1) {
+	//$exists = mysql_num_rows(mysql_query("SELECT id FROM " . TABLE_CONTACT . " WHERE id=$id LIMIT 1", $db_link));
+    $globalSqlLink->SelectQuery('id', TABLE_CONTACT, "WHERE id=".$id);
+    $results = $globalSqlLink->FetchQueryResult();
+	if ($globalSqlLink->GetRowCount() != 1) {
 		reportScriptError("<b>no entry by that id</b>");
 		exit();
 	}	

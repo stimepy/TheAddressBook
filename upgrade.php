@@ -10,8 +10,14 @@
 //error_reporting  (E_ERROR | E_WARNING | E_PARSE); 
 
 // ** GET CONFIGURATION DATA **
-    require_once('constants.inc');
-    require_once(FILE_FUNCTIONS);
+    $upgrade = true;
+    $permission=1091;
+    require_once('.\lib\Core.php');
+
+
+    global $globalSqlLink;
+    global $globalUsers;
+
     require_once('languages/english.php');
 ?>
 <HTML>
@@ -54,16 +60,18 @@ function saveEntry() {
 		}
 
 		// OPEN CONNECTION TO THE DATABASE
-		$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+        global $globalSqlLink;
+        $globalSqlLink = Mysql_Connect_I($db_hostname, $db_name, $db_username, $db_password);
+		//$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
 		//*******************
 		// doQuery();
 		//*******************
-		function doQuery($sql) {
-			global $db_link;
-			mysql_query($sql)
-				or die(reportSQLError($sql));
-		}
+	//	function doQuery($sql) {
+	//		global $db_link;
+	//		mysql_query($sql)
+	//			or die(reportSQLError($sql));
+	//	}
 
 	//  BEGIN 1.03 to 1.04 UPGRADE  
 	echo "Upgrading from 1.03 to 1.04, the debut of multi-language version !!! <br>
@@ -78,13 +86,16 @@ function saveEntry() {
 		<br>";
 	// function numb2alph() TAKES A NUMERIC COUNTRY CODE, FINDS THE COUNTRY NAME, THEN FINDS THAT NAME IN ALPHA TABLE AND RETURNS THE ALPHA CODE.
 	function numb2alph($countryNumber) {
-		global $db_link;
+		global $globalSqlLink;
 		global $db_prefix;
 		global $country; #this array is loaded by the language file and contains 2 letter country codes 
 		reset($country);
 		$countryAlpha = 0; //default to 0, unless a match is found.
-		$oldCountry = mysql_fetch_assoc(mysql_query("SELECT * FROM " . $db_prefix . "country WHERE id=$countryNumber"));
-			while (list ($aphaCountryCode, $countryName) = each ($country)) {
+        $globalSqlLink->SelectQuery('*',  $db_prefix . "country", "id='$countryNumber'", NULL);
+        $oldCountry = $globalSqlLink->FetchQueryResult();
+            //mysql_fetch_assoc(mysql_query("SELECT * FROM " . $db_prefix . "country WHERE id=$countryNumber"));
+            foreach($country as $aphaCountryCode => $countryName ){
+			// while (list ($aphaCountryCode, $countryName) = each ($country)) {
 				if ($countryName==$oldCountry['countryname']) {
 					$countryAlpha = $aphaCountryCode; 
 				}
@@ -116,41 +127,61 @@ function saveEntry() {
 					}	// end switch
 			}  // end while
 		return $countryAlpha;
-	} // END FUNCTION 
+	} // END FUNCTION w
 	
 	// UPGRADE TABLE_OPTIONS
 	echo "\n<br>Starting upgrades to table ".$db_prefix."options... ";
-	doQuery("ALTER TABLE " . $db_prefix . "options CHANGE countryDefault countryDefault CHAR(3) DEFAULT '0' NULL"); 
-	doQuery("ALTER TABLE " . $db_prefix . "options DROP pathMugshots"); 
-	doQuery("ALTER TABLE " . $db_prefix . "options ADD language varchar(25) NOT NULL AFTER requireLogin"); 
-	doQuery("ALTER TABLE " . $db_prefix . "options ADD defaultLetter char(2) NULL AFTER language");
-	doQuery("ALTER TABLE " . $db_prefix . "options ADD limitEntries smallint(3) DEFAULT '0' NOT NULL AFTER defaultLetter");
-	doQuery("ALTER TABLE " . $db_prefix . "options ADD eMailAdmin int(1) NOT NULL default '0' AFTER allowUserReg");
+	$globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "options CHANGE countryDefault countryDefault CHAR(3) DEFAULT '0' NULL", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "options CHANGE countryDefault countryDefault CHAR(3) DEFAULT '0' NULL");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "options DROP pathMugshots", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "options DROP pathMugshots");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "options ADD language varchar(25) NOT NULL AFTER requireLogin", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "options ADD language varchar(25) NOT NULL AFTER requireLogin");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "options ADD defaultLetter char(2) NULL AFTER language", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "options ADD defaultLetter char(2) NULL AFTER language");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "options ADD limitEntries smallint(3) DEFAULT '0' NOT NULL AFTER defaultLetter",  $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "options ADD limitEntries smallint(3) DEFAULT '0' NOT NULL AFTER defaultLetter");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "options ADD eMailAdmin int(1) NOT NULL default '0' AFTER allowUserReg", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "options ADD eMailAdmin int(1) NOT NULL default '0' AFTER allowUserReg");
 
 	// Country code upgrade
-	$oldCountryCode = mysql_fetch_assoc(mysql_query("SELECT countryDefault FROM " . $db_prefix . "options"));
+	//$oldCountryCode = mysql_fetch_assoc(mysql_query("SELECT countryDefault FROM " . $db_prefix . "options"));
+	$globalSqlLink->SelectQuery('countryDefault', $db_prefix . "options");
+	$oldCountryCode = $globalSqlLink->FetchQueryResult();
 	$countryAlpha = numb2alph($oldCountryCode['countryDefault']); #give this function the country number and it returns the 2 letter alpha code as $countryAlpha
-	doQuery("UPDATE " . $db_prefix . "options SET countryDefault='$countryAlpha', language='english'");
+    $update['countryDefault'] = '$countryAlpha';
+    $update['language'] = 'english';
+    $globalSqlLink->UpdateQuery($update, $db_prefix . "options");
+    //doQuery("UPDATE " . $db_prefix . "options SET countryDefault='$countryAlpha', language='english'");
 	echo "OK.\n";
 
 	// UPGRADE TABLE_USERS
 	echo "<br>Starting upgrades to table ".$db_prefix."users... ";
 	// add the new user option fields
-	doQuery("ALTER TABLE " . $db_prefix . "users ADD bdayInterval int(3) default NULL"); 
-	doQuery("ALTER TABLE " . $db_prefix . "users ADD bdayDisplay int(1) default NULL"); 
-	doQuery("ALTER TABLE " . $db_prefix . "users ADD displayAsPopup int(1) default NULL"); 
-	doQuery("ALTER TABLE " . $db_prefix . "users ADD useMailScript int(1) default NULL"); 
-	doQuery("ALTER TABLE " . $db_prefix . "users ADD language varchar(25) default NULL"); 
-	doQuery("ALTER TABLE " . $db_prefix . "users ADD defaultLetter char(2) default NULL");
-	doQuery("ALTER TABLE " . $db_prefix . "users ADD limitEntries smallint(3) default NULL");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "users ADD bdayInterval int(3) default NULL", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "users ADD bdayInterval int(3) default NULL");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "users ADD bdayDisplay int(1) default NULL", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "users ADD bdayDisplay int(1) default NULL");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "users ADD displayAsPopup int(1) default NULL", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "users ADD displayAsPopup int(1) default NULL");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "users ADD useMailScript int(1) default NULL", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "users ADD useMailScript int(1) default NULL");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "users ADD language varchar(25) default NULL", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "users ADD language varchar(25) default NULL");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "users ADD defaultLetter char(2) default NULL", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "users ADD defaultLetter char(2) default NULL");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "users ADD limitEntries smallint(3) default NULL", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "users ADD limitEntries smallint(3) default NULL");
 	echo "OK.\n";
 
 	// UPGRADE TABLE_ADDRESS	
 	echo "<br>Starting upgrades to table ".$db_prefix."address... ";
-	doQuery("ALTER TABLE " . $db_prefix . "address CHANGE state state VARCHAR(50) DEFAULT NULL, ADD refid INT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "address CHANGE state state VARCHAR(50) DEFAULT NULL, ADD refid INT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "address CHANGE state state VARCHAR(50) DEFAULT NULL, ADD refid INT NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST");
 	
 	// Change the value of contact.primaryAddress from type to refid
 	echo "<br>Converting types... ";
+
 	$oldAddType = mysql_query("SELECT contact.id, primaryAddType, refid FROM " . $db_prefix . "contact AS contact LEFT JOIN " . $db_prefix . "address AS address ON contact.id=address.id AND contact.primaryAddType=address.type");
 	while ($tblAddType = mysql_fetch_array($oldAddType)) {
 		doQuery("UPDATE  " . $db_prefix . "contact SET primaryAddType='".$tblAddType['refid']."' WHERE id=".$tblAddType['id']."");

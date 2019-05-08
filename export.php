@@ -18,6 +18,8 @@
 	global $globalSqlLink;
 	global $globalUsers;
 
+	$globalUsers->checkForLogin();
+
     $options = new Options();
 
 
@@ -312,7 +314,6 @@
 			// QUERY
 
 
-
 			$xmlQuery = "SELECT * FROM ". TABLE_CONTACT . "";
 			$r_contact = mysql_query($xmlQuery, $db_link);
 
@@ -326,8 +327,10 @@
 
 			echo "<?xml version=\"1.0\" encoding=\"".$lang['CHARSET']."\"?>\n\n";
 			echo "<rubrica>\n\n";
-
-			while ($tbl_contact = mysql_fetch_array($r_contact)) {
+			$globalSqlLink->SelectQuery('*',TABLE_CONTACT, NULL, NULL );
+			$r_contact = $globalSqlLink->FetchQueryResult();
+			foreach($r_contact as $tbl_contact ){
+			// while ($tbl_contact = mysql_fetch_array($r_contact)) {
 
 				# short id
 				$XID = $tbl_contact['id'];
@@ -351,10 +354,12 @@
 				# TABLE_EMAIL
 				# ********************
 				echo "<EMAIL>\n";
-				$xmlMail = "SELECT * FROM ". TABLE_EMAIL . " WHERE id=$XID";
-				$r_mail = mysql_query($xmlMail, $db_link);
-
-				while ($tbl_mail = mysql_fetch_array($r_mail)) {
+				//$xmlMail = "SELECT * FROM ". TABLE_EMAIL . " WHERE id=$XID";
+				$globalSqlLink->SelectQuery('*',TABLE_EMAIL, "id=".$XID, NULL );
+				$r_mail = $globalSqlLink->FetchQueryResult();
+				//$r_mail = mysql_query($xmlMail, $db_link);
+				foreach( $r_mail as $tbl_mail){
+				//while ($tbl_mail = mysql_fetch_array($r_mail)) {
 					echo "<mail type=\"".$tbl_mail['type']."\">".$tbl_mail['email']."</mail>\n";
 				}
 
@@ -368,25 +373,27 @@
 				# ********************
 				echo "<ADDRESS>\n";
 
-				$xmlAddr = "SELECT * FROM ". TABLE_ADDRESS . " WHERE id=$XID";
-				$r_addr = mysql_query($xmlAddr, $db_link);
+				//$xmlAddr = "SELECT * FROM ". TABLE_ADDRESS . " WHERE id=$XID";
+				$globalSqlLink->SelectQuery('*',TABLE_ADDRESS, "id=".$XID, NULL );
+				$r_addr = $globalSqlLink->FetchQueryResult();
+				//$r_addr = mysql_query($xmlAddr, $db_link);
+				foreach($r_addr as $tbl_addr){
+				//while ($tbl_addr = mysql_fetch_array($r_addr)) {
 
-				while ($tbl_addr = mysql_fetch_array($r_addr)) {
+					echo "<address type=\"".$tbl_addr['type']."\">\n";
+					echo "<line1>".$tbl_addr['line1']."</line1>\n";
+					echo "<line2>".$tbl_addr['line2']."</line2>\n";
+					echo "<city>".$tbl_addr['city']."</city>\n";
+					echo "<state>".$tbl_addr['state']."</state>\n";
+					echo "<zip>".$tbl_addr['zip']."</zip>\n";
 
-				echo "<address type=\"".$tbl_addr['type']."\">\n";
-				echo "<line1>".$tbl_addr['line1']."</line1>\n";
-				echo "<line2>".$tbl_addr['line2']."</line2>\n";
-				echo "<city>".$tbl_addr['city']."</city>\n";
-				echo "<state>".$tbl_addr['state']."</state>\n";
-				echo "<zip>".$tbl_addr['zip']."</zip>\n";
+					# TABLE_COUNTRY
+					$xmlCountry = $tbl_addr['country'];
 
-				# TABLE_COUNTRY
-				$xmlCountry = $tbl_addr['country'];
-
-				echo "<country>".$country[$xmlCountry]."</country>\n";
-				echo "<phone1>".$tbl_addr['phone1']."</phone1>\n";
-				echo "<phone2>".$tbl_addr['phone2']."</phone2>\n";
-				echo "</address>\n";
+					echo "<country>".$country[$xmlCountry]."</country>\n";
+					echo "<phone1>".$tbl_addr['phone1']."</phone1>\n";
+					echo "<phone2>".$tbl_addr['phone2']."</phone2>\n";
+					echo "</address>\n";
 
 				}
 
@@ -399,12 +406,13 @@
 				# TABLE_OTHERPHONE
 				# ********************
 				echo "<OTHER-PHONE>\n";
-				$xmlPhone = "SELECT * FROM ". TABLE_OTHERPHONE . " WHERE id=$XID";
-				$r_phone = mysql_query($xmlPhone, $db_link);
+				//$xmlPhone = "SELECT * FROM ". TABLE_OTHERPHONE . " WHERE id=$XID";
+				$globalSqlLink->SelectQuery('*',TABLE_OTHERPHONE, "id=".$XID, NULL );
+				$r_phone = $globalSqlLink->FetchQueryResult();
+				//$r_phone = mysql_query($xmlPhone, $db_link);
 
-
-
-				while ($tbl_phone = mysql_fetch_array($r_phone)) {
+				foreach($r_phone as $tbl_phone){
+				//while ($tbl_phone = mysql_fetch_array($r_phone)) {
 
 					echo "<phone type=\"".$tbl_phone['type']."\">".$tbl_phone['phone']."</phone>\n";
 
@@ -420,9 +428,12 @@
 				# ********************
 				echo "<WEBSITES>\n";
 				$xmlWWW = "SELECT * FROM ". TABLE_WEBSITES . " WHERE id=$XID";
-				$r_www = mysql_query($xmlWWW, $db_link);
+				//$r_www = mysql_query($xmlWWW, $db_link);
+				$globalSqlLink->SelectQuery('*',TABLE_WEBSITES, "id=".$XID, NULL );
+				$r_www = $globalSqlLink->FetchQueryResult();
 
-				while ($tbl_www = mysql_fetch_array($r_www)) {
+				foreach($r_www as $tbl_www){
+				//while ($tbl_www = mysql_fetch_array($r_www)) {
 
 					echo "<www label=\"".$tbl_www['webpageName']."\">".$tbl_www['webpageURL']."</www>\n";
 
@@ -437,10 +448,12 @@
 				# TABLE_ADDITIONALDATA
 				# ********************
 				echo "<ADDITIONAL-DATA>\n";
-				$xmlData = "SELECT * FROM ". TABLE_ADDITIONALDATA . " WHERE id=$XID";
-				$r_data = mysql_query($xmlData, $db_link);
-
-				while ($tbl_data = mysql_fetch_array($r_data)) {
+				//$xmlData = "SELECT * FROM ". TABLE_ADDITIONALDATA . " WHERE id=$XID";
+				//$r_data = mysql_query($xmlData, $db_link);
+				$globalSqlLink->SelectQuery('*',TABLE_ADDITIONALDATA, "id=".$XID, NULL );
+				$r_data = $globalSqlLink->FetchQueryResult();
+				foreach($r_data as $tbl_data){
+				//while ($tbl_data = mysql_fetch_array($r_data)) {
 
 					echo "<data type=\"".$tbl_data['type']."\">".$tbl_data['value']."</data>\n";
 
@@ -455,16 +468,19 @@
 				# GROUPS SUBSCRIPTIONS
 				# ********************
 				echo "<GROUPS>\n";
-				$xmlGroups = "SELECT * FROM ". TABLE_GROUPS . " WHERE id=$XID";
-				$r_groups = mysql_query($xmlGroups, $db_link);
-
-				while ($tbl_groups = mysql_fetch_array($r_groups)) {
+				//$xmlGroups = "SELECT * FROM ". TABLE_GROUPS . " WHERE id=$XID";
+				//$r_groups = mysql_query($xmlGroups, $db_link);
+				$globalSqlLink->SelectQuery('*',TABLE_GROUPS, "id=".$XID, NULL );
+				$r_groups = $globalSqlLink->FetchQueryResult();
+				foreach($r_groups as $tbl_groups){
+				//while ($tbl_groups = mysql_fetch_array($r_groups)) {
 
 					# groups name
-					$xmlGN = "SELECT * FROM ". TABLE_GROUPLIST . " WHERE groupid=".$tbl_groups['groupid']."";
-					$r_gn = mysql_query($xmlGN, $db_link);
-					$tbl_gn = mysql_fetch_array($r_gn);
-
+					$xmlGN = "SELECT * FROM ". TABLE_GROUPLIST . " WHERE groupid=".$tbl_groups['groupid'];
+					//$r_gn = mysql_query($xmlGN, $db_link);
+					//$tbl_gn = mysql_fetch_array($r_gn);
+					$globalSqlLink->SelectQuery('*',TABLE_GROUPS, "groupid=".$tbl_groups['groupid'], NULL );
+					$tbl_gn = $globalSqlLink->FetchQueryResult();
 
 					echo "<group id=\"".$tbl_gn['groupid']."\" name=\"".$tbl_gn['groupname']."\"/>\n";
 
@@ -494,9 +510,9 @@
 		case "gmail":
 
 			// QUERY
-		    $gmailQuery = "SELECT firstname, lastname, email, type FROM ". TABLE_CONTACT ." AS contact LEFT JOIN ". TABLE_EMAIL ." AS email ON contact.id=email.id WHERE email.email IS NOT NULL";
-		    $r_contact = mysql_query($gmailQuery, $db_link)
-				or die(reportSQLError($gmailQuery));
+		    //$gmailQuery = "SELECT firstname, lastname, email, type FROM ". TABLE_CONTACT ." AS contact LEFT JOIN ". TABLE_EMAIL ." AS email ON contact.id=email.id WHERE email.email IS NOT NULL";
+		    //$r_contact = mysql_query($gmailQuery, $db_link)
+			//	or die(reportSQLError($gmailQuery));
 
 			// OUTPUT
 			header("Content-Type: text/comma-separated-values");
@@ -507,7 +523,10 @@
 			header("Expires: 0");
 
 		    echo("Name,Email Address\n");
-		    while ($tbl_contact = mysql_fetch_array($r_contact)) {
+			$globalSqlLink->SelectQuery('firstname, lastname, email, type', TABLE_CONTACT ." AS contact LEFT JOIN ". TABLE_EMAIL ." AS email ON contact.id=email.id",  "email.email IS NOT NULL", NULL);
+			$r_contact = $globalSqlLink->FetchQueryResult();
+			foreach($r_contact as $tbl_contact){
+		    //while ($tbl_contact = mysql_fetch_array($r_contact)) {
 				// First Name, Last Name, and Type variables are checked for the comma (,) character, which will be
 				// removed if found. This is to prevent these fields from breaking the CSV format.
 				echo(str_replace(",", "",$tbl_contact['firstname']) . " " . str_replace(",", "",$tbl_contact['lastname']));
@@ -519,20 +538,23 @@
 
 			// END
 			break;
+
 		case "vcard":  //from wilco on forum http://www.corvalis.net/phpBB2/viewtopic.php?t=294
 		
-			$vCardQuery = "SELECT id, firstname, middlename, lastname, nickname, birthday, pictureURL, notes
-				     	FROM ". TABLE_CONTACT;
+			//$vCardQuery = "SELECT id, firstname, middlename, lastname, nickname, birthday, pictureURL, notes
+			//	     	FROM ". TABLE_CONTACT;
 				     	
-			$r_contact = mysql_query($vCardQuery, $db_link)
-				or die(reportSQLError($vCardQuery));
+			//$r_contact = mysql_query($vCardQuery, $db_link)
+			//	or die(reportSQLError($vCardQuery));
 				
 			$mobile_prefix = '06'; // prefix for mobile numbers
 			$picture_prefix = 'http://www.miletic.nl/adressen/mugshots/';
-			
-			
+
+			$globalSqlLink->SelectQuery('id, firstname, middlename, lastname, nickname, birthday, pictureURL, notes', TABLE_CONTACT , NULL, NULL);
+			$r_contact = $globalSqlLink->FetchQueryResult();
 			//include('vcard.php');
-			while($r = mysql_fetch_array($r_contact)) {  // $r means result
+			foreach($r_contact as $r){
+			//while($r = mysql_fetch_array($r_contact)) {  // $r means result
 				$output .= "BEGIN:VCARD\nVERSION:3.0\n";
 				$output .= 'FN:' . $r['firstname'] . "\n";
 				$output .= 'N:' . $r['lastname'] . ';' . $r['firstname'] . ';' . $r['middlename'] . ";\n";
@@ -541,9 +563,12 @@
 				if($r['birthday'] != '0000-00-00') $output .= 'BDAY:' . $r['birthday'] . "\n";
 				
 				$i='primary';
-				$adrq = 'SELECT line1, line2, city, state, phone1, phone2, zip FROM ' . TABLE_ADDRESS . ' WHERE id=' . $r['id'];
-				$adrq = mysql_query($adrq);
-				while($adr = mysql_fetch_array($adrq)) {
+				//$adrq = 'SELECT line1, line2, city, state, phone1, phone2, zip FROM ' . TABLE_ADDRESS . ' WHERE id=' . $r['id'];
+				//$adrq = mysql_query($adrq);
+				$globalSqlLink->SelectQuery('line1, line2, city, state, phone1, phone2, zip', TABLE_ADDRESS , "id=". $r['id'], NULL);
+				$adrq = $globalSqlLink->FetchQueryResult();
+				foreach($adrq as $adr){
+				//while($adr = mysql_fetch_array($adrq)) {
 					$output .= 'ADR;TYPE=dom,home,postal';
 					if($i == 'primary') {
 						$output .= ',pref';
@@ -554,7 +579,7 @@
 					if($adr['phone1']) {
 						$output .= 'TEL;TYPE=';
 					
-						if(eregi("^$mobile_prefix",$adr['phone1'])) {
+						if(preg_match("/^$mobile_prefix/",$adr['phone1'])) {
 							$output .= 'CELL,VOICE,MSG';
 							if($i == 'primary') $output .= ',PREF';
 						}
@@ -568,7 +593,7 @@
 					
 					if($adr['phone2']) {
 						$output .= 'TEL;TYPE=';
-						if(eregi("^$mobile_prefix",$adr['phone2'])) $output .= 'CELL,VOICE,MSG';
+						if(preg_match("/^$mobile_prefix/",$adr['phone2'])) $output .= 'CELL,VOICE,MSG';
 						else $output .= 'HOME,VOICE';
 					
 						$output .= ':' . $adr['phone2'] . "\n";
@@ -578,30 +603,39 @@
 				}
 				
 				
-				$telq = 'SELECT phone FROM ' . TABLE_OTHERPHONE . ' WHERE id=' . $r['id'];
-				$telq = mysql_query($telq);
-				while($tel = mysql_fetch_array($telq)) {
+				//$telq = 'SELECT phone FROM ' . TABLE_OTHERPHONE . ' WHERE id=' . $r['id'];
+				//$telq = mysql_query($telq);
+				$globalSqlLink->SelectQuery('phone', TABLE_OTHERPHONE , "id=". $r['id'], NULL);
+				$telq = $globalSqlLink->FetchQueryResult();
+				foreach($telq as $tel){
+				//while($tel = mysql_fetch_array($telq)) {
 					$output .= 'TEL;TYPE=';
-					if(eregi("^$mobile_prefix",$tel['phone'])) $output .= 'CELL,VOICE,MSG';
+					if(preg_match("/^$mobile_prefix/",$tel['phone'])) $output .= 'CELL,VOICE,MSG';
 					else $output .= 'HOME,VOICE';
 					
 					$output .= ':' . $tel['phone'] . "\n";
 				}
 				
 				
-				$emailq = 'SELECT email FROM ' . TABLE_EMAIL . ' WHERE id=' . $r['id'];
-				$emailq = mysql_query($emailq);
+				//$emailq = 'SELECT email FROM ' . TABLE_EMAIL . ' WHERE id=' . $r['id'];
+				//$emailq = mysql_query($emailq);
+				$globalSqlLink->SelectQuery('email', TABLE_EMAIL , "id=". $r['id'], NULL);
+				$emailq = $globalSqlLink->FetchQueryResult();
 				$i = 'primary';
-				while($m = mysql_fetch_array($emailq)) {
+				foreach($emailq as $m){
+				//while($m = mysql_fetch_array($emailq)) {
 					$output .= 'EMAIL;TYPE=internet,home';
 					if($i == 'primary') $output .= ',PRIM';
 					$output .= ':' . $m['email'] . "\n";
 					$i = 'not_primary';
 				}
 			
-				$urlq = 'SELECT webpageURL FROM ' . TABLE_WEBSITES . ' WHERE id=' . $r['id'];
-				$urlq = mysql_query($urlq);
-				while($url = mysql_fetch_array($urlq)) {
+				//$urlq = 'SELECT webpageURL FROM ' . TABLE_WEBSITES . ' WHERE id=' . $r['id'];
+				//$urlq = mysql_query($urlq);
+				$globalSqlLink->SelectQuery('webpageURL', TABLE_WEBSITES , "id=". $r['id'], NULL);
+				$urlq = $globalSqlLink->FetchQueryResult();
+				foreach($urlq as $url){
+				//while($url = mysql_fetch_array($urlq)) {
 					$output .= 'URL:' . $url['webpageURL'] . "\n";
 				}
 				

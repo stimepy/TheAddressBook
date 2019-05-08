@@ -22,7 +22,7 @@ global $globalUsers;
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
-
+    $globalUsers->checkForLogin('admin', 'user');
 // ** CHECK FOR ID **
 	$mode = $_GET['mode'];
 	if ($mode == 'new') {

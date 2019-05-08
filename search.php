@@ -17,23 +17,28 @@
  *************************************************************/
 
 
-// ** GET CONFIGURATION DATA **
-    require_once('constants.inc');
-    require_once(FILE_FUNCTIONS);
-    require_once(FILE_CLASS_OPTIONS);
+require_once('.\lib\Core.php');
+
+
+global $globalSqlLink;
+global $globalUsers;
+
+$globalUsers->checkForLogin();
 
 
 // ** OPEN CONNECTION TO THE DATABASE **
-    $db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+    //$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
 // ** CHECK FOR LOGIN **
-	checkForLogin();
+//	checkForLogin();
 
 // RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE
-	$options = new Options();
+	//$options = new Options();
 
-    $options = mysql_fetch_array(mysql_query("SELECT displayAsPopup FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
-		or die(reportScriptError("Unable to retrieve options."));
+    $globalSqlLink->SelectQuery('displayAsPopup', TABLE_OPTIONS, NULL, 'Limit 1');
+    $options =  $globalSqlLink->FetchQueryResult();
+        //mysql_fetch_array(mysql_query("SELECT displayAsPopup FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
+	//	or die(reportScriptError("Unable to retrieve options."));
     $options->displayAsPopup = $options['displayAsPopup'];
 
 
@@ -56,21 +61,24 @@
         $goTo = $search;
     }
     if ($goTo) {
-        $gotosql = "SELECT id, CONCAT(lastname,', ',firstname) AS fullname, lastname, firstname
-                   FROM " . TABLE_CONTACT . "
-                   WHERE 
-                     CONCAT(firstname,' ', lastname) LIKE '%$goTo%' OR
-                     CONCAT(firstname,' ', middlename,' ', lastname) LIKE '%$goTo%' OR
-                     nickname LIKE '%$goTo%'
-                   ORDER BY fullname";
-        $r_goto = mysql_query($gotosql, $db_link);
-        $numGoTo = mysql_num_rows($r_goto);
+      //  $gotosql = "SELECT id, CONCAT(lastname,', d',firstname) AS fullname, lastname, firstname
+    //               FROM " . TABLE_CONTACT . "
+  //                 WHERE
+//                     CONCAT(firstname,' ', lastname) LIKE '%$goTo%' OR CONCAT(firstname,' ', middlename,' ', lastname) LIKE '%$goTo%' OR nickname LIKE '%$goTo%'
+        //           ORDER BY fullname";
+        $select = "id, CONCAT(lastname,', ',firstname) AS fullname, lastname, firstname";
+        $where ="CONCAT(firstname,' ', lastname) LIKE '%$goTo%' OR CONCAT(firstname,' ', middlename,' ', lastname) LIKE '%$goTo%' OR nickname LIKE '%$goTo%'";
+        $globalSqlLink->SelectQuery($select,TABLE_CONTACT, $where, "ORDER BY fullname" );
+        $r_goto = $globalSqlLink->FetchQueryResult();
+        //$r_goto = mysql_query($gotosql, $db_link);
+        $numGoTo = $globalSqlLink->GetRowCount();
+            //mysql_num_rows($r_goto);
 
     }
 
 // print results
     if ($numGoTo == 1) {
-        $t_goto = mysql_fetch_array($r_goto); 
+        //$t_goto = mysql_fetch_array($r_goto);
         $contact_id = $t_goto['id'];
 		if ($options->displayAsPopup == 1) { 
         	$theAddress = FILE_ADDRESS."?id=".$contact_id; 
@@ -146,7 +154,8 @@ One entry found. It will appear in a new window. If no window appears, <A HREF="
     }
     else {
         echo("<P>".$lang['SEARCH_MULTIPLE']."<P>");
-        while ($t_goto = mysql_fetch_array($r_goto) ) {
+        foreach($r_goto as $t_goto){
+        //while ($t_goto = mysql_fetch_array($r_goto) ) {
             $contact_id = $t_goto['id'];
             $contact_name = $t_goto['fullname'];
             $contact_firstname = $t_goto['firstname'];
