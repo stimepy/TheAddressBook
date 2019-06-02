@@ -9,12 +9,15 @@
  *************************************************************/
 
 
-// ** GET CONFIGURATION DATA **
-	require_once('constants.inc');
-	require_once(FILE_FUNCTIONS);
-	require_once(FILE_LIB_MAIL);	
-	require_once(FILE_CLASS_OPTIONS);
+
 	session_start();
+require_once('.\lib\Core.php');
+
+
+global $globalSqlLink;
+global $globalUsers;
+
+$globalUsers->checkForLogin();
 
 // ** OPEN CONNECTION TO THE DATABASE **
 	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);

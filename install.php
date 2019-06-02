@@ -14,19 +14,21 @@
  *
  *************************************************************/
 
-error_reporting  (E_ERROR | E_WARNING | E_PARSE); 
-session_start();
-// ** GET CONFIGURATION DATA **
-	require_once('constants.inc');
-	require_once(FILE_FUNCTIONS);
+error_reporting  (E_ERROR | E_WARNING | E_PARSE);
+$upgrade = true;
+$permission=1091;
+require_once('.\lib\Core.php');
+
+
+global $globalSqlLink;
 	$langForDB = 'english';
 //*******************
 //doQuery();  used to update Datatabse later down the program-
 //*******************
-	function doQuery($sql, $db_link) {
-		mysql_query($sql, $db_link)
-				or die(ReportSQLError($sql));
-	}
+	//function doQuery($sql, $db_link) {
+	//	mysql_query($sql, $db_link)
+	//			or die(ReportSQLError($sql));
+	//}
 ?>
 
 <HTML>
@@ -57,7 +59,7 @@ function saveEntry() {
 			$errorMsg .= "- MySQL user name is empty<br>";
 			$errorStatus = 1;
 	    	}
-// OPEN CONNECTION TO THE DATABASE
+// OPEN CONNECTION TO THE DATABASEs
 		$db_link = @mysql_connect($db_hostname, $db_username, $db_password, $db_name);
 		$opps = mysql_errno();
 		if($opps ==1045){

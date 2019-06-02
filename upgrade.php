@@ -182,22 +182,34 @@ function saveEntry() {
 	// Change the value of contact.primaryAddress from type to refid
 	echo "<br>Converting types... ";
 
-	$oldAddType = mysql_query("SELECT contact.id, primaryAddType, refid FROM " . $db_prefix . "contact AS contact LEFT JOIN " . $db_prefix . "address AS address ON contact.id=address.id AND contact.primaryAddType=address.type");
-	while ($tblAddType = mysql_fetch_array($oldAddType)) {
-		doQuery("UPDATE  " . $db_prefix . "contact SET primaryAddType='".$tblAddType['refid']."' WHERE id=".$tblAddType['id']."");
+	//$oldAddType = mysql_query("SELECT contact.id, primaryAddType, refid FROM " . $db_prefix . "contact AS contact LEFT JOIN " . $db_prefix . "address AS address ON contact.id=address.id AND contact.primaryAddType=address.type");
+	$globalSqlLink->SelectQuery('contact.id, primaryAddType, refid', $db_prefix . "contact AS contact LEFT JOIN " . $db_prefix . "address AS address ON contact.id=address.id AND contact.primaryAddType=address.type", NULL, NULL);
+	$oldAddType = $globalSqlLink->FetchQueryResult();
+	foreach($oldAddType as $tblAddType)
+    // while ($tblAddType = mysql_fetch_array($oldAddType)) {
+        $select['primaryAddType']="'".$tblAddType['refid']."'";
+        $globalSqlLink->UpdateQuery($select, $db_prefix . "contact", "id=".$tblAddType['id']);
+		//doQuery("UPDATE  " . $db_prefix . "contact SET primaryAddType='".$tblAddType['refid']."' WHERE id=".$tblAddType['id']."");
 		echo "<!-- ID ".$tblAddType['id']." | Old type: ".$tblAddType['primaryAddType']." | New refid: ".$tblAddType['refid']." -->\n"; 
 	}
 	// Make the change to type INT *after* new refid values are given.
-	doQuery("ALTER TABLE " . $db_prefix . "contact CHANGE primaryAddType primaryAddress INT DEFAULT NULL");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "contact CHANGE primaryAddType primaryAddress INT DEFAULT NULL", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "contact CHANGE primaryAddType primaryAddress INT DEFAULT NULL");
 
 	// THE ADDRESS TABLE WAS IN NUMERIC CODE, NOW ALPHA CODE, SO CONVERT IT NOW
 	echo "<br>Converting old country codes... ";
-	doQuery("ALTER TABLE " . $db_prefix . "address CHANGE country country VARCHAR(3) "); // change to type VARCHAR first
-	$numericAddressHandle = mysql_query("SELECT * FROM " . $db_prefix . "address");
-	while ($numericAddressArray = mysql_fetch_array($numericAddressHandle)) {
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "address CHANGE country country VARCHAR(3) ", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "address CHANGE country country VARCHAR(3) "); // change to type VARCHAR first
+	$globalSqlLink->SelectQuery('*', $db_prefix . "address", NULL, NULL);
+    $numericAddressHandle = $globalSqlLink->FetchQueryResult();
+    //$numericAddressHandle = mysql_query("SELECT * FROM " . $db_prefix . "address");
+    foreach($numericAddressHandle as $numericAddressArray){
+	//while ($numericAddressArray = mysql_fetch_array($numericAddressHandle)) {
 		$countryAlpha = numb2alph($numericAddressArray['country']);
-		$query = "UPDATE " . $db_prefix . "address SET country='$countryAlpha' WHERE id=" .$numericAddressArray['id']. " AND refid='".$numericAddressArray['refid']."'";
-		doQuery($query);
+		$update['country'] = "'".$countryAlpha."'";
+		//$query = "UPDATE " . $db_prefix . "address SET country='$countryAlpha' WHERE id=" .$numericAddressArray['id']. " AND refid='".$numericAddressArray['refid']."'";
+        //doQuery($query);
+		$globalSqlLink->UpdateQuery($update, $db_prefix . "address", "id=" .$numericAddressArray['id']. " AND refid='".$numericAddressArray['refid']);
 		echo "<br> ID ".$numericAddressArray['id']." | Old code: ".$numericAddressArray['country']." | New code: ".$countryAlpha." \n";
 	}
 
@@ -205,16 +217,20 @@ function saveEntry() {
 
 	// REMOVE COUNTRY TABLE
 	echo "<br>Removing table ".$db_prefix."country from database... ";
-	doQuery("DROP TABLE IF EXISTS " . $db_prefix . "country");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("DROP TABLE IF EXISTS " . $db_prefix . "country", $permission);
+	//doQuery("DROP TABLE IF EXISTS " . $db_prefix . "country");
 	echo "OK.\n";
 
 	// CONTACT TABLE CHANGES HERE
 	// alter the contact.id field to be auto_increment
 	echo "<br>Implementing auto increment... ";
-	doQuery("ALTER TABLE " . $db_prefix . "contact CHANGE id id INT(11) NOT NULL AUTO_INCREMENT");
-	doQuery("DROP TABLE IF EXISTS " . $db_prefix . "counter"); //with auto_increment, we no longer need the counter table.
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "contact CHANGE id id INT(11) NOT NULL AUTO_INCREMENT", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "contact CHANGE id id INT(11) NOT NULL AUTO_INCREMENT");
+    $globalSqlLink->FreeFormQueryNoErrorchecking("DROP TABLE IF EXISTS " . $db_prefix . "counter", $permission);
+	//doQuery("DROP TABLE IF EXISTS " . $db_prefix . "counter"); //with auto_increment, we no longer need the counter table.
 	echo "OK.\n";
-	doQuery("ALTER TABLE " . $db_prefix . "groups CHANGE groupid groupid INT(11) NOT NULL DEFAULT '0'"); //changed from tinyint(4) to allow more than 127 groups
+    $globalSqlLink->FreeFormQueryNoErrorchecking("ALTER TABLE " . $db_prefix . "groups CHANGE groupid groupid INT(11) NOT NULL DEFAULT '0'", $permission);
+	//doQuery("ALTER TABLE " . $db_prefix . "groups CHANGE groupid groupid INT(11) NOT NULL DEFAULT '0'"); //changed from tinyint(4) to allow more than 127 groups
 	echo "<p>Finished! Upgrade appears to be successful.\n";	
 	
 // ** END 1.03 to 1.04 UPGRADE

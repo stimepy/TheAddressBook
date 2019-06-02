@@ -18,7 +18,6 @@ require_once(FILE_CONFIG);
 require_once(FILE_LIB_MAIL);
 
 
-
 require_once('./lib/Database_Connect_I.php');
 require_once('./lib/class.users.php');
 
