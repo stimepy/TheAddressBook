@@ -10,7 +10,7 @@
  *  
  *************************************************************/
 
-require_once('.\lib\Core.php');
+require_once('.\Core.php');
 
 // ** OPEN CONNECTION TO THE DATABASE **
 //	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
@@ -21,7 +21,7 @@ global $globalUsers;
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
-
+echo TABLE_USERS;
 	// ** FIGURE OUT WHAT'S GOING ON
 	switch($_GET['mode']) {
 
@@ -30,7 +30,7 @@ global $globalUsers;
 			session_destroy();
 			require_once('languages/' . $options->language . '.php');			
 			// PRINT MESSAGE
-			$errorMsg = $lang[MSG_LOGGED_OUT];
+			$errorMsg = $lang['MSG_LOGGED_OUT'];
 			header("Location: " . FILE_INDEX); //required to force site language to override user language at sign in screen
 			break;
 
@@ -67,7 +67,7 @@ global $globalUsers;
 				// END SESSION
 				session_destroy();
 				// PRINT ERROR MESSAGE AND LOGIN SCREEN
-				$errorMsg = $lang[ERR_USER_CONFIRMED_NOT];
+				$errorMsg = $lang['ERR_USER_CONFIRMED_NOT'];
 			}
 
 			// WRONG USERNAME
@@ -75,7 +75,7 @@ global $globalUsers;
 				// END SESSION
 				session_destroy();
 				// PRINT ERROR MESSAGE AND LOGIN SCREEN
-				$errorMsg = $lang[MSG_LOGIN_INCORRECT];
+				$errorMsg = $lang['MSG_LOGIN_INCORRECT'];
 			}
 			break;
 		
@@ -122,59 +122,39 @@ global $globalUsers;
 
 	// END SWITCH
 	}
-	
 
-?>
-<HTML>
-<HEAD>
-	<TITLE> <?php  echo "$lang[TITLE_WELCOME] - $lang[TITLE_TAB]" ?></TITLE>
-	<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
-	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
-	<META HTTP-EQUIV="EXPIRES" CONTENT="-1">
-	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['CHARSET']?>">	
-</HEAD>
-<BODY onload="document.login.username.focus();">
-<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH="100%" HEIGHT="100%">
-<TBODY>
-<TR><TD ALIGN="center">
-<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
-<TBODY>
-	<TR><TD><IMG SRC="images/title.gif" WIDTH=570 HEIGHT=90 ALT="" BORDER=0></TD></TR>
-	<TR>
-		<TD CLASS="data"><CENTER>
-		<FORM NAME="login" METHOD="post" ACTION="index.php?mode=auth">
-<?php
+	$output = webheader($lang['TITLE_WELCOME'] ." - ". $lang['TITLE_TAB'], $lang['CHARSET']);
+
+
 	// PRINT LOGIN MESSAGE
 	if ($options->msgLogin != "") {
-		echo("<P>$options->msgLogin\n");
+	    $body['msgLogin'] =$options->msgLogin;
+
 	}
 	// PRINT ERROR MESSAGES
 	if ($errorMsg != "") {
-		echo("<P><FONT COLOR=\"#FF0000\"><B>$errorMsg</B></FONT>\n");
+	    $body['errorMsg'] = $errorMsg;
 	}
-?>
-		<P><B><?php echo $lang[LBL_USERNAME]?></B>
-		<BR><INPUT TYPE="text" SIZE=20 CLASS="formTextbox" NAME="username">
-		<P><B><?php echo $lang[LBL_PASSWORD]?></B>
-		<BR><INPUT TYPE="password" SIZE=20 CLASS="formTextbox" NAME="password">
-		<P><INPUT TYPE="submit" CLASS="formButton" NAME="loginSubmit" VALUE="<?php echo $lang[BTN_LOGIN]?>">
-<?php
+	$body['LBL_USERNAME'] = $lang['LBL_USERNAME'];
+    $body['LBL_PASSWORD'] = $lang['LBL_PASSWORD'];
+    $body['BTN_LOGIN'] = $lang['BTN_LOGIN'];
+
 	if ($options->allowUserReg == 1) {
-		echo("<P><A HREF=\"" .FILE_INDEX. "?mode=register\">$lang[MSG_REGISTER_LOST]</A>\n");
+	    $body['MSG_REGISTER_LOST'] = "<p><A HREF=\"" .FILE_INDEX. "?mode=register\">". $lang[MSG_REGISTER_LOST] ."</A></p>";
 	}
+	else{
+        $body['MSG_REGISTER_LOST'] = "";
+    }
 	if ($options->requireLogin != 1) {
-		echo("	<P><A HREF=\"" . FILE_LIST ."\">$lang[GUEST]</A>\n");
+        $body['GUEST'] = "	<p><A HREF=\"" . FILE_LIST ."\">". $lang[GUEST]."</A></p>";
 	}
+	else{
+        $body['GUEST'] = "";
+    }
+
+   $output .= indexBodyStart($body);
+
+	Display($output);
+
 ?>
-</FORM><p>
-<?php 			
-	printFooter();
-?>
-</TBODY>
-</TABLE>
-</TD></TR>
-</TBODY>
-</TABLE>
-</BODY>
-</HTML>
+

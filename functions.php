@@ -171,22 +171,7 @@ function isAlphaNumeric($string) {
 
 
 
-//
-// PRINT FOOTER - printFooter();
-// Prints a table row containing version, copyright, and links.
-//
-function printFooter() {
-	global $lang;
 
-	echo("  <TR>\n");
-	echo("    <TD CLASS=\"data\"><CENTER>\n");
-	echo("    <BR><BR><B>" . $lang['TITLE_TAB'] . "</B> " . $lang['FOOTER_VERSION'] ." ". VERSION_NO. " | <A HREF=\"" . URL_HOMEPAGE . "\" TARGET=\"_blank\">" . $lang['FOOTER_HOMEPAGE_LINK'] . "</A> | <A HREF=\"" . URL_SOURCEFORGE . "\" TARGET=\"_blank\">". $lang['FOOTER_SOURCEFORGE_LINK'] ."</A> \n");
-	echo("    <BR>" . $lang['FOOTER_COPYRIGHT'] . "\n");
-	echo("    <BR>\n");
-	echo("    </CENTER></TD>\n");
-	echo("  </TR>\n");
-}
-// end
 
 
 

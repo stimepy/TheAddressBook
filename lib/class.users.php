@@ -21,6 +21,7 @@ class users
         // IF AUTHENTICATION IS TURNED OFF (requires database connection)
 
         $globalSqlLink->SelectQuery( 'requireLogin', TABLE_OPTIONS, NULL, 'LIMIT 1');
+
         $requireLogin = $globalSqlLink->FetchQueryResult();
         if($requireLogin == -1) {
             die(reportScriptError("Unable to retrieve options in authorization check."));

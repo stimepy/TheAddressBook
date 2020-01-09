@@ -9,7 +9,7 @@
  *
  *************************************************************/
 
-require_once('.\lib\Core.php');
+require_once('.\Core.php');
 
 
 global $globalSqlLink;
@@ -18,79 +18,56 @@ global $globalUsers;
 $globalUsers->checkForLogin();
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
-	$options = new Options();
-	
+$options = new Options();
+
 // ** END INITIALIZATION *******************************************************
 
-	// CREATE THE LIST.	
-	$list = ContactList();
+// CREATE THE LIST.
+$list = ContactList();
 
 
-	// THIS PAGE TAKES SEVERAL GET VARIABLES
-	// ie. list.php?group_id=6&page=2&letter=c&limit=20
-	if ($_GET['groupid'])         $list->group_id = $_GET['groupid'];
-	if ($_GET['page'])            $list->current_page = $_GET['page'];
-	if (isset($_GET['letter']))   $list->current_letter = $_GET['letter'];	
-	if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];	
+// THIS PAGE TAKES SEVERAL GET VARIABLES
+// ie. list.php?group_id=6&page=2&letter=c&limit=20
+if ($_GET['groupid'])         $list->group_id = $_GET['groupid'];
+if ($_GET['page'])            $list->current_page = $_GET['page'];
+if (isset($_GET['letter']))   $list->current_letter = $_GET['letter'];
+if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
 
 	// Set group name (group_id defaults to 0 if not provided)
 	$list->group_name();
 
 	// ** RETRIEVE CONTACT LIST BY GROUP **
 	$r_contact = $list->retrieve();
-?>
-<HTML>
-<HEAD>
-	<TITLE><?php echo "$lang[TITLE_TAB] - $lang[TITLE_LIST]"?></TITLE>
-	<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
-	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
-	<META HTTP-EQUIV="EXPIRES" CONTENT="-1">
-	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['CHARSET']?>">
-</HEAD>
 
-<BODY onLoad="document.goToEntry.goTo.focus();">
-<A NAME="top"></A>
-<P>
-<CENTER>
-<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
-		<TR><TD><IMG SRC="images/title.gif" WIDTH=570 HEIGHT=90 ALT="" BORDER=0></TD></TR>	
-  <TR>
-    <TD>
-        <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=570>
-           <TR VALIGN="top">
-              <TD WIDTH=285 CLASS="data">
+	$output = webheader($lang['TITLE_TAB'] ." - ". $lang['TITLE_LIST'], $lang['CHARSET'])
+
+
+
 <?php
 	// PRINT WELCOME MESSAGE
 	if ($options->msgWelcome != "") {
-		echo("<B>$options->msgWelcome</B>\n");
+		$body['msgWelcome'] ="<b>$options->msgWelcome</b>"
 	}
 	// PRINT SITE LANGUAGE [disabled for release]
 	// if($options->global_options[language] != $options->user_options[language]) echo "<br>".$lang[WELCOME_SITE_LANG].": ".$options->global_options[language];
 	// if($options->global_options[language] != $options->user_options[language] AND isset($options->user_options[language]))	echo "<br>".$lang[WELCOME_UR_LANG].": ".$options->user_options[language];	
 	// PRINT LOGGED IN USER
 	if (($_SESSION['username'] == "@auth_off") || ($_SESSION['usertype'] == "guest")) {
-?>
-			<BR><?php  echo $lang[MSG_LOGIN_NOT]. '<a href=" '.FILE_INDEX.'?mode=login"> '.$lang[WELCOME_LOGIN].'</a>' ?>
-<?php
-	} else {
-?>
-                <BR><?php echo $lang[WELCOME_CURRENT_LOGIN].' <b>'.$_SESSION['username'].'</b>'?>
-<?php	
-	if ($_SESSION['usertype'] == "admin") {
-		echo('<BR>'.$lang[WELCOME_ADMIN_ACCESS]);
+			$body['Login'] ="<br />". $lang['MSG_LOGIN_NOT'] ." <a href=\" ".FILE_INDEX."?mode=login\"> ".$lang['WELCOME_LOGIN']."</a>";
 	}
-	if ($_SESSION['usertype'] == "user") {
-		echo('<BR>'.$lang[WELCOME_USER_ACCESS]);
-	}
-	echo '<br><a href=" '.FILE_INDEX.'?mode=logout"> '.$lang[WELCOME_LOGOUT].'</a>';
+	else {
+        $body['Login'] ="<br />".$lang['WELCOME_CURRENT_LOGIN']." <b>".$_SESSION['username']."</b>";
+
+        if ($_SESSION['usertype'] == "admin") {
+            $body['Login'] .="<br />".$lang['WELCOME_ADMIN_ACCESS'];
+        }
+        if ($_SESSION['usertype'] == "user") {
+            $body['Login'] .="<br />".$lang['WELCOME_USER_ACCESS'];
+        }
+        $body['Login'] .="<br /><a href=\" ".FILE_INDEX."?mode=logout\"> ".$lang[WELCOME_LOGOUT]."</a>";
 	}
 
-?>
-                <BR><BR><BR>
-              </TD>
-              <TD WIDTH=285 CLASS="data" ROWSPAN=3>
-<?php
+
 	// **INCLUDE BIRTHDAY LIST**
 	if ($options->bdayDisplay == 1) {
 		include(FILE_BIRTHDAY);

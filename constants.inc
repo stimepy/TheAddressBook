@@ -27,7 +27,6 @@ define('VERSION_NO', '1.04e');
 
 // DEFINE FILE NAMES
 define('FILE_ADDRESS', 'address.' . $php_ext);
-define('FILE_BIRTHDAY', 'birthday.' . $php_ext);
 define('FILE_CELL', 'cell.' . $php_ext);
 define('FILE_CLASS_CONTACTLIST', 'lib/class-contactlist.' . $php_ext);
 define('FILE_CLASS_OPTIONS', 'lib/class-options.' . $php_ext);
@@ -58,20 +57,6 @@ define('PATH_MUGSHOTS', 'mugshots/');
 define('PATH_LANGUAGES', 'languages/');
 
 
-
-// DEFINE TABLE NAMES
-define('TABLE_ADDITIONALDATA', $db_prefix . 'additionaldata');
-define('TABLE_ADDRESS', $db_prefix . 'address');
-define('TABLE_CONTACT', $db_prefix . 'contact');
-define('TABLE_EMAIL', $db_prefix . 'email');
-define('TABLE_GROUPS', $db_prefix . 'groups');
-define('TABLE_GROUPLIST', $db_prefix . 'grouplist');
-define('TABLE_MESSAGING', $db_prefix . 'messaging');
-define('TABLE_OPTIONS', $db_prefix . 'options');
-define('TABLE_OTHERPHONE', $db_prefix . 'otherphone');
-define('TABLE_SCRATCHPAD', $db_prefix . 'scratchpad');
-define('TABLE_USERS', $db_prefix . 'users');
-define('TABLE_WEBSITES', $db_prefix . 'websites');
 
 // DEFINE WEBSITES
 define('URL_HOMEPAGE', 'http://www.corvalis.net/address/');

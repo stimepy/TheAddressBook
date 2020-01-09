@@ -38,7 +38,7 @@ class Options {
 
 	
 	// CONSTRUCTOR FUNCTION
-	function Options() {
+	function __construct() {
 		$this->get();
 	}
 	
@@ -59,7 +59,7 @@ class Options {
 		global $globalSqlLink;
 
 		$globalSqlLink->SelectQuery('*',TABLE_OPTIONS, '',   " LIMIT 1" );
-		$this->global_options = $globalSqlLink->FetchQueryResults();
+		$this->global_options = $globalSqlLink->FetchQueryResult();
 		 // =mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
 		 //		or die(reportScriptError("Unable to retrieve global options."));
 
@@ -93,7 +93,7 @@ class Options {
 		global $globalSqlLink;
 
 		$globalSqlLink->SelectQuery('*', TABLE_USERS, "username='" . $_SESSION['username'] . "' LIMIT 1", '');
-		$this->user_options =$globalSqlLink->FetchQueryResults();
+		$this->user_options =$globalSqlLink->FetchQueryResult();
 		//$this->user_options = mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_USERS . " WHERE username='" . $_SESSION['username'] . "' LIMIT 1", $db_link))
 			//	or die(reportScriptError("Unable to retrieve user options."));
 

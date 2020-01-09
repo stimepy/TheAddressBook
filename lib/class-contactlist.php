@@ -23,7 +23,7 @@ class ContactList {
 	private $myRowCount;
 
 
-	function ContactList() {
+	function __construct() {
 		global $options;
 		
 		// DEPENDENT VARIABLES -- Values for these variables are passed to the object after ContactList is created

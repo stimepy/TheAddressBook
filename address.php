@@ -8,7 +8,7 @@
  *************************************************************/
 
 
-    require_once('.\lib\Core.php');
+    require_once('.\Core.php');
 
     // ** OPEN CONNECTION TO THE DATABASE **
     //	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
@@ -16,7 +16,8 @@
     global $globalSqlLink;
     global $globalUsers;
 
-$globalUsers->checkForLogin();
+    $globalUsers->checkForLogin();
+
     // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
         $options = new Options();
 
@@ -75,12 +76,12 @@ $globalUsers->checkForLogin();
 	}
 
 	$TitleHeader = $lang[TAB].' - '.$lang[TITLE_ADDRESS]. ' '.$contact->fullname;
-    $output = header($TitleHeader, $lang['CHARSET']);
+    $output = addressheader($TitleHeader, $lang['CHARSET']);
 
 
     if (($_SESSION['usertype'] == "admin") || ($_SESSION['username'] == $contact->who_added)) {
         $body['sessuser'] = 1;
-        $body['sessuser']['BTN_PRINT'] = $lang[BTN_PRINT]
+        $body['sessuser']['BTN_PRINT'] = $lang[BTN_PRINT];
         $body['sessuser']['FILE_EDIT'] = FILE_EDIT;
         $body['sessuser']['id'] = $id;
         $body['sessuser']['BTN_EDIT'] = $lang[BTN_EDIT];
@@ -127,7 +128,7 @@ $globalUsers->checkForLogin();
 	//$tbl_groups = mysql_fetch_array($r_groups);
 	 // check if no groups
 	if ( $globalSqlLink->GetRowCount() == 0 ) {
-        $body['spacer']  = echo("<IMG SRC=\"spacer.gif\" WIDTH=1 HEIGHT=1 BORDER=0 ALT=\"\">");  // leaves a spacer image if no groups is assigned to the person.
+        $body['spacer']  = "<IMG SRC=\"spacer.gif\" WIDTH=1 HEIGHT=1 BORDER=0 ALT=\"\">";  // leaves a spacer image if no groups is assigned to the person.
 	}
 	else{
         $body['spacer'] = '';
@@ -137,7 +138,7 @@ $globalUsers->checkForLogin();
     $body['tableColumnAmt2'] =$tableColumnAmt;
 	// ** PICTURE BOX **
 	if ($tableColumnAmt == 3) {
-        $picture = ($contact->picture_url)? PATH_MUGSHOTS . $contact->picture_url?"images/nopicture.gif";
+        $picture = ($contact->picture_url)? PATH_MUGSHOTS . $contact->picture_url:"images/nopicture.gif";
 		$body['tableColumnAmt'] ="                    <TD WIDTH=". $options->picWidth .">
 		                    <IMG SRC=\"" . $picture ."\" WIDTH=". $options->picWidth ." HEIGHT=". $options->picHeight ." BORDER=1 ALT=\"\">
                     </TD>";
@@ -172,11 +173,10 @@ $globalUsers->checkForLogin();
 
         $body['addresses'][$forcnt] ="<p>
             <b>" . $addRef ." ". ($address_type)? $address_type:'' ." </b>
-            $address_line1 . $address_line2 ." <br /> ". "$address_state . $address_phone "<br /> ". $tbl_address['country'];
+           ". $address_line1 . $address_line2 ." <br /> ". $address_state . $address_phone ."<br /> ". $tbl_address['country'];
         $forcnt++;
 	}
 
-    $output .=  addressBodyStart($body);
 
 	// ** E-MAIL **
 	// First check to see that the result set is filled. If so, create E-mail section header.
@@ -197,6 +197,7 @@ $globalUsers->checkForLogin();
 			if ($email_type) {
                 $body["emails"][$emlcnt] .=" ($email_type)";
 			}
+            $body["emails"][$emlcnt] .= "</p>";
             $emlcnt++;
 		}
 	}
@@ -211,7 +212,7 @@ $globalUsers->checkForLogin();
 		foreach ($r_otherPhone as $tbl_otherPhone){
 	    //while ($tbl_otherPhone = mysql_fetch_array($r_otherPhone)) {
 			$otherphone_phone = stripslashes( $tbl_otherPhone['phone'] );
-			$otherphone_type = ;
+
             $body["otherphone"][$otherphonecnt] .="<br />". stripslashes( $tbl_otherPhone['type'] ) .": ".stripslashes( $tbl_otherPhone['phone'] );
             $otherphonecnt++;
 		}
@@ -257,8 +258,6 @@ $globalUsers->checkForLogin();
     $additioncnt =0;
 	foreach ($r_additionalData as $tbl_additionalData){
     //while ( $tbl_additionalData = mysql_fetch_array($r_additionalData) ) {
-		$adddataType = stripslashes( $tbl_additionalData['type'] );
-		$adddataValue = stripslashes( $tbl_additionalData['value'] );
         $body["additional"][$additioncnt] ="                 <tr VALIGN=\"top\">
                    <td WIDTH=120 CLASS=\"data\">
                         <b>".stripslashes( $tbl_additionalData['type'])."</b>
@@ -277,9 +276,12 @@ $globalUsers->checkForLogin();
 	//$websiteURL = stripslashes( $tbl_websites['webpageURL'] );
 	//$websiteName = stripslashes( $tbl_websites['webpageName'] );
 	if ($globalSqlLink->GetRowCount() > 0) {
-		echo("                 <TR VALIGN=\"top\">\n");
-		echo("                   <TD WIDTH=120 CLASS=\"data\"><B>$lang[LBL_WEBSITES]</B></TD>\n");
-		echo("                   <TD WIDTH=440 CLASS=\"data\">\n");
+        $x = 0;
+		$body['Websites'][$x] ="                 <TR VALIGN=\"top\">
+		                   <td WIDTH=120 CLASS=\"data\">
+		                        <b>". $lang[LBL_WEBSITES] ."</b>
+		                   </td>
+		                   <TD WIDTH=440 CLASS=\"data\">\n";
 		//echo("                      <A HREF=\"$websiteURL\" TARGET=\"out\">");
 			// Displays URL if no name is given
 		//	if ($websiteName) {
@@ -292,44 +294,23 @@ $globalUsers->checkForLogin();
 		// while ($tbl_websites = mysql_fetch_array($r_websites)) {
 			$websiteURL = stripslashes( $tbl_websites['webpageURL'] );
 			$websiteName = stripslashes( $tbl_websites['webpageName'] );
-			echo("                      <BR><A HREF=\"$websiteURL\" TARGET=\"out\">");
-				if ($websiteName) {
-					echo($websiteName);
-				} else {
-					echo($websiteURL);
-				}
-				echo("</A>\n");
+            $body['Websites'][$x] .="                      <BR><A HREF=\"$websiteURL\" TARGET=\"out\">
+				". ($websiteName)? websiteName : $websiteURL ."</A>";
 		}
-		echo("                   </TD>\n");
-		echo("                 </TR>\n");
+        $body['Websites'][$x] .="                   </TD>
+		                 </TR>";
 	}
-?>
 
-			   </TABLE>
-			 </TD>
-		</TR>
-<?php
+
 
 	// ** NOTES **
 	if ($contact->notes) {
-		echo("        <TR>\n");
-		echo("          <TD COLSPAN=$tableColumnAmt CLASS=\"data\">\n");
-		echo("             <B>$lang[LBL_NOTES]</B>\n");
-		echo("             <BR>\n");
-		echo("             $contact->notes\n");
-		echo("          </TD>\n");
-		echo("        </TR>\n");
+        $body['note'] = $contact->notes;
+        $body['LBL_NOTES'] = $lang[LBL_NOTES];
 	}
 
-?>
-	  </TABLE>
-	  <BR>
-	</TD>
-  </TR>
-  <TR>
-	<TD CLASS="update"><?php echo $lang[LAST_UPDATE].' '.($contact->last_update).'.'; ?></TD>
-  </TR>
-</TABLE>
-</CENTER>
-</BODY>
-</HTML>
+    $body['lastUpdatetxt'] = $lang[LAST_UPDATE];
+    $body['lastupdate'] = $contact->last_update;
+
+    $output .=  addressBodyStart($body);
+    display($output);

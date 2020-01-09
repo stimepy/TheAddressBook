@@ -51,6 +51,7 @@ class Mysql_Connect_I
         $this->SetDatabaseName($databaseName);
         $this->SetHost($hostName);
         $this->openDatabase();
+
     }
 
 
@@ -75,10 +76,11 @@ class Mysql_Connect_I
         }
 
         // Opens connection to MySQL server
-        $this->mySQLConnection = @mysqli_connect($this->myHost, $this->myUsername, $this->myPassword);
+        $this->mySQLConnection = mysqli_connect($this->myHost, $this->myUsername, $this->myPassword);  //@mysqli_connect($this->myHost, $this->myUsername, $this->myPassword, $this->myDatabase);
         if(mysqli_connect_errno ()){
-            die(reportScriptError("<B>An error occurred while trying to connect to the MySQL server.</B> MySQL returned the following error information: " .mysqli_connect_errno (). ")"));
+            die(reportScriptError("<B>An error occurred while trying to connect to the MySQL server.</B> MySQL returned the following error information: " .mysqli_connect_errno (). mysqli_connect_error() .")"));
         }
+
         $this->ChangeDatabase($this->myDatabase);
 
 
@@ -88,7 +90,8 @@ class Mysql_Connect_I
         if($databasename != $this->myDatabase){
             $this->SetDatabaseName($databasename);
         }
-        if(mysqli_select_db($this->mySQLConnection, $databasename)) {
+
+        if(!mysqli_select_db($this->mySQLConnection, $databasename)) {
             die(reportScriptError("<B>Unable to locate the database.</B> Please double check <I>config.php</I> to make sure the <I>\$db_name</I> variable is set correctly."));
         }
     }
@@ -102,7 +105,7 @@ class Mysql_Connect_I
         }
         $this->mySQLresults = $this->mySQLConnection->query($query);
         if($this->mySQLresults == false){
-            die('query error.');
+            die('query error:' . $query);
         }
     }
 
@@ -218,7 +221,7 @@ class Mysql_Connect_I
     }
 
     private function buildSelect($select, $table, $where, $orderby){
-         $query = 'Select '.$select.' '.$table;
+         $query = 'Select '.$select.' from '.$table;
 
         if($where != '' || $where != NULL){
             // todo: redo the where to actually build it

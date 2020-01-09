@@ -30,7 +30,7 @@ class Contact {
 	var $fullname;
 	
 	// CONSTRUCTOR
-	function Contact($id) {
+	function __construct($id) {
         global $globalSqlLink;
 
 		$this->id = $id; // Assume the ID given is legit. No checks are performed.
