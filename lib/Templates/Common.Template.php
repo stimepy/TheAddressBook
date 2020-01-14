@@ -34,6 +34,30 @@ function printFooter() {
 }
 // end
 
+function birthdaylist($body){
+    $output = "                <TABLE WIDTH=\"100%\" BORDER=0 CELLPADDING=0 CELLSPACING=0>
+                      <tr>
+                        <td CLASS=\"headText\" COLSPAN=3> 
+                            ". $body['langbirth'] ."
+                        </td>
+                      </tr>";
+    $output .=outputloop($body['bithinfo']);
+    $output .="                </TABLE>";
+
+
+}
+
+function outputloop($item){
+    $maxx = count($item);
+    $x = 0;
+    $text = '';
+    while($maxx < $x ){
+        $text .=$item[$x];
+        $x++;
+    }
+    return $text;
+}
+
 
 function Display($input){
     echo $input;

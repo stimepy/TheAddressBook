@@ -10,7 +10,7 @@
  *************************************************************/
 
 require_once('.\Core.php');
-
+include(FILE_CLASS_BIRTHDAY);
 
 global $globalSqlLink;
 global $globalUsers;
@@ -42,8 +42,6 @@ if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
 	$output = webheader($lang['TITLE_TAB'] ." - ". $lang['TITLE_LIST'], $lang['CHARSET'])
 
 
-
-<?php
 	// PRINT WELCOME MESSAGE
 	if ($options->msgWelcome != "") {
 		$body['msgWelcome'] ="<b>$options->msgWelcome</b>"
@@ -69,106 +67,57 @@ if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
 
 
 	// **INCLUDE BIRTHDAY LIST**
+    $body['birthday'] = '';
 	if ($options->bdayDisplay == 1) {
-		include(FILE_BIRTHDAY);
+        $body['birthday'] = GetBirthday($options, $lang, FILE_ADDRESS);
 	}
-?>
-           </TD>
-           </TR>
-           <TR VALIGN="top">
-             <TD WIDTH=285 CLASS="data">
-                   <FORM NAME="goToEntry" METHOD="post" ACTION="<?php echo(FILE_SEARCH); ?>">
-                   <B><?php echo $lang[LBL_GOTO] ?></B>
-                   <BR><INPUT TYPE="text" WIDTH=50 CLASS="formTextbox" NAME="goTo">
-                   </FORM>
-             </TD>
-           </TR>
-<!-- non functional
-           <TR VALIGN="top">
-              <TD WIDTH=285 CLASS="data">
-                   <FORM NAME="search" METHOD="post" ACTION="<?php echo(FILE_SEARCH); ?>">
-                   <B>search</B>
-                     <BR><INPUT TYPE="text" WIDTH=50 CLASS="formTextbox" NAME="search">
-                   </FORM>
-              </TD>
-           </TR>
-// -->
-           <TR VALIGN="bottom">
-             <TD WIDTH=285 CLASS="data">
-<?php
+
+	$body['FILE_SEARCH'] = FILE_SEARCH;
+$body['LBL_GOTO'] = $lang['LBL_GOTO'];
 	// Link for ADD NEW ENTRY button. Check for popup
-    if ($options->displayAsPopup == 1) {
-        $editLink = "<A HREF=\"#\" onClick=\"window.open('" . FILE_EDIT . "?mode=new','addressWindow','width=600,height=450,scrollbars,resizable,menubar,status'); return false;\">";
-    }
-	else {
-		$editLink = "<A HREF=\"" . FILE_EDIT . "?mode=new\">";
-	}
+
 
 	// DISPLAY TOOLBOX according to user type
-	if ($_SESSION['usertype'] == "admin") {
-?>
-				<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=270 COLS=3>
-				<TR VALIGN="middle" HEIGHT=90>
-					<TD CLASS="data" WIDTH=90><CENTER><?php echo($editLink); ?><IMG SRC="images/b-add.gif" WIDTH=50 HEIGHT=50 ALT="" BORDER=0><BR><?php echo($lang['TOOLBOX_ADD']); ?></A></CENTER></TD>
-					<TD CLASS="data" WIDTH=90><CENTER><A HREF="<?php echo(FILE_OPTIONS); ?>"><IMG SRC="images/b-options.gif" WIDTH=50 HEIGHT=50 ALT="" BORDER=0><BR><?php echo($lang['TOOLBOX_OPTIONS']); ?></A></CENTER></TD>
-					<TD CLASS="data" WIDTH=90><CENTER><A HREF="<?php echo(FILE_MAILTO."?groupid=".$list->group_id); ?>"><IMG SRC="images/b-mail.gif" WIDTH=50 HEIGHT=50 ALT="" BORDER=0><BR><?php echo($lang['TOOLBOX_MAILINGLIST']); ?></A></CENTER></TD>
-				</TR>
-				<TR VALIGN="middle" HEIGHT=90>
-					<TD CLASS="data" WIDTH=90><CENTER><A HREF="<?php echo(FILE_EXPORT); ?>"><IMG SRC="images/b-export.gif" WIDTH=50 HEIGHT=50 ALT="" BORDER=0><BR><?php echo($lang['TOOLBOX_EXPORT']); ?></A></CENTER></TD>
-					<TD CLASS="data" WIDTH=90><CENTER><A HREF="<?php echo(FILE_SCRATCHPAD); ?>"><IMG SRC="images/b-scratchpad.gif" WIDTH=50 HEIGHT=50 ALT="" BORDER=0><BR><?php echo($lang['TOOLBOX_SCRATCHPAD']); ?></A></CENTER></TD>
-					<TD CLASS="data" WIDTH=90><CENTER><A HREF="<?php echo(FILE_USERS); ?>"><IMG SRC="images/b-users.gif" WIDTH=50 HEIGHT=50 ALT="" BORDER=0><BR><?php echo($lang['TOOLBOX_MANAGEUSERS']); ?></A></CENTER></TD>
-				</TR>
-				</TABLE>
-<?php
-	}
-	elseif ($_SESSION['usertype'] == "user") {
-?>
-				<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=270 COLS=3>
-				<TR VALIGN="middle" HEIGHT=90>
-					<TD CLASS="data" WIDTH=90><CENTER><?php echo($editLink); ?><IMG SRC="images/b-add.gif" WIDTH=50 HEIGHT=50 ALT="" BORDER=0><BR><?php echo $lang[TOOLBOX_ADD] ?></A></CENTER></TD>
-					<TD CLASS="data" WIDTH=90><CENTER><A HREF="<?php echo(FILE_USERS); ?>"><IMG SRC="images/b-users.gif" WIDTH=50 HEIGHT=50 ALT="" BORDER=0><BR><?php echo $lang[ LBL_USR_ACCT_SET] ?></A></CENTER></TD>
-					<TD CLASS="data" WIDTH=90>&nbsp;</TD>
-				</TR>
-				<TR VALIGN="middle" HEIGHT=90>
-					<TD CLASS="data" WIDTH=90><CENTER><A HREF="<?php echo(FILE_MAILTO); ?>"><IMG SRC="images/b-mail.gif" WIDTH=50 HEIGHT=50 ALT="" BORDER=0><BR><?php echo $lang[TOOLBOX_MAILINGLIST] ?></A></CENTER></TD>
-					<TD CLASS="data" WIDTH=90><CENTER><A HREF="<?php echo(FILE_EXPORT); ?>"><IMG SRC="images/b-export.gif" WIDTH=50 HEIGHT=50 ALT="" BORDER=0><BR><?php echo $lang[TOOLBOX_EXPORT] ?></A></CENTER></TD>
-					<TD CLASS="data" WIDTH=90>&nbsp;</TD>
-				</TR>
-				</TABLE>
-<?php
-	}  // Else assume user is a guest
-	else { 
-?>
-				<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=270 COLS=3>
-				<TR VALIGN="middle" HEIGHT=90>
-					<TD CLASS="data" WIDTH=90><CENTER><A HREF="<?php echo(FILE_EXPORT); ?>"><IMG SRC="images/b-export.gif" WIDTH=50 HEIGHT=50 ALT="" BORDER=0><BR><?php echo $lang[TOOLBOX_EXPORT] ?></A></CENTER></TD>
-					<TD CLASS="data" WIDTH=90>&nbsp;</TD>
-					<TD CLASS="data" WIDTH=90>&nbsp;</TD>
-				</TR>
-				</TABLE>
-<?php
-	}
-?>
-             </TD>
-           </TR>
-        </TABLE>
+	if ($_SESSION['usertype'] == "admin" || $_SESSION['usertype'] == "user") {
+        if ($options->displayAsPopup == 1) {
+            $body['editLink'] = "<A HREF=\"#\" onClick=\"window.open('" . FILE_EDIT . "?mode=new','addressWindow','width=600,height=450,scrollbars,resizable,menubar,status'); return false;\">";
+        }
+        else {
+            $body['editLink'] = "<A HREF=\"" . FILE_EDIT . "?mode=new\">";
+        }
 
+        $body['usertype'] = 1;
+        $body['toolbox'] = $lang['TOOLBOX_ADD'];
+        if($_SESSION['usertype'] == "user"){
+            $body['fileopt'] = FILE_USERS;
+            $body['toolusersettings'] = $lang['LBL_USR_ACCT_SET'];
+            $body['tdinside1']="";
+            $body['FILE_EXPORT'] = FILE_MAILTO;
+            $body['Toolexprt'] =$lang['TOOLBOX_MAILINGLIST'];
+            $body['FILE_SCRATCHPAD'] = FILE_EXPORT;
+            $body['toolscratchpd'] = $lang['TOOLBOX_EXPORT'];
+            $body['tdinside2'] = "";
+        }
+        else{
+            $body['fileopt'] = FILE_OPTIONS;
+            $body['toolusersettings'] = $lang['TOOLBOX_OPTIONS'];
+            $body['tdinside1']="<A HREF=\"". FILE_MAILTO ."?groupid=".$list->group_id."\"><IMG SRC=\"images/b-mail.gif\" WIDTH=50 HEIGHT=50 ALT=\"\" BORDER=0><br /> ".$lang['TOOLBOX_MAILINGLIST']."</A>";
+            $body['FILE_EXPORT'] = FILE_EXPORT;
+            $body['Toolexprt'] = $lang['TOOLBOX_EXPORT'];
+            $body['FILE_SCRATCHPAD'] = FILE_SCRATCHPAD;
+            $body['toolscratchpd'] = $lang['TOOLBOX_SCRATCHPAD'];
+            $body['tdinside2'] = "<A HREF=\"". FILE_USERS ."\"><IMG SRC=\"images/b-users.gif\" WIDTH=50 HEIGHT=50 ALT=\"\" BORDER=0><BR>". $lang['TOOLBOX_MANAGEUSERS'] ."</A>";
+        }
+	}
+	else {
+        $body['fileopt'] = FILE_EXPORT;
+        $body['toolusersettings'] = $lang['TOOLBOX_EXPORT'];
+	}
+	$body['nav_list'] = $list->create_nav();
+	$body['titleish'] = $list->title();
+	$body['action'] = FILE_LIST;
+	$body['groupsel'] = $lang[GROUP_SELECT];
 
-    <BR>
-    </TD>
-  </TR>
-  <TR>
-      <TD CLASS="navMenu"><?php echo $list->create_nav(); ?></TD>
-  </TR>
-  <TR>
-    <TD>
-        <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=570>
-           <TR VALIGN="bottom">
-              <TD CLASS="headTitle"><?php echo $list->title();  ?></TD>
-              <TD CLASS="headText" ALIGN=right>
-                 <FORM NAME="selectGroup" METHOD="get" ACTION="<?php echo(FILE_LIST); ?>">
-                    <?php echo $lang[GROUP_SELECT] ?><SELECT NAME="groupid" CLASS="formSelect" onChange="document.selectGroup.submit();">
-<?php
     // -- GENERATE GROUP SELECTION LIST --
 	// Only admins can view hidden entries.
 	if ($_SESSION['usertype'] == "admin") {

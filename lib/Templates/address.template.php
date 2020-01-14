@@ -98,13 +98,3 @@ function addressBodyStart($body){
 
 }
 
-function outputloop($item){
-    $maxx = count($item);
-    $x = 0;
-    $text = '';
-    while($maxx < $x ){
-        $text .=$item[$x];
-        $x++;
-    }
-    return $text;
-}

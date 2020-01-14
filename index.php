@@ -21,7 +21,7 @@ global $globalUsers;
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
-echo TABLE_USERS;
+
 	// ** FIGURE OUT WHAT'S GOING ON
 	switch($_GET['mode']) {
 
