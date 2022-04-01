@@ -36,6 +36,10 @@ class Mysql_Connect_I
     }
 
     private function SetRowCount($rowCount){
+        if($rowCount == null){
+            $this->mySQLRowCount = 0;
+            return;
+        }
         $this->mySQLRowCount = $rowCount;
     }
 

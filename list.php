@@ -23,8 +23,8 @@ $options = new Options();
 // ** END INITIALIZATION *******************************************************
 
 // CREATE THE LIST.
-$list = ContactList();
-
+$list = new ContactList();
+// echo 'bob' ;
 
 // THIS PAGE TAKES SEVERAL GET VARIABLES
 // ie. list.php?group_id=6&page=2&letter=c&limit=20
@@ -39,16 +39,17 @@ if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
 	// ** RETRIEVE CONTACT LIST BY GROUP **
 	$r_contact = $list->retrieve();
 
-	$output = webheader($lang['TITLE_TAB'] ." - ". $lang['TITLE_LIST'], $lang['CHARSET'])
+	$output = webheader($lang['TITLE_TAB'] ." - ". $lang['TITLE_LIST'], $lang['CHARSET']);
+
 
 
 	// PRINT WELCOME MESSAGE
 	if ($options->msgWelcome != "") {
-		$body['msgWelcome'] ="<b>$options->msgWelcome</b>"
+		$body['msgWelcome'] ="<b>$options->msgWelcome</b>";
 	}
 	// PRINT SITE LANGUAGE [disabled for release]
 	// if($options->global_options[language] != $options->user_options[language]) echo "<br>".$lang[WELCOME_SITE_LANG].": ".$options->global_options[language];
-	// if($options->global_options[language] != $options->user_options[language] AND isset($options->user_options[language]))	echo "<br>".$lang[WELCOME_UR_LANG].": ".$options->user_options[language];	
+	// if($options->global_options[language] != $options->user_options[language] AND isset($options->user_options[language]))	echo "<br>".$lang[WELCOME_UR_LANG].": ".$options->user_options[language];
 	// PRINT LOGGED IN USER
 	if (($_SESSION['username'] == "@auth_off") || ($_SESSION['usertype'] == "guest")) {
 			$body['Login'] ="<br />". $lang['MSG_LOGIN_NOT'] ." <a href=\" ".FILE_INDEX."?mode=login\"> ".$lang['WELCOME_LOGIN']."</a>";
@@ -62,14 +63,15 @@ if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
         if ($_SESSION['usertype'] == "user") {
             $body['Login'] .="<br />".$lang['WELCOME_USER_ACCESS'];
         }
-        $body['Login'] .="<br /><a href=\" ".FILE_INDEX."?mode=logout\"> ".$lang[WELCOME_LOGOUT]."</a>";
+        $body['Login'] .="<br /><a href=\" ".FILE_INDEX."?mode=logout\"> ".$lang['WELCOME_LOGOUT']."</a>";
 	}
 
 
 	// **INCLUDE BIRTHDAY LIST**
     $body['birthday'] = '';
 	if ($options->bdayDisplay == 1) {
-        $body['birthday'] = GetBirthday($options, $lang, FILE_ADDRESS);
+        $myBirthday = new Birthday();
+        $body['birthday'] = $myBirthday->GetBirthday($options, $lang, FILE_ADDRESS);
 	}
 
 	$body['FILE_SEARCH'] = FILE_SEARCH;
@@ -184,7 +186,7 @@ $body['LBL_GOTO'] = $lang['LBL_GOTO'];
         $contact_whoAdded = $tbl_contact['whoAdded'];
 		if ($contact_whoAdded == $_SESSION['username'] && $_SESSION['usertype'] == 'user' ) {
 			$thecolor = ' STYLE="background-color: #EEEEEE;"';
-		}      
+		}
 
         $list_NewLetter = strtoupper(substr($contact_fullname, 0, 1));
         if ($list_NewLetter != $list_LastLetter) {
@@ -214,7 +216,7 @@ $body['LBL_GOTO'] = $lang['LBL_GOTO'];
         echo("&nbsp;</TD>\n");
         // DISPLAY ADDRESS - shown only if the first line of the address exists.
         echo("                   <TD WIDTH=160 CLASS=\"listEntry\">");
-        if ($contact_line1) { 
+        if ($contact_line1) {
             echo("$contact_line1<BR>");
             if ($contact_line2) { echo("$contact_line2<BR>"); }
             if ($contact_city) { echo("$contact_city"); }
@@ -222,7 +224,7 @@ $body['LBL_GOTO'] = $lang['LBL_GOTO'];
             if ($contact_state) { echo("$contact_state"); }
             if ($contact_zip) { echo(" $contact_zip"); }
 			// COUNTRY
-        	if ($contact_country) { 
+        	if ($contact_country) {
 				echo("\n<br>$country[$contact_country]");
 			}
         }
@@ -247,11 +249,11 @@ $body['LBL_GOTO'] = $lang['LBL_GOTO'];
 			}
 			else {
 				echo("<BR><A HREF=\"mailto:".$rbl_email['email']."\">".$rbl_email['email']."</A>");
-			}       
+			}
 		}
         echo("&nbsp;</TD>\n");
         echo("</TR>\n");
-		
+
         $list_LastLetter = strtoupper(substr($contact_fullname, 0, 1));
 
 		//reset background color

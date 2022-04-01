@@ -152,8 +152,8 @@ class ContactList {
 		if ($this->max_entries > 0) { //if this option is set, limit the number of entries shown per page
 			// Count number of rows (this uses group and letter sql fragments, determined previously)
 
-			$globalSqlLink->SelectQuery->SelectQuery( 'COUNT(*)', TABLE_CONTACT, $this->tables, $this->where, NULL);
-            $count =$globalSqlLink->FetchQueryResults();
+			$globalSqlLink->SelectQuery( 'COUNT(*)', $this->tables,  $this->where, NULL);
+            $count = $globalSqlLink->FetchQueryResult();
 
                 //mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM " . TABLE_CONTACT . " AS contact" . $sql_group . $sql_letter, $db_link));
 			$this->total_pages = intval(ceil($count[0]/$this->max_entries)); //divide the total entries by the limit per page. Round up to an integer
@@ -169,7 +169,8 @@ class ContactList {
 		
 		// EXECUTE THE SQL QUERY
         $globalSqlLink->SelectQuery($this->select, $this->tables, $this->where,  " ORDER BY fullname" . $sql_limit );
-		$r_contact = FetchQueryResults();
+		$r_contact = $globalSqlLink->FetchQueryResult();
+
 		$this->myRowCount = $globalSqlLink->GetRowCount();
            //  = mysql_query($this->sql, $db_link)
 			//or die(reportSQLError($this->sql));
