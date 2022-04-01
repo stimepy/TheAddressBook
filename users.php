@@ -17,14 +17,9 @@ require_once('.\lib\Core.php');
 global $globalSqlLink;
 global $globalUsers;
 
+// ** CHECK FOR LOGIN **
 $globalUsers->checkForLogin();
 
-// ** OPEN CONNECTION TO THE DATABASE **
-	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
-
-// ** CHECK FOR LOGIN **
-	checkForLogin("admin","user");
-	
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
 
@@ -33,23 +28,26 @@ $globalUsers->checkForLogin();
 	switch($_GET['action']) {
 		// ADD A NEW USER (admin only)
 		case "adduser":
-			checkForLogin("admin");
+            $globalUsers->checkForLogin("admin");
 			// Perform checks and then add if things are OK
-			$newuserName = $_POST['newuserName'];
-			if ((!empty($newuserName)) && (isAlphaNumeric($newuserName))) {
+			$newuserName = ;
+			if ((!empty($_POST['newuserName'])) && (isAlphaNumeric($_POST['newuserName']))) {
+                $insert[username] = $_POST['newuserName']
 				if ($_POST['newuserPass'] == $_POST['newuserConfirmPass']) {
-					$newuserPass = $_POST['newuserPass'];
-					$newuserType = $_POST['newuserType'];
-					$newuserEmail = $_POST['newuserEmail'];   // NOT VALIDATED
-					$sql = "INSERT INTO ". TABLE_USERS ." (username, usertype, password, email, is_confirmed) VALUES ('$newuserName', '$newuserType', MD5('$newuserPass'), '$newuserEmail', 1)";
-					mysql_query($sql, $db_link);
-					$opps = mysql_errno();
+                    $insert[password] = MD5($_POST['newuserPass']);
+                    $insert[usertype] = $_POST['newuserType'];
+                    $insert[email] = $_POST['newuserEmail'];   // NOT VALIDATED
+                    $insert[is_confirmed] = 1;
+                    $globalSqlLink->InsertQuery(TABLE_USERS,$insert);
+					// $sql = "INSERT INTO ". TABLE_USERS ." (username, usertype, password, email, is_confirmed) VALUES ('$newuserName', '$newuserType', MD5('$newuserPass'), '$newuserEmail', 1)";
+
+					/*$opps = mysql_errno();
 					if($opps ==1062) {
 						$actionMsg = $lang['ERR_USERNAME_DUPL'];
 						break;
 					}elseif ($opps != 0){
 						die(ReportSQLError($sql));
-					}	
+					}*/
 					$actionMsg =  $newuserName.' '.$lang['USR_ADDED'];
 				}
 				else {
@@ -63,26 +61,28 @@ $globalUsers->checkForLogin();
 
 		// DELETE A USER (admin only)
 		case "deleteuser":
-			checkForLogin("admin");
+            $globalUsers->checkForLogin("admin");
 			// Check to see if a user was given
 			if (empty($_GET['id'])) {
 				ReportScriptError($lang['ERR_USERNAME_NONE']);
 				break;
 			}
 			// Check to see if user exists in the database
-			$sql = "SELECT username, usertype FROM ". TABLE_USERS ." WHERE id=". $_GET['id'] ." LIMIT 1";
-			$deluser = mysql_query($sql, $db_link)
-				or die(ReportSQLError($sql));
-			if (mysql_num_rows($deluser)<1) {
+			// $sql = "SELECT username, usertype FROM ". TABLE_USERS ." WHERE id=". $_GET['id'] ." LIMIT 1";
+            $globalSqlLink->SelectQuery('username, usertype', TABLE_USERS, "id=". $_GET['id'], " LIMIT 1");
+			$deluser = FetchQueryResult();
+			//	or die(ReportSQLError($sql));
+			if ($globalSqlLink->GetRowCount()<1) {
 				ReportScriptError($lang['ERR_USERNAME_NON_EXIST']);
 				break;
 			}
 			// Get the username and type
-			$deluser = mysql_fetch_array($deluser);
+			// $deluser = mysql_fetch_array($deluser);
 			$deluserType = $deluser['usertype'];
 			$deluserName = $deluser['username'];
 			// Check to see if user is last remaining admin
-			if ($deluserType == "admin") {
+            //todo Make sure NO del on userid 1!
+		/*	if ($deluserType == "admin") {
 				$sql = "SELECT usertype FROM ". TABLE_USERS ." WHERE usertype='admin'";
 				$isLastAdmin = mysql_query($sql, $db_link)
 					or die(ReportSQLError($sql));
@@ -90,21 +90,26 @@ $globalUsers->checkForLogin();
 					$actionMsg = $lang['ERR_USER_LAST_ADMIN'];
 					break;
 				}
-			}
+			}*/
 			// Perform the deletion if everything checks out
-			$sql = "DELETE FROM ". TABLE_USERS ." WHERE id=". $_GET['id'] ." LIMIT 1";		
-			mysql_query($sql, $db_link)
-				or die(ReportSQLError($sql));
-			$actionMsg = $deluserName.' '. $lang['USR_DELETED'];
+            if($_GET['id'] != 1) {
+                $globalSqlLink->DeleteQuery( "id=" . $_GET['id'], TABLE_USERS );
+                //$sql = "DELETE FROM " . TABLE_USERS . " WHERE id=" . $_GET['id'] . " LIMIT 1";
+                //mysql_query($sql, $db_link)
+                //or die(ReportSQLError($sql));
+                $actionMsg = $deluserName . ' ' . $lang['USR_DELETED'];
+            }
 			break;
 
 		// CHANGE PERSONAL OPTIONS
 		
 		case "confirm":
-			$id = $_GET['id'];
-			$sql = "UPDATE ". TABLE_USERS ." SET is_confirmed=1 WHERE id =  $id";
-			$doConfirm = mysql_query($sql, $db_link)
-					or die(ReportSQLError($sql));
+			//. $id = $_GET['id'];
+			$update['is_confirmed'] = 1;
+            $globalSqlLink->UpdateQuery($update, TABLE_USERS, "id =". $_GET['id']);
+			//$sql = "UPDATE ". TABLE_USERS ." SET is_confirmed=1 WHERE id =  $id";
+			//$doConfirm = mysql_query($sql, $db_link)
+			//		or die(ReportSQLError($sql));
 			$holder = explode(".",$lang['ERR_USER_HASH_CONFIRMED']); //rather than make new $lang[var], chop of first sentence of this thing		
 			$actionMsg = $holder[0];
 		break;
@@ -126,10 +131,12 @@ $globalUsers->checkForLogin();
 			// Check to see if password and confirmation matches
 			if ($_POST['passwordNew'] == $_POST['passwordNewRetype']) {
 				// SQL query checks to make sure username and old password is corrrect.
-				$sql = "UPDATE ". TABLE_USERS ." SET password=MD5('". $_POST['passwordNew'] ."') WHERE username='". $_SESSION['username'] ."' AND password=MD5('". $_POST['passwordOld'] ."') LIMIT 1";
-				$updatePassword = mysql_query($sql, $db_link)
-					or die(ReportSQLError($sql));
-				if (mysql_affected_rows()<1) {
+                $update['password']=MD5("'". $_POST['passwordNew']."'");
+                $globalSqlLink->UpdateQuery($update, TABLE_USERS, "username='". $_SESSION['username'] ."' AND password= '".MD5( $_POST['passwordOld'])."'");
+				//$sql = "UPDATE ". TABLE_USERS ." SET password=MD5('". $_POST['passwordNew'] ."') WHERE username='". $_SESSION['username'] ."' AND password=MD5('". $_POST['passwordOld'] ."') LIMIT 1";
+				//$updatePassword = mysql_query($sql, $db_link)
+				//	or die(ReportSQLError($sql));
+				if ($globalSqlLink->GetRowCount()<1) {
 					$actionMsg = $lang['ERR_USER_PASSWORD_WRONG'];
 				}
 				else {
@@ -149,9 +156,12 @@ $globalUsers->checkForLogin();
 				$hash = md5($new_email.$hidden_hash_var);
 				//change the confirm hash in the db but not the email - 
 				//send out a new confirm email with a new hash to complete the process
-				$sql = "UPDATE " .TABLE_USERS. " SET confirm_hash='$hash' , is_confirmed = 0 WHERE username='$username' LIMIT 1";
-				$result = mysql_query($sql, $db_link);
-				if (!$result) {
+                $update['confirm_hash'] ="'".$hash."'";
+                $update['is_confirmed'] = 0;
+                $globalSqlLink->UpdateQuery($update, TABLE_USERS, "username='".$username."'" );
+				//$sql = "UPDATE " .TABLE_USERS. " SET confirm_hash='$hash' , is_confirmed = 0 WHERE username='$username' LIMIT 1";
+				// $result = mysql_query($sql, $db_link);
+				if ($globalSqlLink->GetRowCount()<1) {
 					//if (!$result || mysql_affected_rows($result) < 1) {
 					$feedback .= ' There was a problem updating your e-mail address. ';
 					// This used to double check for incorrect username and password, but these
@@ -184,6 +194,10 @@ $globalUsers->checkForLogin();
 		default:
 		break;
 	}
+if ($_SESSION['usertype'] == "admin") {
+    $globalSqlLink->SelectQuery('*', TABLE_USERS, '', '');
+    $r_users = FetchQueryResult();
+}
 
 ?>
 <HTML>
@@ -223,8 +237,8 @@ $globalUsers->checkForLogin();
 		// DISPLAY USER MANAGEMENT SETTINGS, IF USER IS ADMIN
 		if ($_SESSION['usertype'] == "admin") {
 			// Retrieve user account settings.
-		    	$r_users = mysql_query("SELECT * FROM " . TABLE_USERS, $db_link)
-				or die(reportSQLError("SELECT * FROM " . TABLE_USERS));
+		    //	$r_users = mysql_query("SELECT * FROM " . TABLE_USERS, $db_link)
+			//	or die(reportSQLError("SELECT * FROM " . TABLE_USERS));
 			?>
            		<TR VALIGN="top"><TD WIDTH=560 COLSPAN=3 CLASS="listHeader"><?php echo $lang['LBL_USR_ADD_USER']?></TD></TR>
 			<TR VALIGN="top"><TD CLASS="data"><?php echo $lang['USR_HELP_ADD']?><P>
@@ -259,7 +273,8 @@ $globalUsers->checkForLogin();
 	<!-- USER LIST BOX --><P>
 		<TABLE border="0" cellpadding="3" cellspacing="0" >
 		<?php
-		while ($t_users = mysql_fetch_array($r_users)) {
+        foreach($r_users as $t_users){
+		//while ($t_users = mysql_fetch_array($r_users)) {
 			$disp_confirmed = $t_users['is_confirmed'];
 			$disp_username = $t_users['username'];
 			$disp_usertype = $t_users['usertype'];
@@ -331,8 +346,10 @@ $globalUsers->checkForLogin();
               <TD CLASS="data">
 <?php
 	// GET THE USER'S EMAIL ADDRESS
-	$r_user = mysql_fetch_array(mysql_query("SELECT email FROM " . TABLE_USERS . " AS users WHERE username='". $_SESSION['username'] ."' LIMIT 1", $db_link))
-		or die(reportSQLError());
+    $globalSqlLink->SelectQuery('email', TABLE_USERS, "WHERE username='". $_SESSION['username']."'", '');
+    $r_user = FetchQueryResult();
+	//$r_user = mysql_fetch_array(mysql_query("SELECT email FROM " . TABLE_USERS . " AS users WHERE username='". $_SESSION['username'] ."' LIMIT 1", $db_link))
+	//	or die(reportSQLError());
 	$email = $r_user['email'];
 	if ($email) {
 		echo($lang['USR_HELP_EMAIL_NEW']."<B> $email </B>. ".$lang['USR_HELP_EMAIL_NEW2']);
