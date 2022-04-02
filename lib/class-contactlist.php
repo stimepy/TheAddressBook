@@ -272,6 +272,13 @@ class ContactList {
 	    return $this->myRowCount;
     }
 
+    function getEmailsByContactId( $contactId){
+        global $globalSqlLink;
+        $globalSqlLink->SelectQuery('id, email', TABLE_EMAIL, "id=" . $contactId, NULL);
+        $tbl_email = $globalSqlLink->FetchQueryResult();
+        return $tbl_email;
+    }
+
 }
 // END ContactList
 ?>

@@ -45,13 +45,8 @@ class Birthday
         $body['langbirth'] = $lang['BIRTHDAY_UPCOMING1'] . $options->bdayInterval . $lang['BIRTHDAY_UPCOMING2'];
         $x = 0;
 
-        if(is_array($r_bday[0])) {
-            foreach ($r_bday as $tbl_birthday) {
-               $this-> fillInBirthday($tbl_birthday, $options, $lang, $file_address, $x,$body);
-            }
-        }
-        else{
-            $this->fillInBirthday($r_bday, $options, $lang, $file_address, $x,$body);
+        foreach ($r_bday as $tbl_birthday) {
+           $this-> fillInBirthday($tbl_birthday, $options, $lang, $file_address, $x,$body);
         }
 
     }
