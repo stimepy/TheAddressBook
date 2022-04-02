@@ -100,7 +100,6 @@ function listbodystart($body, $list)
               </TD>
            </TR>
         </TABLE>
-
     </TD>
   </TR>
   <TR>
@@ -108,7 +107,8 @@ function listbodystart($body, $list)
            <BR>
               <CENTER>
               <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=560>";
-    if ($body['countContacts']<1) {
+
+    if (count($body['contacts'])<1) {
         $output .="                 <TR VALIGN=\"top\">\n
                    <TD WIDTH=560 COLSPAN=4 CLASS=\"listEntry\">".$body['noContacts']."</TD>\n
                  </TR>\n";
@@ -125,7 +125,7 @@ function listbodystart($body, $list)
             $tbl_contact['phone1'] = stripslashes($tbl_contact['phone1']);
             $tbl_contact['phone2'] = stripslashes($tbl_contact['phone2']);
 
-            $list_NewLetter = strtoupper($tbl_contact['fullname'], 0, 1);
+            $list_NewLetter =  strtoupper(substr($tbl_contact['fullname'], 0, 1));
             if ($list_NewLetter != $list_LastLetter) {
                 $output .="                 <TR VALIGN=\"top\">\n
                    <TD WIDTH=410 COLSPAN=3 CLASS=\"listHeader\">$list_NewLetter<A NAME=\"$list_NewLetter\"></A></TD>\n
@@ -146,7 +146,7 @@ function listbodystart($body, $list)
 
             if ($tbl_contact['phone1'] || $tbl_contact['phone1'] ) {
                 if ($tbl_contact['phone1'] && $tbl_contact['phone2']) {
-                    $output .= $tbl_contact['phone1'] ."</br>". $tbl_contact['phone1'];
+                    $output .= $tbl_contact['phone1'] ."<br />". $tbl_contact['phone1'];
                 }
                 else if($tbl_contact['phone1']){
                     $output .= $tbl_contact['phone1'];
@@ -192,9 +192,9 @@ class listTemplateFunctions{
 
     function buildcontact($tbl_contact){
         global $country;
-                $output = $tbl_contact['line1']."</br>";
+                $output = $tbl_contact['line1']."<br />";
             if ($tbl_contact['line1']) {
-                $output .= $tbl_contact['line1']."</br>";
+                $output .= $tbl_contact['line1']."<br />";
             }
             if ($tbl_contact['city'] || $tbl_contact['state']) {
                 if($tbl_contact['city'] && $tbl_contact['state']) {
@@ -211,7 +211,7 @@ class listTemplateFunctions{
                 $output .= " ".$tbl_contact['zip'];
             }
             if ($tbl_contact['country']) {
-                $output .= "\n<br>" . $country[$tbl_contact['country']];
+                $output .= "\n<br />" . $country[$tbl_contact['country']];
             }
             return $output;
 
@@ -219,9 +219,9 @@ class listTemplateFunctions{
 
     function createEmail($useMailScript, $email){
         if ($useMailScript == 1) {
-            return "<BR><A HREF=\"" . FILE_MAILTO . "?to=" . $email . "\">" . $email . "</A>";
+            return "<br/><A HREF=\"" . FILE_MAILTO . "?to=" . $email . "\">" . $email . "</A>";
         }
-        return "<BR><A HREF=\"mailto:" . $email . "\">" . $email . "</A>";;
+        return "<br/><A HREF=\"mailto:" . $email . "\">" . $email . "</A>";;
 
     }
 }

@@ -145,121 +145,23 @@ $body['LBL_GOTO'] = $lang['LBL_GOTO'];
         }
     }
     $body['G_count'] = $x;
-$output .=listbodystart($body,$list,$options);
-
-display($output);
 
 	// DISPLAY IF NO ENTRIES UNDER GROUP
     $body['useMailScript'] = $options->useMailScript;
-    $body['countContacts'] = count($r_contact);
+    $body['contacts'] = $r_contact;
 	if (count($r_contact)<1) {
         $body['noContacts'] = $lang[NO_ENTRIES];
 	}else {
         // DISPLAY ENTRIES
         $body['openPopUp'] = $options->displayAsPopup;
 
-
-
-        foreach ($r_contact as $tbl_contact) {
-
-            $contact_fullname = stripslashes($tbl_contact['fullname']);
-            $contact_lastname = stripslashes($tbl_contact['lastname']);
-            $contact_firstname = stripslashes($tbl_contact['firstname']);
-            $contact_id = $tbl_contact['id'];
-            $contact_line1 = stripslashes($tbl_contact['line1']);
-            $contact_line2 = stripslashes($tbl_contact['line2']);
-            $contact_city = stripslashes($tbl_contact['city']);
-            $contact_state = stripslashes($tbl_contact['state']);
-            $contact_zip = stripslashes($tbl_contact['zip']);
-            $contact_phone1 = stripslashes($tbl_contact['phone1']);
-            $contact_phone2 = stripslashes($tbl_contact['phone2']);
-            $contact_country = $tbl_contact['country'];
-            $contact_whoAdded = $tbl_contact['whoAdded'];
-            if ($contact_whoAdded == $_SESSION['username'] && $_SESSION['usertype'] == 'user') {
-                $thecolor = ' STYLE="background-color: #EEEEEE;"';
-            }
-
-            $list_NewLetter = strtoupper(substr($contact_fullname, 0, 1));
-            if ($list_NewLetter != $list_LastLetter) {
-                echo("                 <TR VALIGN=\"top\">\n");
-                echo("                   <TD WIDTH=410 COLSPAN=3 CLASS=\"listHeader\">$list_NewLetter<A NAME=\"$list_NewLetter\"></A></TD>\n");
-                echo("                   <TD WIDTH=150 COLSPAN=1 CLASS=\"listHeader\" ALIGN=\"right\" VALIGN=\"bottom\"><A HREF=\"#top\"><IMG SRC=\"images/uparrow.gif\" WIDTH=10 HEIGHT=10 BORDER=0 ALT=\"[top]\"></A></TD>\n");
-                echo("                 </TR>\n");
-            }
-
-            echo("                 <TR" . $thecolor . " VALIGN=\"top\">\n");
-            // DISPLAY NAME -- links are shown either as regular link or popup window
-            if ($options->displayAsPopup == 1) {
-                $popupLink = " onClick=\"window.open('" . FILE_ADDRESS . "?id=$contact_id','addressWindow','width=600,height=450,scrollbars,resizable,menubar,status'); return false;\"";
-            }
-            if (!$contact_firstname) {
-                echo("<TD WIDTH=150 CLASS=\"listEntry\"><B><A HREF=\"" . FILE_ADDRESS . "?id=$contact_id\"$popupLink>$contact_lastname</A></B></TD>\n");
-            } else {
-                echo("<TD WIDTH=150 CLASS=\"listEntry\"><B><A HREF=\"" . FILE_ADDRESS . "?id=$contact_id\"$popupLink>$contact_fullname</A></B></TD>\n");
-            }
-            // DISPLAY PHONE NUMBER OF PRIMARY ADDRESS
-            echo("<TD WIDTH=100 CLASS=\"listEntry\">");
-            if ($contact_phone1) {
-                echo("$contact_phone1");
-            }
-
-            if ($contact_phone1 and $contact_phone2) {
-                echo("<BR>");
-            }
-            if ($contact_phone2) {
-                echo("$contact_phone2");
-            }
-            echo("&nbsp;</TD>\n");
-            // DISPLAY ADDRESS - shown only if the first line of the address exists.
-            echo("                   <TD WIDTH=160 CLASS=\"listEntry\">");
-            if ($contact_line1) {
-                echo("$contact_line1<BR>");
-                if ($contact_line2) {
-                    echo("$contact_line2<BR>");
-                }
-                if ($contact_city) {
-                    echo("$contact_city");
-                }
-                if ($contact_city and $contact_state) {
-                    echo(", ");
-                }
-                if ($contact_state) {
-                    echo("$contact_state");
-                }
-                if ($contact_zip) {
-                    echo(" $contact_zip");
-                }
-                // COUNTRY
-                if ($contact_country) {
-                    echo("\n<br>" . $country[$contact_country]);
-                }
-            }
-            echo("&nbsp;</TD>\n");
-            // DISPLAY E-MAILS
-            echo("<TD WIDTH=150 CLASS=\"listEntry\">");
-            $globalSqlLink->SelectQuery('id, email', TABLE_EMAIL, "id=" . $contact_id, NULL);
-            $tbl_email = $globalSqlLink->FetchQueryResult();
-            if (is_array($tbl_email)) {
-                foreach ($tbl_email as $rbl_email) {
-                    $email_address = $rbl_email['email'];
-                    if ($options->useMailScript == 1) {
-                        echo("<BR><A HREF=\"" . FILE_MAILTO . "?to=" . $rbl_email['email'] . "\">" . $rbl_email['email'] . "</A>");
-                    } else {
-                        echo("<BR><A HREF=\"mailto:" . $rbl_email['email'] . "\">" . $rbl_email['email'] . "</A>");
-                    }
-                }
-            }
-            echo("&nbsp;</TD>\n");
-            echo("</TR>\n");
-
-            $list_LastLetter = strtoupper(substr($contact_fullname, 0, 1));
-
-            //reset background color
-            $thecolor = "";
-
-            // END WHILE
-        }
     }
+
+$output .=listbodystart($body,$list);
+
+display($output);
+
+
 
 ?>
                </TABLE>
