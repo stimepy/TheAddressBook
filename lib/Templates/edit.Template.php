@@ -144,7 +144,7 @@ class editTemplate{
 				<TD WIDTH=185 CLASS=\"data\">
 					<B>".lang['LBL_PICTURE_URL']."</B>
 					<BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"pictureURL\" VALUE=\"".hasValueOrBlank($body['contact_pictureURL'])."\">";
-        if($body['allowPicUpload']) {
+        if($body['allowPicUpload']!=0) {
             $output .="<BR><A HREF=\"#\" onClick=\"window.open('" . $body['FILE_UPLOAD'] . "','uploadWindow','width=450,height=250'); return false;\">" . $lang['LBL_UPLOAD_PICTURE'] . "</A>\n";
         }
     }
