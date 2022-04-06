@@ -184,7 +184,7 @@ function reportScriptError($msg) {
 <html>
 <head>
 	<title>Address Book - Error</title>
-	<link rel="stylesheet" href="styles.css" type="text/css">
+	<link rel="stylesheet" href="lib/Stylesheet/styles.css" type="text/css">
 	<meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
 	<meta http-equiv="PRAGMA" content="NO-CACHE">
 	<meta http-equiv="EXPIRES" content="-1">
@@ -234,7 +234,7 @@ function reportSQLError() {
 <html>
 <head>
 	<title>Address Book - Error</title>
-	<link rel="stylesheet" href="styles.css" type="text/css">
+	<link rel="stylesheet" href="lib/Stylesheet/styles.css" type="text/css">
 	<meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
 	<meta http-equiv="PRAGMA" content="NO-CACHE">
 	<meta http-equiv="EXPIRES" content="-1">

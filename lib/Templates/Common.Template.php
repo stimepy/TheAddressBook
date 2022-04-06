@@ -1,17 +1,20 @@
 <?php
 
 
-function webheader($title, $language){
+function webheader($title, $language, $javascriptfile = -1){
 
     $output =" <HTML>
         <head>
             <TITLE> $title </TITLE>
-            <LINK REL=\"stylesheet\" HREF=\"styles.css\" TYPE=\"text/css\">
+            <link rel=\"stylesheet\" href=\"./lib/Stylesheet/styles.css\">            
               <META HTTP-EQUIV=\"CACHE-CONTROL\" CONTENT=\"NO-CACHE\">
             <META HTTP-EQUIV=\"PRAGMA\" CONTENT=\"NO-CACHE\">
             <META HTTP-EQUIV=\"EXPIRES\" CONTENT=\"-1\">
-            <META http-equiv=\"Content-Type\" content=\"text/html; charset=$language\">
-        </head>";
+            <META http-equiv=\"Content-Type\" content=\"text/html; charset=$language\">";
+    if($javascriptfile != -1){
+        $output .="            <script src=\"./lib/Javascript/".$javascriptfile."\"></script>";
+    }
+    $output .="    </head>";
 
     return $output;
 }
@@ -61,4 +64,15 @@ function outputloop($item){
 
 function Display($input){
     echo $input;
+}
+
+function createTextArea($width, $title, $data){
+    $output = "<TEXTAREA STYLE=\"width:".$width."px;\" ROWS=6 CLASS=\"formTextarea\" NAME=\"".$title."\" WRAP=off>
+         ".     outputloop($data)."
+    </TEXTAREA>";
+
+}
+
+function hasValueOrBlank($value){
+    return ((!empty($value)) ? stripslashes(value) : '');
 }

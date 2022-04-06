@@ -19,7 +19,9 @@ require_once('Core.php');
 global $globalSqlLink;
 global $globalUsers;
 
-
+$bob['od'] = 'go';
+//$body['contact_lastname'] = 'b';
+echo "babes are ". ((!empty($body['contact_lastname']))? empty($body['contact_lastname' ]) ."m":'') ."mommy!~";
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
     $globalUsers->checkForLogin('admin', 'user');
@@ -141,7 +143,7 @@ global $globalUsers;
 	if ($mode == 'new') {
 		echo("      <A HREF=\"" . FILE_LIST . "\">".$lang['BTN_CANCEL']."</A>\n");
 	}
-	else { 
+	else {
 		echo("      <A HREF=\"#\" onClick=\"deleteEntry(); return false;\">".$lang['BTN_DELETE']."</A>\n");
 		echo("      <A HREF=\"" . FILE_ADDRESS . "?id=$id\">".$lang['BTN_CANCEL']."</A>\n");
 	}

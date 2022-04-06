@@ -105,7 +105,7 @@ $globalUsers->checkForLogin('admin');
 <HTML>
 <HEAD>
 	<TITLE>Address Book - Edit Group</TITLE>
-	<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
+	<LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
 	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="EXPIRES" CONTENT="-1">
@@ -363,7 +363,7 @@ $globalUsers->checkForLogin('admin');
 <HTML>
 <HEAD>
 	<TITLE>Address Book - Manage Groups</TITLE>
-	<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
+	<LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
 	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="EXPIRES" CONTENT="-1">

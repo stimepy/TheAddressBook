@@ -203,7 +203,7 @@ if ($_SESSION['usertype'] == "admin") {
 <HTML>
 <HEAD>
 	<TITLE><?php echo $lang['TITLE_TAB']." - ".$lang['LBL_USR_ACCT_SET']  ?></TITLE>
-	<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
+	<LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
 	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="EXPIRES" CONTENT="-1">

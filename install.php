@@ -34,7 +34,7 @@ global $globalSqlLink;
 <HTML>
 <HEAD>
 <TITLE>The Address Book - Installation</TITLE>
-<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
+<LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
 </HEAD>
 <BODY>
 <SCRIPT LANGUAGE="JavaScript">

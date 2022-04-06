@@ -27,7 +27,7 @@ $globalUsers->checkForLogin();
 <HTML>
 <HEAD>
   <TITLE><?php echo "$lang[TITLE_TAB] - $lang[TITLE_SCRATCH]"?></TITLE>
-  <LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
+  <LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
   <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['CHARSET']?>">
   <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
   <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">

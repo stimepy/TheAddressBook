@@ -671,7 +671,7 @@
 		default:
 
 			// OUTPUT
-		    echo("<HTML>\n<HEAD>\n<TITLE>Address Book</TITLE>\n<LINK REL=\"stylesheet\" HREF=\"styles.css\" TYPE=\"text/css\">\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset= ".$lang['CHARSET']."\"></HEAD></HEAD>\n<BODY>\n");
+		    echo(".$lang['CHARSET']."\"></HEAD></HEAD>\n<BODY>\n");
 		    echo($lang['EXP_TO_FILE']);
 		    echo("<UL>");
 		    echo("  <LI><A HREF=\"" . FILE_EXPORT . "?format=eudora\">".$lang['EXP_EUDORA']);

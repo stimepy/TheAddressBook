@@ -142,11 +142,11 @@ function listbodystart($body, $list)
                 $output .= $listFunctions->ContactLink($body['openPopUp'],$tbl_contact['id'], $tbl_contact['fullname'] );
             }
             // DISPLAY PHONE NUMBER OF PRIMARY ADDRESS
-            echo("<TD WIDTH=100 CLASS=\"listEntry\">");
+            $output .="<TD WIDTH=100 CLASS=\"listEntry\">";
 
             if ($tbl_contact['phone1'] || $tbl_contact['phone1'] ) {
                 if ($tbl_contact['phone1'] && $tbl_contact['phone2']) {
-                    $output .= $tbl_contact['phone1'] ."<br />". $tbl_contact['phone1'];
+                    $output .= $tbl_contact['phone1'] ."<br />". $tbl_contact['phone2'];
                 }
                 else if($tbl_contact['phone1']){
                     $output .= $tbl_contact['phone1'];
@@ -175,6 +175,18 @@ function listbodystart($body, $list)
         }
     }
 
+    $output .="                   </TABLE>
+               </CENTER>
+<BR>
+    </TD>
+  </TR>
+	".printFooter()."
+</TABLE>
+</CENTER>
+</BODY>
+</HTML>";
+
+
     return $output;
 }
 
@@ -193,12 +205,12 @@ class listTemplateFunctions{
     function buildcontact($tbl_contact){
         global $country;
                 $output = $tbl_contact['line1']."<br />";
-            if ($tbl_contact['line1']) {
-                $output .= $tbl_contact['line1']."<br />";
+            if ($tbl_contact['line2']) {
+                $output .= $tbl_contact['line2']."<br />";
             }
             if ($tbl_contact['city'] || $tbl_contact['state']) {
                 if($tbl_contact['city'] && $tbl_contact['state']) {
-                    $output .= $tbl_contact['city'] . ", " . $tbl_contact['city'];
+                    $output .= $tbl_contact['city'] . ", " . $tbl_contact['state'];
                 }
                 else if($tbl_contact['city']){
                     $output .=  $tbl_contact['city'];

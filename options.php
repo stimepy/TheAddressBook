@@ -30,7 +30,7 @@ $globalUsers->checkForLogin("admin");
 <HTML>
 <HEAD>
 	<TITLE><?php echo $lang['TITLE_TAB']." - ".$lang['OPT_TITLE']?></TITLE>
-	<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
+	<LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
 	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="EXPIRES" CONTENT="-1">
@@ -218,7 +218,7 @@ function saveEntry() {
 <?php
 	// ********** $country array is loaded with the language include file *******
 		foreach ($country as $country_id=>$val)
-		$sortarray[$country_id]= strtr($val,"ÀÁÂÃÄÅÈÉÊ€ËÌÍÎÏÑÒÓÔÕÖÙÚÛÜİàáâãäåèéêëìíîïñòóôõöùúûüıÿ", "AAAAAAAEEEEIIIINOOOOOUUUUYaaaaaaeeeeiiiinooooouuuuyy");
+		$sortarray[$country_id]= strtr($val,"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê€ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", "AAAAAAAEEEEIIIINOOOOOUUUUYaaaaaaeeeeiiiinooooouuuuyy");
 		# the above line ensures that special characters in some languages do not sort strangely by replacing them in a sort array, sorting same, then reading our original values in sort array order
 		asort($sortarray);
 		foreach(array_keys($sortarray) as $country_id) {

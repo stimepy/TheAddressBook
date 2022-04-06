@@ -271,8 +271,10 @@ class Options {
 			require_once(dirname($_SERVER['SCRIPT_FILENAME']) . '/' . PATH_LANGUAGES . 'english.' . $php_ext);
 			$this->message = $lang['OPT_LANGUAGE_MISSING'];
 			return 'english';
-		} 
+		}
 	}
+
+
 	
 // END Options
 }

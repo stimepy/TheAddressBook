@@ -75,7 +75,7 @@ if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
 	}
 
 	$body['FILE_SEARCH'] = FILE_SEARCH;
-$body['LBL_GOTO'] = $lang['LBL_GOTO'];
+    $body['LBL_GOTO'] = $lang['LBL_GOTO'];
 	// Link for ADD NEW ENTRY button. Check for popup
 
 
@@ -164,19 +164,3 @@ display($output);
 
 
 ?>
-               </TABLE>
-               </CENTER>
-
-<BR>
-
-    </TD>
-  </TR>
-<?php
-	printFooter();
-?>
-</TABLE>
-</CENTER>
-
-
-</BODY>
-</HTML>
