@@ -66,13 +66,28 @@ function Display($input){
     echo $input;
 }
 
-function createTextArea($width, $title, $data){
-    $output = "<TEXTAREA STYLE=\"width:".$width."px;\" ROWS=6 CLASS=\"formTextarea\" NAME=\"".$title."\" WRAP=off>
-         ".     outputloop($data)."
-    </TEXTAREA>";
+function createTextArea($width, $rows, $title, $data, $wrap = 'off'){
+    $output = "<TEXTAREA STYLE=\"width:".$width."px;\" ROWS=".$rows." CLASS=\"formTextarea\" NAME=\"".$title."\" WRAP=".$wrap.">";
+    if(is_array($data)){
+        $output.= outputloop($data);
+    }
+    else{
+        $output.= $data;
+    }
+    $output .= "</TEXTAREA>";
+    return $output;
 
 }
 
 function hasValueOrBlank($value){
     return ((!empty($value)) ? stripslashes(value) : '');
+}
+
+
+function sortandSetCountry($country){
+    foreach ($country as $country_id=>$val) {
+        $countrySorted[$country_id] = strtr($val,"��������ʀ������������������������������������������", "AAAAAAAEEEEIIIINOOOOOUUUUYaaaaaaeeeeiiiinooooouuuuyy");
+    }
+    asort($countrySorted);
+    return $countrySorted;
 }
