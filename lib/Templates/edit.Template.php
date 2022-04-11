@@ -31,8 +31,8 @@ class editTemplate{
 
 		<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=570>
 		   <TR VALIGN=bottom>
-			  <TD CLASS=\"headTitle\">"
-       $output .=  ($body['mode'] == 'new')? $lang['EDIT_TITLE_ADD'] : $lang['EDIT_TITLE_EDIT']." ". hasValueOrBlank($body['contact_lastname'] .", ".hasValueOrBlank($body['contact_firstname']) ." ". $body['contact_middlename'] ."\n";
+			  <TD CLASS=\"headTitle\">";
+       $output .=  ($body['mode'] == 'new')? $lang['EDIT_TITLE_ADD'] : $lang['EDIT_TITLE_EDIT']." ". hasValueOrBlank($body['contact_lastname']) .", ".hasValueOrBlank($body['contact_firstname']) ." ". hasValueOrBlank($body['contact_middlename']) ."\n";
        $output .="			  			  </TD>
 			  <TD CLASS=\"headText\" ALIGN=right>
 				 &nbsp;
@@ -43,8 +43,6 @@ class editTemplate{
   </TR>
   <TR>
 	<TD CLASS=\"infoBox\">
-
-	  
 		<TABLE BORDER=0 CELLSPACING=10 CELLPADDING=0 WIDTH=560>
 		   <TR VALIGN=\"top\">
 			  <TD COLSPAN=3 CLASS=\"data\">
@@ -140,7 +138,7 @@ class editTemplate{
 			<TR VALIGN=\"top\">
 				<TD WIDTH=190 CLASS=\"data\">
 					<B>".$lang['LBL_BIRTHDATE']."(yyyy-mm-dd)</B>
-					<BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"birthday\" VALUE=\"".hasValueOrBlank($body['contact_birthday']."\">
+					<BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"birthday\" VALUE=\"".hasValueOrBlank($body['contact_birthday'])."\">
 				</TD>
 				<TD WIDTH=185 CLASS=\"data\">
 					<B>".lang['LBL_PICTURE_URL']."</B>
@@ -151,7 +149,7 @@ class editTemplate{
         $output .="        </TD>
 				<TD WIDTH=185 CLASS=\"data\">
 					<B>". $lang['LBL_NICKNAME'] ."</B>
-                    <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"nickname\" VALUE=\" ". hasValueOrBlank($contact_nickname) ."\">
+                    <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"nickname\" VALUE=\" ". hasValueOrBlank($body['contact_nickname']) ."\">
                 </TD>
         </TR>
         <TR VALIGN=\"top\">
@@ -179,7 +177,7 @@ class editTemplate{
             </TR>
             <TR VALIGN=\"top\">
                 <TD WIDTH=190 CLASS=\"data\">";
-        $output .=  CreateGroupCheckBoxes($body['r_grouplist'], $body['id'], $body['numGroups']);
+        $output .=  $this->CreateGroupCheckBoxes($body['r_grouplist'], $body['id'], $body['numGroups']);
  $output .= "        </TD>
 			  <TD WIDTH=185 CLASS=\"data\">
 				   <INPUT TYPE=\"checkbox\" NAME=\"groupAddNew\" VALUE=\"addNew\"><B>". $lang['EDIT_ADD_NEW_GROUP']."</B>
@@ -221,7 +219,7 @@ class editTemplate{
     }
 
 
-    function CreateGroupCheckBoxes($r_grouplist, $colSplitat, $selectedgroups){
+    private function CreateGroupCheckBoxes($r_grouplist, $colSplitat, $selectedgroups){
         $output ="";
         $isSplit = 0;
         foreach ($r_grouplist as $tbl_grouplist) {
@@ -242,7 +240,7 @@ class editTemplate{
 
 
 
-    function createAddress($address, $lang, $primaryAddress, $addidnum = 0 ){
+    private function createAddress($address, $lang, $primaryAddress, $addidnum = 0 ){
 
         $checkedPrimary =($primaryAddress == hasValueOrBlank($address['address_refid']))? " checked" : '';
 

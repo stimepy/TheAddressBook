@@ -88,18 +88,7 @@ global $globalSqlLink, $globalUsers, $lang;
     }
 
 
-	$tables = TABLE_GROUPLIST . " AS grouplist LEFT JOIN " . TABLE_GROUPS . " AS groups ON grouplist.groupid=groups.groupid AND id=".$id;
 
-	$globalSqlLink->SelectQuery('grouplist.groupid, groupname, id', $tables, "grouplist.groupid >= 3", "ORDER BY groupname" );
-    $r_grouplist = $globalSqlLink->FetchQueryResult();
-
-	$body['numGroups'] = round($globalSqlLink->GetRowCount()/2);  // assigns to $numGroups the number of Groups to display in the first column.
-
-	// COLUMN 1
-	// $x is checked FIRST because if that fails, $tbl_grouplist will have already been evaluated
-    if($r_grouplist != -1) {
-        $body['r_grouplist'] = $r_grouplist;
-    }
 
 	if ( $contact_hidden == 1 ) {
 			$body['contact_hidden'] = "CHECKED";
