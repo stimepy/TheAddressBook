@@ -73,4 +73,3 @@ $db_prefix = "myaddbook_";
 
 
 // END OF FILE
-?>

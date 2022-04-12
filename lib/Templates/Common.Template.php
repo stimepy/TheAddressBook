@@ -80,7 +80,7 @@ function createTextArea($width, $rows, $title, $data, $wrap = 'off'){
 }
 
 function hasValueOrBlank($value){
-    return ((!empty($value)) ? stripslashes(value) : '');
+    return ((!empty($value)) ? stripslashes($value) : '');
 }
 
 
@@ -91,3 +91,4 @@ function sortandSetCountry($country){
     asort($countrySorted);
     return $countrySorted;
 }
+

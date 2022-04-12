@@ -14,7 +14,7 @@ class editTemplate{
         $row6 = 6;
 
         $output = "        <BODY>
-    <FORM NAME=\"EditEntry\" ACTION=\"" . $body["file_save"] . "?mode=" . $body['actionMode'] . " method=\"post\">
+    <FORM NAME=\"EditEntry\" ACTION=\"" . $body["file_save"] . "?mode=" . $body['mode'] . " method=\"post\">
     <INPUT TYPE=\"hidden\" NAME=\"id\" VALUE=\"" . $body['id'] . "\">
     <CENTER>
     <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
@@ -23,7 +23,7 @@ class editTemplate{
           <A HREF=\"#\" onClick=\"saveEntry(); return false;\">" . $body['BTN_SAVE'] . "</A>";
 
         $output .= ($body['mode'] != 'new') ? "      <A HREF=\"#\" onClick=\"deleteEntry(); return false;\">" . $lang['BTN_DELETE'] . "</A>\n" : "";
-        $output .= "      <A HREF=\"" . body['cancelUrl'] . "\">" . $lang['BTN_CANCEL'] . "</A>\n
+        $output .= "      <A HREF=\"" . $body['cancelUrl'] . "\">" . $lang['BTN_CANCEL'] . "</A>\n
         	</TD>
   </TR>
   <TR>
@@ -73,19 +73,22 @@ class editTemplate{
 			  </TR>";
 
         $this->countrySorted = sortandSetCountry($country);
-        if($body['actionMode'] == 'new'){
-            $output .= createAddress(null, $lang, -1);
+        if($body['mode'] == 'new'){
+            $output .= $this->createAddress(null, $lang, -1);
         }
         else{
             $addnum = 0;
-            if($body['r_address'] != -1){
+
+
+            if(isset($body['r_address'])){
                 $primaryAddress = hasValueOrBlank($body['$contact_primaryAddress']);
+
                 foreach($body['r_address'] as $tbl_address) {
-                    $output .= createAddress($tbl_address, $lang ,$primaryAddress ,$addnum);
+                    $output .= $this->createAddress($tbl_address, $lang ,$primaryAddress ,$addnum);
                     $addnum++;
                 }
             }
-            $output .= createAddress(null, $lang, -1, $addnum);
+            $output .= $this->createAddress(null, $lang, -1, $addnum);
         }
 
        $output .= "          <TR VALIGN=\"top\">
@@ -141,7 +144,7 @@ class editTemplate{
 					<BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"birthday\" VALUE=\"".hasValueOrBlank($body['contact_birthday'])."\">
 				</TD>
 				<TD WIDTH=185 CLASS=\"data\">
-					<B>".lang['LBL_PICTURE_URL']."</B>
+					<B>".$lang['LBL_PICTURE_URL']."</B>
 					<BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"pictureURL\" VALUE=\"".hasValueOrBlank($body['contact_pictureURL'])."\">";
         if($body['allowPicUpload']!=0) {
             $output .="<BR><A HREF=\"#\" onClick=\"window.open('" . $body['FILE_UPLOAD'] . "','uploadWindow','width=450,height=250'); return false;\">" . $lang['LBL_UPLOAD_PICTURE'] . "</A>\n";
@@ -199,7 +202,7 @@ class editTemplate{
 			  <TD WIDTH=560 COLSPAN=3 CLASS=\"navmenu\">
 	            <A HREF=\"#\" onClick=\"saveEntry(); return false;\">". $lang['BTN_SAVE']."</A>";
         $output .= ($body['mode'] != 'new') ? "      <A HREF=\"#\" onClick=\"deleteEntry(); return false;\">" . $lang['BTN_DELETE'] . "</A>\n" : "";
-        $output .= "      <A HREF=\"" . body['cancelUrl'] . "\">" . $lang['BTN_CANCEL'] . "</A>\n";
+        $output .= "      <A HREF=\"" . $body['cancelUrl'] . "\">" . $lang['BTN_CANCEL'] . "</A>\n";
         $output .= "			  </TD>
 		                   </TR>
         		</TABLE>
@@ -222,16 +225,18 @@ class editTemplate{
     private function CreateGroupCheckBoxes($r_grouplist, $colSplitat, $selectedgroups){
         $output ="";
         $isSplit = 0;
-        foreach ($r_grouplist as $tbl_grouplist) {
-            $groupCheck = "";
-            if ($tbl_grouplist['id'] == $selectedgroups) {
-                $groupCheck = " CHECKED";
+        if(isset($r_grouplist)) {
+            foreach ($r_grouplist as $tbl_grouplist) {
+                $groupCheck = "";
+                if ($tbl_grouplist['id'] == $selectedgroups) {
+                    $groupCheck = " CHECKED";
+                }
+                if ($isSplit == $colSplitat) {
+                    $output .= " 			  </TD>			  <TD WIDTH=185 CLASS=\"data\">";
+                }
+                $output .= "<INPUT TYPE=\"checkbox\" NAME=\"groups[]\" VALUE=\"" . $tbl_grouplist['groupid'] . "\"" . $groupCheck . "><b>" . $tbl_grouplist['groupname'] . "</b>\n</br>";
+                $isSplit++;
             }
-            if ($isSplit == $colSplitat) {
-                $output .= " 			  </TD>			  <TD WIDTH=185 CLASS=\"data\">";
-            }
-            $output .= "<INPUT TYPE=\"checkbox\" NAME=\"groups[]\" VALUE=\"". $tbl_grouplist['groupid'] ."\"". $groupCheck ."><b>". $tbl_grouplist['groupname']."</b>\n</br>";
-            $isSplit++;
         }
         return $output;
     }
@@ -247,7 +252,7 @@ class editTemplate{
         $output = "                <TR VALIGN=\"top\">
                     <TD WIDTH=190 CLASS=\"data\">
                         <B>". $lang['LBL_TYPE'] ."</B>
-                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_type_".$addidnum."\" VALUE=\"". hasValueOrBlank(address['type']) ."\">
+                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_type_".$addidnum."\" VALUE=\"". hasValueOrBlank($address['type']) ."\">
                     </TD>
                     <TD WIDTH=185 CLASS=\"data\">
                         <INPUT TYPE=\"radio\" NAME=\"address_primary_select\" VALUE=\"address_primary_".$addidnum."\" ". $checkedPrimary ."> <b>".$lang['LBL_SET_AS_PRIMARY']."</b>

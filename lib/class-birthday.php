@@ -41,8 +41,8 @@ class Birthday
     public function GetBirthday($options, $lang, $file_address)
     {
 
-        $r_bday = $this->getBirthdayData($options->bdayInterval);
-        $body['langbirth'] = $lang['BIRTHDAY_UPCOMING1'] . $options->bdayInterval . $lang['BIRTHDAY_UPCOMING2'];
+        $r_bday = $this->getBirthdayData($options->bdayInterval());
+        $body['langbirth'] = $lang['BIRTHDAY_UPCOMING1'] . $options->bdayInterval() . $lang['BIRTHDAY_UPCOMING2'];
         $x = 0;
 
         foreach ($r_bday as $tbl_birthday) {
@@ -54,7 +54,7 @@ class Birthday
     private function fillInBirthday($tbl_birthday, $options, $lang, $file_address, $x,$body){
             $age = ($tbl_birthday['year'] > 0) ? "                    <TD CLASS=\"listEntry\">                       " . $tbl_birthday['age'] . " yrs                    </TD>" : "                    <TD CLASS=\"listEntry\">&nbsp;</TD>";
             $year = ($tbl_birthday['year'] > 0) ? ", " . $tbl_birthday['year'] : "";
-            if ($options->displayAsPopup == 1) {
+            if ($options->getdisplayAsPopup() == 1) {
                 $popupLink = " onClick=\"window.open('" . $file_address . "?id=" . $tbl_birthday['id'] . "','addressWindow','width=600,height=450,scrollbars,resizable,menubar,status'); return false;\" ";
             }
 

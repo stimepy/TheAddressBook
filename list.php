@@ -44,8 +44,8 @@ if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
 
 
 	// PRINT WELCOME MESSAGE
-	if ($options->msgWelcome != "") {
-		$body['msgWelcome'] ="<b>$options->msgWelcome</b>";
+	if ($options->getWelcomeMessage() != "") {
+		$body['msgWelcome'] ="<b>".$options->getWelcomeMessage()."</b>";
 	}
 	// PRINT SITE LANGUAGE [disabled for release]
 	// if($options->global_options[language] != $options->user_options[language]) echo "<br>".$lang[WELCOME_SITE_LANG].": ".$options->global_options[language];
@@ -69,7 +69,7 @@ if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
 
 	// **INCLUDE BIRTHDAY LIST**
     $body['birthday'] = '';
-	if ($options->bdayDisplay == 1) {
+	if ($options->getbdayDisplay() == 1) {
         $myBirthday = new Birthday();
         $body['birthday'] = $myBirthday->GetBirthday($options, $lang, FILE_ADDRESS);
 	}
@@ -81,7 +81,7 @@ if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
 
 	// DISPLAY TOOLBOX according to user type
 	if ($_SESSION['usertype'] == "admin" || $_SESSION['usertype'] == "user") {
-        if ($options->displayAsPopup == 1) {
+        if ($options->getdisplayAsPopup() == 1) {
             $body['editLink'] = "<A HREF=\"#\" onClick=\"window.open('" . FILE_EDIT . "?mode=new','addressWindow','width=600,height=450,scrollbars,resizable,menubar,status'); return false;\">";
         }
         else {
@@ -147,13 +147,13 @@ if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
     $body['G_count'] = $x;
 
 	// DISPLAY IF NO ENTRIES UNDER GROUP
-    $body['useMailScript'] = $options->useMailScript;
+    $body['useMailScript'] = $options->getuseMailScript();
     $body['contacts'] = $r_contact;
 	if (count($r_contact)<1) {
         $body['noContacts'] = $lang[NO_ENTRIES];
 	}else {
         // DISPLAY ENTRIES
-        $body['openPopUp'] = $options->displayAsPopup;
+        $body['openPopUp'] = $options->getdisplayAsPopup();
 
     }
 

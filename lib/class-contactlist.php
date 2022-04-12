@@ -30,8 +30,8 @@ class ContactList {
 		// If no values are provided, then it uses some defaults
 		$this->group_id = 0;                       // defaults to 0 upon creation of object
 		$this->current_page = 1;                   // defaults to first page
-		$this->current_letter = $options->defaultLetter;	// defaults to value set in options
-		$this->max_entries = $options->limitEntries; 		// defaults to value set in options; 0=no maximum (display all on page 1)
+		$this->current_letter = $options->getdefaultLetter();	// defaults to value set in options
+		$this->max_entries = $options->getlimitEntries(); 		// defaults to value set in options; 0=no maximum (display all on page 1)
 
 		// RESULTANT VARIABLES -- Values for these variables start out blank and will be filled in by this object's methods
 		$this->group_name = "";                    // determined in $this->group_name()
@@ -156,7 +156,7 @@ class ContactList {
             $count = $globalSqlLink->FetchQueryResult();
 
                 //mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM " . TABLE_CONTACT . " AS contact" . $sql_group . $sql_letter, $db_link));
-			$this->total_pages = intval(ceil($count[0]/$this->max_entries)); //divide the total entries by the limit per page. Round up to an integer
+			$this->total_pages = intval(ceil((float)$count[0]/$this->max_entries)); //divide the total entries by the limit per page. Round up to an integer
 		
 			// Users like to start counting from 1 in stead of 0
 			$lowerLimit = $this->current_page - 1; //deduct 1 from the result page number in the URL, use this to calculate the lower limit of the range

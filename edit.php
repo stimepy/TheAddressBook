@@ -11,7 +11,7 @@
 
 
 require_once('Core.php');
-require_once ('./lib/edit.Templaee.php');
+require_once ('./lib/Templates/edit.Template.php');
 
 // ** OPEN CONNECTION TO THE DATABASE **
 //	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
@@ -27,7 +27,7 @@ $globalUsers->checkForLogin('admin', 'user');
 $body['mode'] = $_GET['mode'];
 
 $body['fileSave'] = FILE_SAVE;
-$body['BTN_SAVE'] = BTN_SAVE;
+$body['BTN_SAVE'] = $lang['BTN_SAVE'];
 $body['TABLE_EMAIL'] = TABLE_EMAIL;
 $body['TABLE_OTHERPHONE'] =TABLE_OTHERPHONE;
 $body['TABLE_MESSAGING'] = TABLE_MESSAGING;
@@ -77,6 +77,8 @@ else {
 	// A do-while loop is made to ensure that there is 2 blank entries if person has NO address information.
     $globalSqlLink->SelectQuery('*', TABLE_ADDRESS, "id=".$body['id'], NULL);
     $r_address = $globalSqlLink->FetchQueryResult();
+
+
     if($r_address != -1) {
         $body['r_address'] = $r_address;
     }
@@ -120,7 +122,7 @@ else {
 
     // Display Upload link if allowed by options
     $body['allowPicUpload'] = 0;
-    if (($options->picAllowUpload == 1) || ($_SESSION['usertype'] == "admin")) {
+    if (($options->getpicAllowUpload() == 1) || ($_SESSION['usertype'] == "admin")) {
         $body['allowPicUpload'] = FILE_UPLOAD;
     }
 
@@ -154,7 +156,7 @@ else {
 } // End edit address
 
 $output = webheader($lang['TITLE_TAB'], $lang['CHARSET'], "edit.script.js");
-$output .= $myAddressDetailsTemplate->editbody($body, $lang, $country,$options->countryDefault);
+$output .= $myAddressDetailsTemplate->editbody($body, $lang, $country,$options->getcountryDefault());
 
 Display(($output));
 

@@ -84,5 +84,6 @@ define('CAP_TABLE_OTHERPHONE',      0x01000000);
 define('CAP_TABLE_PICTURES',        0x02000000);
 define('CAP_TABLE_PRIVATENOTES',    0x04000000);
 
+
 // END OF FILE
-?>
+
