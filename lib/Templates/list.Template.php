@@ -2,6 +2,7 @@
 
 function listbodystart($body, $list)
 {
+    global $lang;
     $listFunctions = new listTemplateFunctions();
     $list_LastLetter = "";
 
@@ -81,22 +82,9 @@ function listbodystart($body, $list)
             <TR VALIGN=\"bottom\">
                 <TD CLASS=\"headTitle\">" . $body['titleish'] . "</TD>
                 <TD CLASS=\"headText\" ALIGN=right>
-                    <FORM NAME=\"selectGroup\" METHOD=\"get\" ACTION=\"" . $body['action'] . "\">
-                        " . $body['groupsel'] . "<SELECT NAME=\"groupid\" CLASS=\"formSelect\" onChange=\"document.selectGroup.submit();\">";
-
-    for($groupcount = 0; $groupcount < $body['G_count']; $groupcount++ ){
-        $group = $body['G_'. $groupcount];
-
-        if ($body['G_selected'] != $group['groupid']) {
-            $sel = "";
-        } else {
-            $sel = "Selected";
-        }
-        $output .= "                       <OPTION VALUE=" . $group['groupid'] . " " . $sel . ">" . $group['groupname'] . "</OPTION>\n";
-
-    }
-    $output .="                </SELECT>
-                 </FORM>
+                    <FORM NAME=\"selectGroup\" METHOD=\"get\" ACTION=\"" . $body['action'] . "\">";
+    $output .= createGroupOptions($body, $lang);
+    $output .="                 </FORM>
               </TD>
            </TR>
         </TABLE>
@@ -167,7 +155,7 @@ function listbodystart($body, $list)
             $tbl_email = $list->getEmailsByContactId($tbl_contact['id']);
             if (is_array($tbl_email)) {
                foreach ($tbl_email as $rbl_email) {
-                   $output .= $listFunctions->createEmail($body['useMailScript'], $rbl_email['email']);
+                   $output .= $list->createEmail($body['useMailScript'], $rbl_email['email']);
                 }
             }
             $output .="&nbsp;</TD>\n </TR>\n";
@@ -229,12 +217,6 @@ class listTemplateFunctions{
 
     }
 
-    function createEmail($useMailScript, $email){
-        if ($useMailScript == 1) {
-            return "<br/><A HREF=\"" . FILE_MAILTO . "?to=" . $email . "\">" . $email . "</A>";
-        }
-        return "<br/><A HREF=\"mailto:" . $email . "\">" . $email . "</A>";;
 
-    }
 }
 

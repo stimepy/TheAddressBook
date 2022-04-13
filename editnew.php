@@ -1,428 +1,334 @@
 <?php
-<?php
 /*************************************************************
- *	THE ADDRESS BOOK  :  version 1.04d
+ *  THE ADDRESS BOOK  :  version 1.04d
  *
  *****************************************************************
- *	options.php
- *	Sets options for address book.
+ *  mailto.php
+ *  Sends e-mail to one or more addresses
+ *  Originally written by Joe Chen
  *
  *************************************************************/
-require_once('.\lib\Core.php');
+
+// BUG: Mailing List displays entries without email addresses.
 
 
-global $globalSqlLink;
-global $globalUsers;
+require_once('.\Core.php');
 
-$globalUsers->checkForLogin("admin");
 
-// ** GET OPTIONS
-	$options = new Options();
+global $globalSqlLink, $globalUsers;
 
-// CHECK TO SEE IF A FORM HAS BEEN SUBMITTED, AND SAVE THE OPTIONS.
-	if ($_POST['saveOpt'] == "YES") {
-		$options->save_global();
-	}
-	$options->set_global(); // This page does not yet have separate areas for admin and user settings, so we must reset all options to admin only.
 
+// ** CHECK FOR LOGIN **
+//    list($userGroup, $userHomeName, $userHomePage, $userCapabilities) = checkForLogin($address_session_name, CAP_MAIL);
+$globalUsers->checkForLogin('admin','user');
+
+// ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
+$options = new Options();
+
+
+// ** GET DESTINATION EMAIL ADDRESS **
+// If there is an e-mail address either via POST or GET we will e-mail to that single address.
+// If not, then we will default to a mailing list setup.
+if ($_POST['to']) {				// Look for a target e-mail in POST first, which has priority.
+    $mail_to = $_POST['to'];
+}
+elseif ($_GET['to']) {			// If there is no target e-mail in POST, look in GET
+    $mail_to = $_GET['to'];
+}
+else {							// If there is no target e-mail in either, then we go to default mailing list mode.
+    // RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
+    /*
+    $globalSqlLink->SelectQuery('displayAsPopup, useMailScript', TABLE_OPTIONS, NULL, 'Limit 1' );
+    $options = $globalSqlLink->FetchQueryResult();
+    */
+    //$options = mysql_fetch_array(mysql_query("SELECT displayAsPopup, useMailScript FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
+    //	or die(reportScriptError("Unable to retrieve options."));
+    // CREATE THE LIST.
+    $list = new ContactList($options);
+
+    // THIS PAGE TAKES SEVERAL GET VARIABLES
+    if ($_GET['groupid'])  $list->group_id = $_GET['groupid'];
+    if ($_GET['page'])     $list->current_page = $_GET['page'];
+    if ($_GET['letter'])   $list->current_letter = $_GET['letter'];
+    if ($_GET['limit'])    $list->max_entries = $_GET['limit'];
+
+    // Set group name (group_id defaults to 0 if not provided)
+    $list->group_name();
+
+    // ** RETRIEVE CONTACT LIST BY GROUP **
+    $r_contact = $list->retrieve();
+
+
+}
+
+// ** RETRIEVE USER CONTACT INFORMATION **
+$mail_from = '';
+$globalSqlLink->SelectQuery('email', TABLE_USERS, "username='". $_SESSION['username'], "LIMIT 1");
+$r_user = $globalSqlLink->FetchQueryResult();
+//$r_user = mysql_fetch_array(mysql_query("SELECT email FROM " . TABLE_USERS . " AS users WHERE username='". $_SESSION['username'] ."' LIMIT 1", $db_link))
+//	or die(reportScriptError("Unable to retrieve user email address."));
+$mail_from = $r_user['email'];
+$SendMailButton = "Yes";
+if(!$mail_from){
+    $mail_from = $lang['ERR_NO_EMAIL1']."<A HREF =\"".FILE_USERS."\"> ".$lang['ERR_NO_EMAIL2'];
+    $SendMailButton = "No";
+}
 
 ?>
-
 <HTML>
 <HEAD>
-	<TITLE><?php echo $lang['TITLE_TAB']." - ".$lang['OPT_TITLE']?></TITLE>
-	<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
-	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
-	<META HTTP-EQUIV="EXPIRES" CONTENT="-1">
-	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['CHARSET']?>">
+    <TITLE><?php echo $lang['TAB']." - ".$lang['TITLE_OPT']?></TITLE>
+    <LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
+    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+    <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+    <META HTTP-EQUIV="EXPIRES" CONTENT="-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['CHARSET']?>">
+
+
 </HEAD>
+
 <BODY>
-<SCRIPT LANGUAGE="JavaScript">
-<!--
-function saveEntry() {
-	document.Options.submit();
-}
-// -->
-</SCRIPT>
-
-<FORM NAME="Options" ACTION="<?php echo(FILE_OPTIONS); ?>" METHOD="post">
-<INPUT TYPE="hidden" NAME="saveOpt" VALUE="YES">
 <CENTER>
-<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
-<TR align="right"><TD ><b><A HREF="<?php echo(FILE_LIST); ?>"><?php echo $lang['BTN_RETURN']?></b></A></TD> </TR>
-<TBODY>
-	<TR><TD CLASS="headTitle"><?php echo $lang['OPT_TITLE']?></TD></TR>
-	<TR>
-		<TD CLASS="infoBox">
-		<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=5 WIDTH=560>
-		<TBODY>
-			<TR VALIGN="top"><TD COLSPAN=3 CLASS="data">
-<?php
-		echo("<P STYLE=\"color: #FF0000\">$options->message</P>\n");
-?>
-			</TD></TR>
+    <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
+        <TR>
+            <TD CLASS="navMenu"><A HREF="javascript:history.go(-1)"><?php echo $lang['BTN_RETURN'] ?></A></TD>
+        </TR>
+        <TR>
+            <TD>
 
-			<TR VALIGN="top">
-				<TD WIDTH=560 COLSPAN=3 CLASS="listHeader"><?php echo $lang['OPT_HEADER_MESSAGES']?></TD>
-			</TR>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_MSG_LOGIN_LBL']?></B></TD>
-				<TD WIDTH=360 CLASS="data" COLSPAN=2>
-					<TEXTAREA STYLE="width:300px;" ROWS=4 CLASS="formTextarea" NAME="msgLogin" WRAP=off><?php echo($options->msgLogin); ?></TEXTAREA>
-					<BR><?php echo $lang['OPT_MSG_LOGIN_HELP']?>
-					<BR><B><?php echo $lang['OPT_MSG_ALLOWED_HTML']?>
-				</TD>
-			</TR>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_MSG_WELCOME_LBL']?></B></TD>
-				<TD WIDTH=360 CLASS="data" COLSPAN=2>
-					<INPUT TYPE="text" SIZE=20 STYLE="width:300px;" CLASS="formTextbox" NAME="msgWelcome" VALUE="<?php echo($options->msgWelcome); ?>" MAXLENGTH=255>
-					<BR><?php echo $lang['OPT_MSG_WELCOME_HELP']?>.
-					<BR><B><?php echo $lang['OPT_MSG_ALLOWED_HTML']?>
-				</TD>
-			</TR>
+                <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=570>
+                    <TR VALIGN="bottom">
+                        <TD CLASS="headTitle">
+                            <?php // HEADER
+                            echo (empty($mail_to) ? $lang['TOOLBOX_MAILINGLIST']  : $lang['TITLE_OPT']);
+                            ?>
+                        </TD>
+                        <?php // MAILING LIST
+                        if (empty($mail_to)) {
+                            ?>					<TD CLASS="headText" ALIGN="right">
+                                <FORM NAME="selectGroup" METHOD="get" ACTION="<?php echo(FILE_MAILTO); ?>">
+                                    select group <SELECT NAME="groupid" CLASS="formSelect" onChange="document.selectGroup.submit();">
+                                        <?php
+                                        // -- GENERATE GROUP SELECTION LIST --
+                                        // Only admins can view hidden entries.
+                                        if ($_SESSION['usertype'] == "admin") {
+                                            //$groupsql = "SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid >= 0 ORDER BY groupname";
+                                            $where = "groupid >= 0";
+                                        }
+                                        else {
+                                            //$groupsql = "SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid >= 0 AND groupid != 2 ORDER BY groupname";
+                                            $where = "groupid >= 0 AND groupid != 2";
+                                        }
+                                        $globalSqlLink->SelectQuery("groupid, groupname", TABLE_GROUPLIST, $where, "order by groupname");
+                                        $r_grouplist = $globalSqlLink->FetchQueryResult();
+                                        //$r_grouplist = mysql_query($groupsql, $db_link);
+                                        foreach($r_grouplist as $tbl_grouplist){
+                                            //while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
+                                            $selectGroupID = $tbl_grouplist['groupid'];
+                                            $selectGroupName = $tbl_grouplist['groupname'];
+                                            echo("                       <OPTION VALUE=$selectGroupID");
+                                            if ($selectGroupID == $list->group_id) {
+                                                echo(" SELECTED");
+                                            }
+                                            echo(">$selectGroupName</OPTION>\n");
+                                        }
 
+                                        ?>
+                                    </SELECT>
+                                </FORM>
+                            </TD>
+                            <?php
+                            // END MAILING LIST
+                        }
+                        ?>
 
-			<TR VALIGN="top">
-				<TD WIDTH=560 COLSPAN=3 CLASS="listHeader"><?php echo $lang['OPT_HEADER_BIRTHDAY']?></TD>
-			</TR>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_BIRTHDAY_DISPLAY_LBL']?></B></TD>
-				<TD WIDTH=60 CLASS="data"><?php
-					if ($options->bdayDisplay == 1) {
-						$check = " CHECKED";
-					}
-					echo("<INPUT TYPE=\"checkbox\" NAME=\"bdayDisplay\" VALUE=\"1\"$check>");
-					$check = "";
-				?></TD>
-				<TD WIDTH=300 CLASS="data">
-					<?php echo $lang['OPT_BIRTHDAY_DISPLAY_HELP']?><br><b>
-					<?php echo $lang['LBL_DEFAULT']?>:</B> </b>ON
-				</TD>
-			</TR>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_BIRTHDAY_DAYS_LBL']?></B></TD>
-				<TD WIDTH=60 CLASS="data"><INPUT TYPE="text" SIZE=3 STYLE="width:30px;" CLASS="formTextbox" NAME="bdayInterval" VALUE="<?php echo($options->bdayInterval); ?>" MAXLENGTH=3></TD>
-				<TD WIDTH=300 CLASS="data">
-					<?php echo $lang['OPT_BIRTHDAY_DAYS_HELP']?><br><b>
-					<?php echo $lang['LBL_DEFAULT']?>:</B> </b> 21 days
-			</TR>
+                    </TR>
+                </TABLE>
 
+            </TD>
 
-			<TR VALIGN="top">
-				<TD WIDTH=560 COLSPAN=3 CLASS="listHeader"><?php echo $lang['OPT_HEADER_MUGSHOT']?></TD>
-			</TR>
+        </TR>
+        <TR>
+            <TD CLASS="infoBox">
+                <BR>
+                <CENTER>
+                    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=10 WIDTH=560>
+                        <FORM NAME="mail_form" METHOD="post" ACTION="<?php echo(FILE_MAILSEND); ?>">
+                            <?php
+                            //** MAILING LIST **
+                            if (empty($mail_to)) {
 
-			<?php /* $picAlwaysDisplay */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_MUG_DISPLAY_LBL']?></B></TD>
-				<TD WIDTH=60 CLASS="data"><?php
-					if ($options->picAlwaysDisplay == 1) {
-						$check = " CHECKED";
-					}
-					echo("<INPUT TYPE=\"checkbox\" NAME=\"picAlwaysDisplay\" VALUE=\"1\"$check>");
-					$check = "";
-				?></TD>
-				<TD WIDTH=300 CLASS="data">
-					<?php echo $lang['OPT_MUG_DISPLAY_HELP']?>
-				</TD>
-			</TR>
+                                // INITIATE CHECKBOX NUMBER
+                                // here's the test.
+                                // take out checkbox numbers and assign them to array. the checked ones will automatically be submitted?
+                                // $cb_id = 1;
 
-			<?php /* $options->picWidth */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_MUG_WIDTH_LBL']?></B></TD>
-				<TD WIDTH=60 CLASS="data"><INPUT TYPE="text" SIZE=3 STYLE="width:30px;" CLASS="formTextbox" NAME="picWidth" VALUE="<?php echo($options->picWidth); ?>" MAXLENGTH=3></TD>
-				<TD WIDTH=300 CLASS="data">
-					<?php echo $lang['OPT_MUG_WIDTH_HELP']?>
-					<BR><B><?php echo $lang['LBL_DEFAULT']?>:</B> 140 pixels.
-				</TD>
-			</TR>
+                                // DISPLAY GROUP NAME
+                                echo("                 <TR VALIGN=\"top\">\n");
+                                echo("                   <TD WIDTH=560 COLSPAN=4 CLASS=\"listHeader\">$list->group_name</TD>\n");
+                                echo("                 </TR>\n");
+                                // DISPLAY IF NO ENTRIES UNDER GROUP
+                                if ($list->rowcount()<1) {
+                                    echo("                 <TR VALIGN=\"top\">\n");
+                                    echo("                   <TD WIDTH=560 COLSPAN=4 CLASS=\"listEntry\">No entries.</TD>\n");
+                                    echo("                 </TR>\n");
+                                }
+                                // DISPLAY ENTRIES
+                                foreach($r_contact as $tbl_contact){
+                                    //while ($tbl_contact = mysql_fetch_array($r_contact)) {
 
-			<?php /* $options->picHeight */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_MUG_HEIGHT_LBL']?></B></TD>
-				<TD WIDTH=60 CLASS="data"><INPUT TYPE="text" SIZE=3 STYLE="width:30px;" CLASS="formTextbox" NAME="picHeight" VALUE="<?php echo($options->picHeight); ?>" MAXLENGTH=3></TD>
-				<TD WIDTH=300 CLASS="data">
-					<?php echo $lang['OPT_MUG_HEIGHT_HELP']?>
-					<BR><B><?php echo $lang['LBL_DEFAULT']?>:</B> 140 pixels.
-				</TD>
-			</TR>
+                                    $contact_fullname = $tbl_contact['fullname'];
+                                    $contact_lastname = $tbl_contact['lastname'];
+                                    $contact_firstname = $tbl_contact['firstname'];
+                                    $contact_id = $tbl_contact['id'];
 
-			<?php /* $options->picDupeMode */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_MUG_DUPLICATE_LBL']?></B></TD>
-				<TD WIDTH=360 CLASS="data" COLSPAN=2>
-					<?php echo $lang['OPT_MUG_DUPLICATE_HELP']?>
-					<BR><INPUT TYPE="radio" NAME="picDupeMode" VALUE="1"<?php if ($options->picDupeMode == 1) { echo (" CHECKED"); }?>> <?php echo $lang['OPT_MUG_DUPE_CHOICE_OVERWRITE']?>
-					<BR><INPUT TYPE="radio" NAME="picDupeMode" VALUE="2"<?php if ($options->picDupeMode == 2) { echo (" CHECKED"); }?>> <?php echo $lang['OPT_MUG_DUPE_CHOICE_UPLOAD']?>
-					<BR><INPUT TYPE="radio" NAME="picDupeMode" VALUE="3"<?php if ($options->picDupeMode == 3) { echo (" CHECKED"); }?>> <?php echo $lang['OPT_MUG_DUPE_CHOICE_NO']?>
-				</TD>
-			</TR>
+                                    echo("<TR VALIGN=\"top\">\n");
+                                    // DISPLAY NAME -- links are shown either as regular link or popup window
+                                    if ($options['displayAsPopup'] == 1) {
+                                        $popupLink = " onClick=\"window.open('" . FILE_ADDRESS . "?id=$contact_id','addressWindow','width=600,height=450,scrollbars,resizable,location,menubar,status'); return false;\"";
+                                    }
+                                    if (!$contact_firstname) {
+                                        echo("<TD WIDTH=150 CLASS=\"listEntry\"><B><A HREF=\"" . FILE_ADDRESS . "?id=$contact_id\"$popupLink>$contact_lastname</A></B></TD>\n");
+                                    }
+                                    else {
+                                        echo("<TD WIDTH=150 CLASS=\"listEntry\"><B><A HREF=\"" . FILE_ADDRESS . "?id=$contact_id\"$popupLink>$contact_fullname</A></B></TD>\n");
+                                    }
+                                    // DISPLAY E-MAILS
+                                    echo("<TD WIDTH=410 CLASS=\"listEntry\">");
+                                    $globalSqlLink->SelectQuery("id, email, type", TABLE_EMAIL, "id=".$contact_id, NULL );
+                                    //$r_email = mysql_query("SELECT id, email, type FROM " . TABLE_EMAIL . " AS email WHERE id=$contact_id", $db_link);
+                                    //$tbl_email = mysql_fetch_array($r_email);
+                                    //$email_address = stripslashes( $tbl_email['email'] );
+                                    //$email_type = stripslashes( $tbl_email['type'] );
 
-			<?php /* $picAllowUpload */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_MUG_ALLOW_UPLOAD_LBL']?></B></TD>
-				<TD WIDTH=60 CLASS="data"><?php
-					if ($options->picAllowUpload == 1) {
-						$check = " CHECKED";
-					}
-					echo("<INPUT TYPE=\"checkbox\" NAME=\"picAllowUpload\" VALUE=\"1\"$check>");
-					$check = "";
-				?></TD>
-				<TD WIDTH=300 CLASS="data">
-					<?php echo $lang['OPT_MUG_ALLOW_UPLOAD_HELP']?>
-					<BR><B><?php echo $lang['LBL_DEFAULT']?>:</B> ON.
-				</TD>
-			</TR>
+                                    //echo("<INPUT TYPE=\"checkbox\" NAME=\"mail_to[]\" VALUE=\"$email_address\"$checkme>");
+                                    // $cb_id++;
 
+                                    //if ($options['useMailScript'] == 1) {
+                                    //	echo("<A HREF=\"" .FILE_MAILTO. "?to=$email_address\">$email_address</A>");
+                                    //}
+                                    //else {
+                                    //	echo("<A HREF=\"mailto:$email_address\">$email_address</A>");
+                                    //}
 
-			<TR VALIGN="top">
-				<TD WIDTH=560 COLSPAN=3 CLASS="listHeader"><?php echo $lang['OPT_HEADER_MISC']?></TD>
-			</TR>
-			<?php /* $options->displayAsPopup */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_OPEN_POPUP_LBL']?></B></TD>
-				<TD WIDTH=60 CLASS="data"><?php
-					if ($options->displayAsPopup == 1) {
-						$check = " CHECKED";
-					}
-					echo("<INPUT TYPE=\"checkbox\" NAME=\"displayAsPopup\" VALUE=\"1\"$check>");
-					$check = "";
-				?></TD>
-				<TD WIDTH=300 CLASS="data">
-					<?php echo $lang['OPT_OPEN_POPUP_HELP']?>
-				</TD>
-			</TR>
+                                    //if ($email_type) {
+                                    //	echo(" ($email_type)");
+                                    //}
+                                    $r_email = $globalSqlLink->FetchQueryResult();
+                                    $checkflag = true;
+                                    foreach($r_email as $tbl_email){
+                                        //while ($tbl_email = mysql_fetch_array($r_email)) {
+                                        $email_address = stripslashes( $tbl_email['email'] );
+                                        $email_type = stripslashes( $tbl_email['type'] );
+                                        if($checkflag == true) {
+                                            if ((preg_match("/old/i", $email_type)) || (empty($email_address))) {
+                                                $checkme = "";
+                                            } else {
+                                                $checkme = " CHECKED";
+                                            }
+                                            $checkflag = false;
+                                        }
 
-			<?php /* $useMailScript */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_USE_MAIL_SCRIPT_LBL']?></B></TD>
-				<TD WIDTH=60 CLASS="data"><?php
-					if ($options->useMailScript == 1) {
-						$check = " CHECKED";
-					}
-					echo("<INPUT TYPE=\"checkbox\" NAME=\"useMailScript\" VALUE=\"1\"$check>");
-					$check = "";
-				?></TD>
-				<TD WIDTH=300 CLASS="data">
-					<?php echo $lang['OPT_USE_MAIL_SCRIPT_HELP']?>
-				</TD>
-			</TR>
+                                        echo("<BR><INPUT TYPE=\"checkbox\" NAME=\"mail_to[]\" VALUE=\"$email_address\">");
+                                        $cb_id++;
 
-			<?php /* $countryDefault */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_DEFAULT_COUNTRY_LBL']?></B></TD>
-				<TD WIDTH=360 CLASS="data" COLSPAN=2>
+                                        if ($options['useMailScript'] == 1) {
+                                            echo("<A HREF=\"" .FILE_MAILTO. "?to=$email_address\">$email_address</A>");
+                                        }
+                                        else {
+                                            echo("<A HREF=\"mailto:$email_address\">$email_address</A>");
+                                        }
+                                        if ($email_type) {
+                                            echo(" ($email_type)");
+                                        }
+                                    }
+                                    echo("&nbsp;</TD>\n");
+                                    echo("                 </TR>\n");
 
-					<SELECT NAME="countryDefault" CLASS="formSelect" STYLE="width:160px;">
-<?php
-	// ********** $country array is loaded with the language include file *******
-		foreach ($country as $country_id=>$val)
-		$sortarray[$country_id]= strtr($val,"��������ʀ������������������������������������������", "AAAAAAAEEEEIIIINOOOOOUUUUYaaaaaaeeeeiiiinooooouuuuyy");
-		# the above line ensures that special characters in some languages do not sort strangely by replacing them in a sort array, sorting same, then reading our original values in sort array order
-		asort($sortarray);
-		foreach(array_keys($sortarray) as $country_id) {
-		echo("<option value=$country_id");
-		if ($country_id == $address_country) {
-			echo(" selected");
-		}
-		elseif ($country_id == $options->countryDefault) {
-			echo(" selected");
-		}
-		echo ">";
-		echo($country[$country_id].'</option>\n');
-}
-?>
-					</SELECT>
-					<BR><?php echo $lang['OPT_DEFAULT_COUNTRY_HELP']?>
-					<BR><B><?php echo $lang['LBL_DEFAULT']?>:</B> <?php echo $country[0] //blank?>
-				</TD>
-			</TR>
+                                    // END WHILE
+                                }
+                                ?>
+                                <SCRIPT LANGUAGE="JavaScript">
+                                    <!--
+                                    function restart() {
+                                        for (var i=0;i<=1000;++i) {
+                                            document.mail_form.elements[i].checked=false
+                                        }
+                                    }
+                                    // -->
+                                </SCRIPT>
+                                <TR>
+                                    <TD  width="150" class="data"></TD>
+                                    <TD WIDTH=410 CLASS="data">
+                                        <A HREF="#" onClick="restart();return false;"><?php echo $lang['GROUP_NONE']?></A>
+                                        <BR><BR><BR>
+                                    </TD>
+                                </TR>
+                            <?php
+                            // END MAILING LIST LIST GENERATION
+                            } else {
+                            // THIS IS FOR SINGLE E-MAILS
+                            ?>
+                                <TR>
+                                    <TD  width="200" class="data"><H4>To Email:</H4></TD>
+                                    <TD  width="300" class="data">
+                                        <INPUT TYPE="text" CLASS="formMailbox" VALUE="<?php echo($mail_to);?>" NAME="mail_to" ><BR><BR>
+                                    </TD>
+                                </TR>
+                                <?php
+                            }
+                            // END, AND BEGIN COMMON STUFF
+                            ?>
+                            <TR>
+                                <TD WIDTH=200 CLASS="data"><H4>CC:</H4></TD>
+                                <TD WIDTH=300 CLASS="data">
+                                    <INPUT TYPE="text" CLASS="formMailbox" VALUE="" NAME="mail_cc" SIZE=80><BR><BR>
+                                </TD>
+                            </TR>
+                            <TR>
+                                <TD WIDTH=200 CLASS="data"><H4>BCC:</H4></TD>
+                                <TD WIDTH=300 CLASS="data">
+                                    <INPUT TYPE="text" CLASS="formMailbox" VALUE="" NAME="mail_bcc" SIZE=80><BR><BR>
+                                </TD>
+                            </TR>
 
-			<?php /* $options->allowUserReg */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_ALLOW_REGISTER_LBL']?></B></TD>
-				<TD WIDTH=60 CLASS="data"><?php
-					if ($options->allowUserReg == 1) {
-						$check = " CHECKED";
-					}
-					echo("<INPUT TYPE=\"checkbox\" NAME=\"allowUserReg\" VALUE=\"1\"$check>");
-					$check = "";
-				?></TD>
-				<TD WIDTH=300 CLASS="data">
-					<?php echo $lang['OPT_ALLOW_REGISTER_HELP']?>
-				</TD>
-			</TR>
-			<?php /* $options->eMailAdmin */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_EMAIL_ADMIN']?></B></TD>
-				<TD WIDTH=60 CLASS="data"><?php
-					if ($options->eMailAdmin == 1) {
-						$check = " CHECKED";
-					}
-					echo("<INPUT TYPE=\"checkbox\" NAME=\"eMailAdmin\" VALUE=\"1\"$check>");
-					$check = "";
-				?></TD>
-				<TD WIDTH=300 CLASS="data">
-					<?php echo $lang['OPT_EMAIL_ADMIN_HELP']?>
-				</TD>
-			</TR>
-
-			<?php /* $options->requireLogin */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_REQUIRE_LOGIN_LBL']?></B></TD>
-				<TD WIDTH=60 CLASS="data"><?php
-					if ($options->requireLogin == 1) {
-						$check = " CHECKED";
-
-					}
-					echo("<INPUT TYPE=\"checkbox\" NAME=\"requireLogin\" VALUE=\"1\"$check>");
-					$check = "";
-				?></TD>
-				<TD WIDTH=300 CLASS="data">
-					<?php echo $lang['OPT_REQUIRE_LOGIN_HELP']?>
-					<BR><B><?php echo $lang['LBL_DEFAULT']?>:</B> ON.
-				</TD>
-			</TR>
+                            <TR><TD WIDTH=200 CLASS="data"><H4>From:</H4></TD>
+                                <TD WIDTH=300 CLASS="data"><?php echo $_SESSION['username']; ?>
+                                    <INPUT TYPE="hidden"  VALUE="<?php echo $_SESSION['username'] ; ?>" NAME="mail_from_name" ><BR><BR>
+                                </TD></TR>
 
 
+                            <TR><TD WIDTH=200 CLASS="data"><H4>From Email:</H4></TD>
+                                <TD  width="300" class="data"><?php echo$mail_from; ?></TD></TR>
+                            <TR><TD WIDTH=200 CLASS="data"><H4><?php  echo $lang['MAIL_SUBJ']?>:</H4></TD>
+                                <TD WIDTH=300 CLASS="data">
+                                    <INPUT TYPE="text" CLASS="formTextbox" VALUE="" NAME="mail_subject" SIZE=80><BR><BR>
+                                </TD></TR>
+                            <TR><TD WIDTH=200 CLASS="data"><H4><?php echo $lang['MAIL_MSG']?>:</H4></TD>
+                                <TD WIDTH=300 CLASS="data">
+                                    <TEXTAREA CLASS="formTextarea" ROWS="20" COLS="75" NAME="mail_body"></TEXTAREA><BR><BR>
+                                </TD></TR>
+                            <TR><TD WIDTH=200 CLASS="data"></TD>
+                                <TD WIDTH=300 CLASS="data">
+                                    <?php
+                                    //   If there is valid email in FROM, then send mail from to mailsend with other values and dispaly the send mail button. Value set above when contact info obtained
+                                    if($SendMailButton == "Yes"){
+                                        echo " 					<INPUT TYPE=\"submit\" VALUE=\"".$lang['BTN_SEND']."\" NAME=\"sendEmail\" CLASS=\"formButton\"><BR>";
+                                        echo"					<INPUT TYPE=\"hidden\"  VALUE=\"$mail_from\" NAME=\"mail_from\" ><BR><BR>";
 
-			<?php /* $language */ ?>
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_LANGUAGE_LBL']?></B></TD>
-				<TD WIDTH=360 CLASS="data" COLSPAN=2>
-				<SELECT NAME="language" CLASS="formSelect" STYLE="width:160px;">
-<?php
-	// ** LANGUAGE DROP DOWN GENERATION
-	// Obtain the list of language modules from the 'languages' directory.
-	$dh = opendir("languages") or die ("Open Directory failed");
-	while (false !== ($filename = readdir($dh))) {
-		if ($filename == "." OR $filename == "..") continue;
-		$files[] = $filename;
-	}
-	sort($files);
-	closedir($dh);
-
-	// Generate the selections
-	// This may not necessary be the quickest way to do it, but it works.
-	for ($i = 0; $i < count($files); $i++) {
-		// Files will be parsed to obtain the value of LANGUAGE_NAME.
-		// If the language name cannot be found, then it must be a faulty module (or not a module at all!) -- and it will not be displayed in the drop down list.
-		$languagename = implode(" ", file("languages/" . $files[$i]));
-  		$languagename = explode("LANGUAGE_NAME', \"", $languagename, 2);  // Find the variable name and the first set of double quotes
-   		$languagename = explode("\"", $languagename[1], 2);              // Find the second set of double quotes
-		// The result should be the name of the language. If nothing is found, display no option.
-		if ($languagename[0] != "") {
-			// value used is the filename minus extension.
-			$filename = (explode(".", $files[$i]));
-    		echo("<option value=\"" . $filename[0] . "\"" . (($filename[0] == $options->language) ? " selected" : "") . ">" . $languagename[0] . "</option>\n");
-		}
-	}
-     ?>
-</SELECT>
-					<BR><?php echo $lang['OPT_LANGUAGE_HELP']?>
-					<BR><B><?php echo $lang['LBL_DEFAULT']?>:</B> english
-				</TD>
-			</TR>
-
-		<!--HDK: view by letter option-->
-		<?php /* $defaultLetter */
-			$abc=array(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z);
-		?>
-
-			<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_VIEW_LTR_LABEL']?></B></TD>
-				<TD WIDTH=360 CLASS="data" COLSPAN=2>
-					<SELECT NAME="defaultLetter" CLASS="formSelect" STYLE="width:160px;">
-							<OPTION VALUE="0">(off)</OPTION>
-<?php
-
-	foreach ($abc as $letter){
-		echo("						<OPTION VALUE=\"$letter\"");
-		if ($letter == $options->defaultLetter) {
-			echo(" SELECTED");
-		}
-		echo(">$letter</OPTION>\n");
-	}
-?>
-</SELECT>
-					<?php echo $lang['OPT_VIEW_LTR_HELP']?>
-				</TD>
-			</TR>
-			<!-- //HDK end change-->
-		<!--HDK: limit entries per page -->
-		<?php /* $limitEntries */?>
-				<TR VALIGN="top">
-				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_LIMIT_ENTRIES_LBL']?></B></TD>
-				<TD WIDTH=360 CLASS="data" COLSPAN=2>
-					<INPUT TYPE="text" NAME="limitEntries" VALUE="<?php echo $options->limitEntries ?>"
-					<?php echo $lang['OPT_LIMIT_ENTRIES_HELP']?>
-				</TD>
-			</TR>
-			<!-- //HDK end change-->
-			<?php /* $modifyTime */ ?>
-<!-- DISABLED
-
-		   <TR VALIGN="top">
-			  <TD WIDTH=200 CLASS="data" ALIGN="right">
-				   <B>Last Update Time</B>
-			  </TD>
-			  <TD WIDTH=60 CLASS="data">
-
-				   <SELECT SIZE=3 NAME="modifyTime">
-					   <OPTION VALUE="-23">-23</OPTION>
-					   <OPTION VALUE="-22">-22</OPTION>
-					   <OPTION VALUE="-21">-21</OPTION>
-					   <OPTION VALUE="-20">-20</OPTION>
-					   <OPTION VALUE="-19">-19</OPTION>
-					   <OPTION VALUE="-18">-18</OPTION>
-					   <OPTION VALUE="-17">-17</OPTION>
-					   <OPTION VALUE="-16">-16</OPTION>
-					   <OPTION VALUE="-15">-15</OPTION>
-					   <OPTION VALUE="-14">-14</OPTION>
-					   <OPTION VALUE="-13">-13</OPTION>
-					   <OPTION VALUE="-12">-12</OPTION>
-					   <OPTION VALUE="-11">-11</OPTION>
-					   <OPTION VALUE="-10">-10</OPTION>
-					   <OPTION VALUE="-9">-9</OPTION>
-					   <OPTION VALUE="-8">-8</OPTION>
-					   <OPTION VALUE="-7">-7</OPTION>
-					   <OPTION VALUE="-6">-6</OPTION>
-					   <OPTION VALUE="-5">-5</OPTION>
-					   <OPTION VALUE="-4">-4</OPTION>
-					   <OPTION VALUE="-3">-3</OPTION>
-					   <OPTION VALUE="-2">-2</OPTION>
-					   <OPTION VALUE="-1">-1</OPTION>
-					   <OPTION VALUE="0">0</OPTION>
-				   </SELECT>
-				   <INPUT TYPE="text" SIZE=3 STYLE="width:30px;" CLASS="formTextbox" NAME="modifyTime" VALUE="<?php echo($modifyTime); ?>" MAXLENGTH=3>
-			  </TD>
-			  <TD WIDTH=300 CLASS="data">
-				   This changes the time "Last Updated" time based on your time zone offset.
-				   <BR><B><?php echo $lang['LBL_DEFAULT']?>:</B> 0 hours.
-			  </TD>
-		   </TR>
-// -->
-			<TR VALIGN="top"><TD WIDTH=560 COLSPAN=3 CLASS="listDivide">&nbsp;</TD></TR>
-			<TR VALIGN="top">
-				<TD WIDTH=560 COLSPAN=3 CLASS="navmenu">
-					<NOSCRIPT>
-					<!-- Will display Form Submit buttons for browsers without Javascript -->
-					<!-- is there even such a thing anymore?? -->
-					<INPUT TYPE="submit" VALUE="Save">
-					</NOSCRIPT>
-					<A HREF="#" onClick="saveEntry(); return false;"><?php echo $lang['BTN_SAVE']?></A>
-					<A HREF="<?php echo(FILE_LIST); ?>"><?php echo $lang['BTN_RETURN']?></A>
-				</TD>
-			</TR>
-		</TBODY>
-		</TABLE>
-		</TD>
-	</TR>
-</TBODY>
-</TABLE>
+                                    }  ?>
+                                </TD></TR>
+                        </FORM>
+                    </TABLE>
+                </CENTER>
+                <BR>
+            </TD>
+        </TR>
+        <?php
+        printFooter();
+        ?>
+    </TABLE>
 </CENTER>
-</FORM>
+
 </BODY>
 </HTML>

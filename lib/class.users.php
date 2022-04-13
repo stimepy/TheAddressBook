@@ -15,6 +15,7 @@ class users
 // There are a lot of issues with the security on this check, please check forums for more details....
 // Security code currently does not work and has been commented out.
     public function checkForLogin() {
+        global $lang;
         session_start();
         global $globalSqlLink;
 
@@ -54,23 +55,58 @@ class users
                 }
             }
             if ($userAllowed != 1) {
-                ?>
-                <HTML>
-                <HEAD>
-                    <TITLE>Address Book - Access Denied</TITLE>
-                    <LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
-                    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-                    <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
-                    <META HTTP-EQUIV="EXPIRES" CONTENT="-1">
-                </HEAD>
-                <BODY>
-                <P><B>You do not have permission to conduct this operation. <A HREF="<?php echo(FILE_LIST); ?>">Click here to return.</A>
-                </BODY>
-                </HTML>
-                <?php
+                $output=webheader('Address Book - Access Denied', $lang['CHARSET']);
+                $output .=errorPleaseclicktoTeturn('You do not have permission to conduct this operation.');
+                display($output);
                 exit();
             }
         }
+    }
+
+    function Logout($options){
+        global $lang;
+        session_destroy();
+        require_once('languages/' . $options->getlanguage() . '.php');
+        // PRINT MESSAGE
+        header("Location: " . FILE_INDEX); //required to force site language to override user language at sign in screen
+        return  $lang['MSG_LOGGED_OUT'];
+    }
+
+    function Authorization(){
+        global $globalSqlLink, $lang;
+        // LOOK FOR USERNAME AND PASSWORD IN THE DATABASE.
+        $globalSqlLink->SelectQuery('username, usertype, is_confirmed', TABLE_USERS, "username='" . $_POST['username'] . "' AND password=MD5('" . $_POST['password'] . "')", NULL);
+        $t_getUser = $globalSqlLink->FetchQueryResult();
+
+        // THE USERNAME IS FOUND AND ACCOUNT IS CONFIRMED
+        if (($globalSqlLink->GetRowCount() != 0) && ($t_getUser['is_confirmed'] == 1)) {
+            // REGISTER SESSION VARIABLES
+            $_SESSION['username'] = $t_getUser['username'];
+            $_SESSION['usertype'] = $t_getUser['usertype'];
+            if (!isset($_SESSION['abspath'])) {
+                $_SESSION['abspath'] = dirname($_SERVER['SCRIPT_FILENAME']);
+            }
+            // REDIRECT TO LIST
+            header("Location: " . FILE_LIST);
+            exit();
+        }
+
+        // ACCOUNT MUST BE CONFIRMED
+        elseif (($globalSqlLink->GetRowCount() != 0) && ($t_getUser['is_confirmed'] != 1)) {
+            // END SESSION
+            session_destroy();
+            // PRINT ERROR MESSAGE AND LOGIN SCREEN
+            $errorMsg = $lang['ERR_USER_CONFIRMED_NOT'];
+        }
+
+        // WRONG USERNAME
+        else {
+            // END SESSION
+            session_destroy();
+            // PRINT ERROR MESSAGE AND LOGIN SCREEN
+            $errorMsg = $lang['MSG_LOGIN_INCORRECT'];
+        }
+        return $errorMsg;
     }
 
 }

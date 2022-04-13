@@ -11,21 +11,20 @@
  
 class ContactList {
 	
-	var $group_id;
-	var $group_name;
-	var $current_letter;
-	var $max_entries;
-	var $current_page;
-	var $total_pages;
-	var $sql; 
-	var $title;
-	var $nav_menu;
+	private $group_id;
+    private $group_name;
+    private $current_letter;
+    private $max_entries;
+    private $current_page;
+    private $total_pages;
+    // private $sql;
+    private $title;
+    private $nav_menu;
 	private $myRowCount;
 
 
-	function __construct() {
-		global $options;
-		
+	function __construct($options) {
+
 		// DEPENDENT VARIABLES -- Values for these variables are passed to the object after ContactList is created
 		// If no values are provided, then it uses some defaults
 		$this->group_id = 0;                       // defaults to 0 upon creation of object
@@ -274,10 +273,42 @@ class ContactList {
 
     function getEmailsByContactId( $contactId){
         global $globalSqlLink;
-        $globalSqlLink->SelectQuery('id, email', TABLE_EMAIL, "id=" . $contactId, NULL);
+        $globalSqlLink->SelectQuery('id, email, type', TABLE_EMAIL, "id=" . $contactId, NULL);
         $tbl_email = $globalSqlLink->FetchQueryResult();
         return $tbl_email;
     }
+    function getgroup_id(){return $this->group_id;}
+    function setgroup_id($value){ $this->group_id = $value;}
+
+    function getgroup_name(){return $this->group_name;}
+    function setgroup_name($value){ $this->group_name = $value;}
+
+    function getcurrent_letter(){return $this->currentletter;}
+    function setcurrent_letter($value){ $this->current_letter = $value;}
+
+    function getmax_entries(){return $this->max_entries;}
+    function setmax_entries($value){ $this->max_entries = $value;}
+
+    function getcurrent_page(){return $this->current_page;}
+    function setcurrent_page($value){ $this->current_page = $value;}
+
+    function gettotal_pages(){return $this->total_pages;}
+    function settotal_pages($value){ $this->total_pages = $value;}
+
+    function gettitle(){return $this->title;}
+    function settitle($value){ $this->title = $value;}
+
+    function getnav_menu(){return $this->nav_menu;}
+    function setnav_menu($value){ $this->nav_menu = $value;}
+
+    function createEmail($useMailScript, $email){
+        if ($useMailScript == 1) {
+            return "<br/><A HREF=\"" . FILE_MAILTO . "?to=" . $email . "\">" . $email . "</A>";
+        }
+        return "<br/><A HREF=\"mailto:" . $email . "\">" . $email . "</A>";;
+
+    }
+
 
 }
 // END ContactList

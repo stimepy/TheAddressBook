@@ -35,7 +35,7 @@ define('FILE_CLASSES', 'classes.' . $php_ext); // temporary
 define('FILE_CONFIG', 'config.' . $php_ext);
 define('FILE_EDIT', 'edit.' . $php_ext);
 define('FILE_EXPORT', 'export.' . $php_ext);
-define('FILE_FUNCTIONS', 'functions.' . $php_ext);
+define('FILE_FUNCTIONS', 'lib/functions.' . $php_ext);
 define('FILE_GROUPS', 'groups.' . $php_ext);
 define('FILE_INDEX', 'index.' . $php_ext);
 define('FILE_INSTALL', 'install.' . $php_ext);

@@ -92,3 +92,26 @@ function sortandSetCountry($country){
     return $countrySorted;
 }
 
+function errorPleaseclicktoTeturn($errorMessage){
+        return "<BODY>
+                <P><B>".$errorMessage."<A HREF=\"".FILE_LIST."\">Click here to return.</A>
+                </BODY>
+                </HTML>";
+}
+
+function createGroupOptions($body, $lang){
+    $output = $lang['GROUP_SELECT'] ."<SELECT NAME=\"groupid\" CLASS=\"formSelect\" onChange=\"document.selectGroup.submit();\">";
+    for ($groupcount = 0; $groupcount < $body['G_count']; $groupcount++) {
+        $sel = "";
+        $group = $body['G_' . $groupcount];
+
+        if ($body['G_selected'] == $group['groupid']) {
+           $sel = "Selected";
+        }
+
+        $output .= "                       <OPTION VALUE=" . $group['groupid'] . " " . $sel . ">" . $group['groupname'] . "</OPTION>\n";
+    }
+    $output .= "</SELECT>";
+    return $output;
+}
+

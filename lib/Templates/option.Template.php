@@ -61,7 +61,7 @@ class optionTemplate
 			</TR>
 			<TR VALIGN=\"top\">
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><B>".$lang['OPT_BIRTHDAY_DAYS_LBL']."</B></TD>
-				<TD WIDTH=60 CLASS=\"data\"><INPUT TYPE=\"text\" SIZE=3 STYLE=\"width:30px;\" CLASS=\"formTextbox\" NAME=\"bdayInterval\" VALUE=\"".$option->getBirthInterval()."\" MAXLENGTH=3></TD>
+				<TD WIDTH=60 CLASS=\"data\"><INPUT TYPE=\"text\" SIZE=3 STYLE=\"width:30px;\" CLASS=\"formTextbox\" NAME=\"bdayInterval\" VALUE=\"".$option->bdayInterval()."\" MAXLENGTH=3></TD>
 				<TD WIDTH=300 CLASS=\"data\">
 					".$lang['OPT_BIRTHDAY_DAYS_HELP']."<br><b>
 					".$lang['LBL_DEFAULT'].":</B> </b> 21 days
@@ -118,7 +118,7 @@ class optionTemplate
 			</TR>
 			<TR VALIGN=\"top\">
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_OPEN_POPUP_LBL']."</b></TD>
-				<TD WIDTH=60 CLASS=\"data\">\
+				<TD WIDTH=60 CLASS=\"data\">
 				    <INPUT TYPE=\"checkbox\" NAME=\"displayAsPopup\" VALUE=\"1\" ".hasValueOrBlank($body['displayAsPopup']).">
 				</TD>
 				<TD WIDTH=300 CLASS=\"data\">

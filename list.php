@@ -23,15 +23,23 @@ $options = new Options();
 // ** END INITIALIZATION *******************************************************
 
 // CREATE THE LIST.
-$list = new ContactList();
-// echo 'bob' ;
+$list = new ContactList($options);
+
 
 // THIS PAGE TAKES SEVERAL GET VARIABLES
 // ie. list.php?group_id=6&page=2&letter=c&limit=20
-if ($_GET['groupid'])         $list->group_id = $_GET['groupid'];
-if ($_GET['page'])            $list->current_page = $_GET['page'];
-if (isset($_GET['letter']))   $list->current_letter = $_GET['letter'];
-if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
+if ($_GET['groupid']) {
+    $list->setgroup_id($_GET['groupid']);
+}
+if ($_GET['page']) {
+    $list->setcurrent_page($_GET['page']);
+}
+if (isset($_GET['letter'])){
+    $list->current_letter($_GET['letter']);
+}
+if (isset($_GET['limit'])) {
+    $list->max_entries($_GET['limit']);
+}
 
 	// Set group name (group_id defaults to 0 if not provided)
 	$list->group_name();
@@ -103,7 +111,7 @@ if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
         else{
             $body['fileopt'] = FILE_OPTIONS;
             $body['toolusersettings'] = $lang['TOOLBOX_OPTIONS'];
-            $body['tdinside1']="<A HREF=\"". FILE_MAILTO ."?groupid=".$list->group_id."\"><IMG SRC=\"images/b-mail.gif\" WIDTH=50 HEIGHT=50 ALT=\"\" BORDER=0><br /> ".$lang['TOOLBOX_MAILINGLIST']."</A>";
+            $body['tdinside1']="<A HREF=\"". FILE_MAILTO ."?groupid=".$list->getgroup_id()."\"><IMG SRC=\"images/b-mail.gif\" WIDTH=50 HEIGHT=50 ALT=\"\" BORDER=0><br /> ".$lang['TOOLBOX_MAILINGLIST']."</A>";
             $body['FILE_EXPORT'] = FILE_EXPORT;
             $body['Toolexprt'] = $lang['TOOLBOX_EXPORT'];
             $body['FILE_SCRATCHPAD'] = FILE_SCRATCHPAD;
@@ -123,28 +131,7 @@ if (isset($_GET['limit']))    $list->max_entries = $_GET['limit'];
 
     // -- GENERATE GROUP SELECTION LIST --
 	// Only admins can view hidden entries.
-    $body['G_0'] = array( 'groupid' => 0, 'groupname' => $lang['GROUP_ALL_SELECT'] );
-    $body['G_1'] = array( 'groupid' => 1, 'groupname' => $lang['GROUP_UNGROUPED_SELECT'] );
-
-	if ($_SESSION['usertype'] == "admin") {
-        $body['G_2'] = array( 'groupid' => 2, 'groupname' => $lang['GROUP_HIDDEN_SELECT'] );
-        $x=3;
-	}
-	else {
-        $x=2;
-	}
-    $where = "groupid >= 3";
-    $body['G_selected'] = $list->group_id;
-
-	$globalSqlLink->SelectQuery( 'groupid, groupname',  TABLE_GROUPLIST ,  $where,  'order by groupname', NULL);
-    $r_grouplist = $globalSqlLink->FetchQueryResult();
-    if($r_grouplist != -1) {
-        foreach ($r_grouplist as $rbl_grouplist) {
-            $body['G_' . $x] = array('groupid' => $rbl_grouplist['groupid'], 'groupname' => $rbl_grouplist['groupname']);
-            $x++;
-        }
-    }
-    $body['G_count'] = $x;
+    $options->setupAllGroups($body, $list);
 
 	// DISPLAY IF NO ENTRIES UNDER GROUP
     $body['useMailScript'] = $options->getuseMailScript();
