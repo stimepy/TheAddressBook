@@ -1,19 +1,26 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Stimepy
- * Date: 4/17/2019
- * Time: 8:54 PM
- */
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
+ *  Core.php
+ *  Core files
+ * I am unsure of the original Author, but credit due where it is
+ * due, I thank you.  Now I have to fix your shit.
+ *
+ *
+ *************************************************************/
 
- error_reporting (E_ALL);
+error_reporting (E_ALL);
 
 // ** GET CONFIGURATION DATA **
 require_once('constants.inc');
 require_once(FILE_FUNCTIONS);
 require_once(FILE_CLASS_OPTIONS);
 require_once(FILE_CLASS_CONTACTLIST);
-require_once(FILE_CLASSES);
+//require_once(FILE_CLASSES);
 require_once(FILE_CONFIG);
 
 require_once(FILE_LIB_MAIL);

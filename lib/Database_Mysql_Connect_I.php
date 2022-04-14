@@ -1,10 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Stimepy
- * Date: 4/17/2019
- * Time: 8:13 PM
- */
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
+ *  Database_Mysql_Connect_I.php
+ *  Mysql connection and manipulation.
+ *
+ *************************************************************/
 
 class Mysql_Connect_I
 {
@@ -127,6 +131,20 @@ class Mysql_Connect_I
         $this->mySQLConnection->free();
     }
 
+    /**
+     * CommandQuery
+     * Query takes ANY sql command.  and immidiately returns results.
+     * User SPARINGLY as this CAN CAUSE EXPLOSIONS!!!!!
+     * DOES NOT PROVIDE A ROW COUNT ONLY AN ARRAY!
+     *
+     * @return array
+     */
+    public function CommandQuery($query){
+        $this->mySQLresults=$this->mySQLConnection->query($query);
+        $this->SetRowCount($this->mySQLConnection->affected_rows);
+
+        return $this->FetchQueryResult();
+    }
 
     public function InsertQuery($insert, $table){
         $query = $this->buildquery($insert, $table, '','', 'INSERT');

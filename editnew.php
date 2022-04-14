@@ -1,334 +1,177 @@
-<?php
-/*************************************************************
- *  THE ADDRESS BOOK  :  version 1.04d
- *
- *****************************************************************
- *  mailto.php
- *  Sends e-mail to one or more addresses
- *  Originally written by Joe Chen
- *
- *************************************************************/
+// QUERY
+$xmlCreator = new XMLWriter();
 
-// BUG: Mailing List displays entries without email addresses.
+$xmlCreator->startDocument(1.0,$lang['CHARSET']);
+echo "<?xml version=\"1.0\" encoding=\"".$lang['CHARSET']."\"?>\n\n";
+        echo "<rubrica>\n\n";
+        $globalSqlLink->SelectQuery('*',TABLE_CONTACT, NULL, NULL );
+        $r_contact = $globalSqlLink->FetchQueryResult();
+        foreach($r_contact as $tbl_contact ){
+            // while ($tbl_contact = mysql_fetch_array($r_contact)) {
 
+            # short id
+            $XID = $tbl_contact['id'];
 
-require_once('.\Core.php');
+            echo "<CONTACT id=\"".$XID."\" update=\"".$tbl_contact['lastUpdate']."\">\n";
 
+            # personal data from TABLE_CONTACT
+            echo "<PERSONALDATA>\n";
+            echo "<firstname>".$tbl_contact['firstname']."</firstname>\n";
+            echo "<middlename>".$tbl_contact['middlename']."</middlename>\n";
+            echo "<lastname>".$tbl_contact['lastname']."</lastname>\n";
+            echo "<birthday>".$tbl_contact['birthday']."</birthday>\n";
+            echo "<nick>".$tbl_contact['nickname']."</nick>\n";
+            echo "<notes><![CDATA[\n".$tbl_contact['notes']."\n]]></notes>\n";
+            echo "</PERSONALDATA>\n";
 
-global $globalSqlLink, $globalUsers;
+            # below this line you can move
+            # up or down section data
 
+            # ********************
+            # TABLE_EMAIL
+            # ********************
+            echo "<EMAIL>\n";
+            //$xmlMail = "SELECT * FROM ". TABLE_EMAIL . " WHERE id=$XID";
+            $globalSqlLink->SelectQuery('*',TABLE_EMAIL, "id=".$XID, NULL );
+            $r_mail = $globalSqlLink->FetchQueryResult();
+            //$r_mail = mysql_query($xmlMail, $db_link);
+            foreach( $r_mail as $tbl_mail){
+                //while ($tbl_mail = mysql_fetch_array($r_mail)) {
+                echo "<mail type=\"".$tbl_mail['type']."\">".$tbl_mail['email']."</mail>\n";
+            }
 
-// ** CHECK FOR LOGIN **
-//    list($userGroup, $userHomeName, $userHomePage, $userCapabilities) = checkForLogin($address_session_name, CAP_MAIL);
-$globalUsers->checkForLogin('admin','user');
+            echo "</EMAIL>\n";
+            # ********************
+            # /END TABLE_EMAIL
+            # ********************
 
-// ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
-$options = new Options();
+            # ********************
+            # TABLE_ADDRESS
+            # ********************
+            echo "<ADDRESS>\n";
 
+            //$xmlAddr = "SELECT * FROM ". TABLE_ADDRESS . " WHERE id=$XID";
+            $globalSqlLink->SelectQuery('*',TABLE_ADDRESS, "id=".$XID, NULL );
+            $r_addr = $globalSqlLink->FetchQueryResult();
+            //$r_addr = mysql_query($xmlAddr, $db_link);
+            foreach($r_addr as $tbl_addr){
+                //while ($tbl_addr = mysql_fetch_array($r_addr)) {
 
-// ** GET DESTINATION EMAIL ADDRESS **
-// If there is an e-mail address either via POST or GET we will e-mail to that single address.
-// If not, then we will default to a mailing list setup.
-if ($_POST['to']) {				// Look for a target e-mail in POST first, which has priority.
-    $mail_to = $_POST['to'];
-}
-elseif ($_GET['to']) {			// If there is no target e-mail in POST, look in GET
-    $mail_to = $_GET['to'];
-}
-else {							// If there is no target e-mail in either, then we go to default mailing list mode.
-    // RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
-    /*
-    $globalSqlLink->SelectQuery('displayAsPopup, useMailScript', TABLE_OPTIONS, NULL, 'Limit 1' );
-    $options = $globalSqlLink->FetchQueryResult();
-    */
-    //$options = mysql_fetch_array(mysql_query("SELECT displayAsPopup, useMailScript FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
-    //	or die(reportScriptError("Unable to retrieve options."));
-    // CREATE THE LIST.
-    $list = new ContactList($options);
+                echo "<address type=\"".$tbl_addr['type']."\">\n";
+                echo "<line1>".$tbl_addr['line1']."</line1>\n";
+                echo "<line2>".$tbl_addr['line2']."</line2>\n";
+                echo "<city>".$tbl_addr['city']."</city>\n";
+                echo "<state>".$tbl_addr['state']."</state>\n";
+                echo "<zip>".$tbl_addr['zip']."</zip>\n";
 
-    // THIS PAGE TAKES SEVERAL GET VARIABLES
-    if ($_GET['groupid'])  $list->group_id = $_GET['groupid'];
-    if ($_GET['page'])     $list->current_page = $_GET['page'];
-    if ($_GET['letter'])   $list->current_letter = $_GET['letter'];
-    if ($_GET['limit'])    $list->max_entries = $_GET['limit'];
+                # TABLE_COUNTRY
+                $xmlCountry = $tbl_addr['country'];
 
-    // Set group name (group_id defaults to 0 if not provided)
-    $list->group_name();
+                echo "<country>".$country[$xmlCountry]."</country>\n";
+                echo "<phone1>".$tbl_addr['phone1']."</phone1>\n";
+                echo "<phone2>".$tbl_addr['phone2']."</phone2>\n";
+                echo "</address>\n";
 
-    // ** RETRIEVE CONTACT LIST BY GROUP **
-    $r_contact = $list->retrieve();
+            }
 
+            echo "</ADDRESS>\n";
+            # ********************
+            # /END TABLE_ADDRESS
+            # ********************
 
-}
+            # ********************
+            # TABLE_OTHERPHONE
+            # ********************
+            echo "<OTHER-PHONE>\n";
+            //$xmlPhone = "SELECT * FROM ". TABLE_OTHERPHONE . " WHERE id=$XID";
+            $globalSqlLink->SelectQuery('*',TABLE_OTHERPHONE, "id=".$XID, NULL );
+            $r_phone = $globalSqlLink->FetchQueryResult();
+            //$r_phone = mysql_query($xmlPhone, $db_link);
 
-// ** RETRIEVE USER CONTACT INFORMATION **
-$mail_from = '';
-$globalSqlLink->SelectQuery('email', TABLE_USERS, "username='". $_SESSION['username'], "LIMIT 1");
-$r_user = $globalSqlLink->FetchQueryResult();
-//$r_user = mysql_fetch_array(mysql_query("SELECT email FROM " . TABLE_USERS . " AS users WHERE username='". $_SESSION['username'] ."' LIMIT 1", $db_link))
-//	or die(reportScriptError("Unable to retrieve user email address."));
-$mail_from = $r_user['email'];
-$SendMailButton = "Yes";
-if(!$mail_from){
-    $mail_from = $lang['ERR_NO_EMAIL1']."<A HREF =\"".FILE_USERS."\"> ".$lang['ERR_NO_EMAIL2'];
-    $SendMailButton = "No";
-}
+            foreach($r_phone as $tbl_phone){
+                //while ($tbl_phone = mysql_fetch_array($r_phone)) {
 
-?>
-<HTML>
-<HEAD>
-    <TITLE><?php echo $lang['TAB']." - ".$lang['TITLE_OPT']?></TITLE>
-    <LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
-    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-    <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
-    <META HTTP-EQUIV="EXPIRES" CONTENT="-1">
-    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['CHARSET']?>">
+                echo "<phone type=\"".$tbl_phone['type']."\">".$tbl_phone['phone']."</phone>\n";
 
+            }
 
-</HEAD>
+            echo "</OTHER-PHONE>\n";
+            # ********************
+            # /END TABLE_OTHERPHONE
+            # ********************
 
-<BODY>
-<CENTER>
-    <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
-        <TR>
-            <TD CLASS="navMenu"><A HREF="javascript:history.go(-1)"><?php echo $lang['BTN_RETURN'] ?></A></TD>
-        </TR>
-        <TR>
-            <TD>
+            # ********************
+            # TABLE_WEBSITES
+            # ********************
+            echo "<WEBSITES>\n";
+            $xmlWWW = "SELECT * FROM ". TABLE_WEBSITES . " WHERE id=$XID";
+            //$r_www = mysql_query($xmlWWW, $db_link);
+            $globalSqlLink->SelectQuery('*',TABLE_WEBSITES, "id=".$XID, NULL );
+            $r_www = $globalSqlLink->FetchQueryResult();
 
-                <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=570>
-                    <TR VALIGN="bottom">
-                        <TD CLASS="headTitle">
-                            <?php // HEADER
-                            echo (empty($mail_to) ? $lang['TOOLBOX_MAILINGLIST']  : $lang['TITLE_OPT']);
-                            ?>
-                        </TD>
-                        <?php // MAILING LIST
-                        if (empty($mail_to)) {
-                            ?>					<TD CLASS="headText" ALIGN="right">
-                                <FORM NAME="selectGroup" METHOD="get" ACTION="<?php echo(FILE_MAILTO); ?>">
-                                    select group <SELECT NAME="groupid" CLASS="formSelect" onChange="document.selectGroup.submit();">
-                                        <?php
-                                        // -- GENERATE GROUP SELECTION LIST --
-                                        // Only admins can view hidden entries.
-                                        if ($_SESSION['usertype'] == "admin") {
-                                            //$groupsql = "SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid >= 0 ORDER BY groupname";
-                                            $where = "groupid >= 0";
-                                        }
-                                        else {
-                                            //$groupsql = "SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid >= 0 AND groupid != 2 ORDER BY groupname";
-                                            $where = "groupid >= 0 AND groupid != 2";
-                                        }
-                                        $globalSqlLink->SelectQuery("groupid, groupname", TABLE_GROUPLIST, $where, "order by groupname");
-                                        $r_grouplist = $globalSqlLink->FetchQueryResult();
-                                        //$r_grouplist = mysql_query($groupsql, $db_link);
-                                        foreach($r_grouplist as $tbl_grouplist){
-                                            //while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
-                                            $selectGroupID = $tbl_grouplist['groupid'];
-                                            $selectGroupName = $tbl_grouplist['groupname'];
-                                            echo("                       <OPTION VALUE=$selectGroupID");
-                                            if ($selectGroupID == $list->group_id) {
-                                                echo(" SELECTED");
-                                            }
-                                            echo(">$selectGroupName</OPTION>\n");
-                                        }
+            foreach($r_www as $tbl_www){
+                //while ($tbl_www = mysql_fetch_array($r_www)) {
 
-                                        ?>
-                                    </SELECT>
-                                </FORM>
-                            </TD>
-                            <?php
-                            // END MAILING LIST
-                        }
-                        ?>
+                echo "<www label=\"".$tbl_www['webpageName']."\">".$tbl_www['webpageURL']."</www>\n";
 
-                    </TR>
-                </TABLE>
+            }
 
-            </TD>
+            echo "</WEBSITES>\n";
+            # ********************
+            # /END TABLE_WEBSITES
+            # ********************
 
-        </TR>
-        <TR>
-            <TD CLASS="infoBox">
-                <BR>
-                <CENTER>
-                    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=10 WIDTH=560>
-                        <FORM NAME="mail_form" METHOD="post" ACTION="<?php echo(FILE_MAILSEND); ?>">
-                            <?php
-                            //** MAILING LIST **
-                            if (empty($mail_to)) {
+            # ********************
+            # TABLE_ADDITIONALDATA
+            # ********************
+            echo "<ADDITIONAL-DATA>\n";
+            //$xmlData = "SELECT * FROM ". TABLE_ADDITIONALDATA . " WHERE id=$XID";
+            //$r_data = mysql_query($xmlData, $db_link);
+            $globalSqlLink->SelectQuery('*',TABLE_ADDITIONALDATA, "id=".$XID, NULL );
+            $r_data = $globalSqlLink->FetchQueryResult();
+            foreach($r_data as $tbl_data){
+                //while ($tbl_data = mysql_fetch_array($r_data)) {
 
-                                // INITIATE CHECKBOX NUMBER
-                                // here's the test.
-                                // take out checkbox numbers and assign them to array. the checked ones will automatically be submitted?
-                                // $cb_id = 1;
+                echo "<data type=\"".$tbl_data['type']."\">".$tbl_data['value']."</data>\n";
 
-                                // DISPLAY GROUP NAME
-                                echo("                 <TR VALIGN=\"top\">\n");
-                                echo("                   <TD WIDTH=560 COLSPAN=4 CLASS=\"listHeader\">$list->group_name</TD>\n");
-                                echo("                 </TR>\n");
-                                // DISPLAY IF NO ENTRIES UNDER GROUP
-                                if ($list->rowcount()<1) {
-                                    echo("                 <TR VALIGN=\"top\">\n");
-                                    echo("                   <TD WIDTH=560 COLSPAN=4 CLASS=\"listEntry\">No entries.</TD>\n");
-                                    echo("                 </TR>\n");
-                                }
-                                // DISPLAY ENTRIES
-                                foreach($r_contact as $tbl_contact){
-                                    //while ($tbl_contact = mysql_fetch_array($r_contact)) {
+            }
 
-                                    $contact_fullname = $tbl_contact['fullname'];
-                                    $contact_lastname = $tbl_contact['lastname'];
-                                    $contact_firstname = $tbl_contact['firstname'];
-                                    $contact_id = $tbl_contact['id'];
+            echo "</ADDITIONAL-DATA>\n";
+            # ************************
+            # /END TABLE_ADDITIONALDATA
+            # ************************
 
-                                    echo("<TR VALIGN=\"top\">\n");
-                                    // DISPLAY NAME -- links are shown either as regular link or popup window
-                                    if ($options['displayAsPopup'] == 1) {
-                                        $popupLink = " onClick=\"window.open('" . FILE_ADDRESS . "?id=$contact_id','addressWindow','width=600,height=450,scrollbars,resizable,location,menubar,status'); return false;\"";
-                                    }
-                                    if (!$contact_firstname) {
-                                        echo("<TD WIDTH=150 CLASS=\"listEntry\"><B><A HREF=\"" . FILE_ADDRESS . "?id=$contact_id\"$popupLink>$contact_lastname</A></B></TD>\n");
-                                    }
-                                    else {
-                                        echo("<TD WIDTH=150 CLASS=\"listEntry\"><B><A HREF=\"" . FILE_ADDRESS . "?id=$contact_id\"$popupLink>$contact_fullname</A></B></TD>\n");
-                                    }
-                                    // DISPLAY E-MAILS
-                                    echo("<TD WIDTH=410 CLASS=\"listEntry\">");
-                                    $globalSqlLink->SelectQuery("id, email, type", TABLE_EMAIL, "id=".$contact_id, NULL );
-                                    //$r_email = mysql_query("SELECT id, email, type FROM " . TABLE_EMAIL . " AS email WHERE id=$contact_id", $db_link);
-                                    //$tbl_email = mysql_fetch_array($r_email);
-                                    //$email_address = stripslashes( $tbl_email['email'] );
-                                    //$email_type = stripslashes( $tbl_email['type'] );
+            # ********************
+            # GROUPS SUBSCRIPTIONS
+            # ********************
+            echo "<GROUPS>\n";
+            //$xmlGroups = "SELECT * FROM ". TABLE_GROUPS . " WHERE id=$XID";
+            //$r_groups = mysql_query($xmlGroups, $db_link);
+            $globalSqlLink->SelectQuery('*',TABLE_GROUPS, "id=".$XID, NULL );
+            $r_groups = $globalSqlLink->FetchQueryResult();
+            foreach($r_groups as $tbl_groups){
+                //while ($tbl_groups = mysql_fetch_array($r_groups)) {
 
-                                    //echo("<INPUT TYPE=\"checkbox\" NAME=\"mail_to[]\" VALUE=\"$email_address\"$checkme>");
-                                    // $cb_id++;
+                # groups name
+                $xmlGN = "SELECT * FROM ". TABLE_GROUPLIST . " WHERE groupid=".$tbl_groups['groupid'];
+                //$r_gn = mysql_query($xmlGN, $db_link);
+                //$tbl_gn = mysql_fetch_array($r_gn);
+                $globalSqlLink->SelectQuery('*',TABLE_GROUPS, "groupid=".$tbl_groups['groupid'], NULL );
+                $tbl_gn = $globalSqlLink->FetchQueryResult();
 
-                                    //if ($options['useMailScript'] == 1) {
-                                    //	echo("<A HREF=\"" .FILE_MAILTO. "?to=$email_address\">$email_address</A>");
-                                    //}
-                                    //else {
-                                    //	echo("<A HREF=\"mailto:$email_address\">$email_address</A>");
-                                    //}
+                echo "<group id=\"".$tbl_gn['groupid']."\" name=\"".$tbl_gn['groupname']."\"/>\n";
 
-                                    //if ($email_type) {
-                                    //	echo(" ($email_type)");
-                                    //}
-                                    $r_email = $globalSqlLink->FetchQueryResult();
-                                    $checkflag = true;
-                                    foreach($r_email as $tbl_email){
-                                        //while ($tbl_email = mysql_fetch_array($r_email)) {
-                                        $email_address = stripslashes( $tbl_email['email'] );
-                                        $email_type = stripslashes( $tbl_email['type'] );
-                                        if($checkflag == true) {
-                                            if ((preg_match("/old/i", $email_type)) || (empty($email_address))) {
-                                                $checkme = "";
-                                            } else {
-                                                $checkme = " CHECKED";
-                                            }
-                                            $checkflag = false;
-                                        }
+            }
 
-                                        echo("<BR><INPUT TYPE=\"checkbox\" NAME=\"mail_to[]\" VALUE=\"$email_address\">");
-                                        $cb_id++;
+            echo "</GROUPS>\n";
+            # ***********************
+            # /END GROUPS SUBSCRIPTION
+            # ***********************
 
-                                        if ($options['useMailScript'] == 1) {
-                                            echo("<A HREF=\"" .FILE_MAILTO. "?to=$email_address\">$email_address</A>");
-                                        }
-                                        else {
-                                            echo("<A HREF=\"mailto:$email_address\">$email_address</A>");
-                                        }
-                                        if ($email_type) {
-                                            echo(" ($email_type)");
-                                        }
-                                    }
-                                    echo("&nbsp;</TD>\n");
-                                    echo("                 </TR>\n");
-
-                                    // END WHILE
-                                }
-                                ?>
-                                <SCRIPT LANGUAGE="JavaScript">
-                                    <!--
-                                    function restart() {
-                                        for (var i=0;i<=1000;++i) {
-                                            document.mail_form.elements[i].checked=false
-                                        }
-                                    }
-                                    // -->
-                                </SCRIPT>
-                                <TR>
-                                    <TD  width="150" class="data"></TD>
-                                    <TD WIDTH=410 CLASS="data">
-                                        <A HREF="#" onClick="restart();return false;"><?php echo $lang['GROUP_NONE']?></A>
-                                        <BR><BR><BR>
-                                    </TD>
-                                </TR>
-                            <?php
-                            // END MAILING LIST LIST GENERATION
-                            } else {
-                            // THIS IS FOR SINGLE E-MAILS
-                            ?>
-                                <TR>
-                                    <TD  width="200" class="data"><H4>To Email:</H4></TD>
-                                    <TD  width="300" class="data">
-                                        <INPUT TYPE="text" CLASS="formMailbox" VALUE="<?php echo($mail_to);?>" NAME="mail_to" ><BR><BR>
-                                    </TD>
-                                </TR>
-                                <?php
-                            }
-                            // END, AND BEGIN COMMON STUFF
-                            ?>
-                            <TR>
-                                <TD WIDTH=200 CLASS="data"><H4>CC:</H4></TD>
-                                <TD WIDTH=300 CLASS="data">
-                                    <INPUT TYPE="text" CLASS="formMailbox" VALUE="" NAME="mail_cc" SIZE=80><BR><BR>
-                                </TD>
-                            </TR>
-                            <TR>
-                                <TD WIDTH=200 CLASS="data"><H4>BCC:</H4></TD>
-                                <TD WIDTH=300 CLASS="data">
-                                    <INPUT TYPE="text" CLASS="formMailbox" VALUE="" NAME="mail_bcc" SIZE=80><BR><BR>
-                                </TD>
-                            </TR>
-
-                            <TR><TD WIDTH=200 CLASS="data"><H4>From:</H4></TD>
-                                <TD WIDTH=300 CLASS="data"><?php echo $_SESSION['username']; ?>
-                                    <INPUT TYPE="hidden"  VALUE="<?php echo $_SESSION['username'] ; ?>" NAME="mail_from_name" ><BR><BR>
-                                </TD></TR>
+            #### do not move ########
+            echo "</CONTACT>\n\n";
+        }
+        ### close xmlQuery ######
 
 
-                            <TR><TD WIDTH=200 CLASS="data"><H4>From Email:</H4></TD>
-                                <TD  width="300" class="data"><?php echo$mail_from; ?></TD></TR>
-                            <TR><TD WIDTH=200 CLASS="data"><H4><?php  echo $lang['MAIL_SUBJ']?>:</H4></TD>
-                                <TD WIDTH=300 CLASS="data">
-                                    <INPUT TYPE="text" CLASS="formTextbox" VALUE="" NAME="mail_subject" SIZE=80><BR><BR>
-                                </TD></TR>
-                            <TR><TD WIDTH=200 CLASS="data"><H4><?php echo $lang['MAIL_MSG']?>:</H4></TD>
-                                <TD WIDTH=300 CLASS="data">
-                                    <TEXTAREA CLASS="formTextarea" ROWS="20" COLS="75" NAME="mail_body"></TEXTAREA><BR><BR>
-                                </TD></TR>
-                            <TR><TD WIDTH=200 CLASS="data"></TD>
-                                <TD WIDTH=300 CLASS="data">
-                                    <?php
-                                    //   If there is valid email in FROM, then send mail from to mailsend with other values and dispaly the send mail button. Value set above when contact info obtained
-                                    if($SendMailButton == "Yes"){
-                                        echo " 					<INPUT TYPE=\"submit\" VALUE=\"".$lang['BTN_SEND']."\" NAME=\"sendEmail\" CLASS=\"formButton\"><BR>";
-                                        echo"					<INPUT TYPE=\"hidden\"  VALUE=\"$mail_from\" NAME=\"mail_from\" ><BR><BR>";
-
-                                    }  ?>
-                                </TD></TR>
-                        </FORM>
-                    </TABLE>
-                </CENTER>
-                <BR>
-            </TD>
-        </TR>
-        <?php
-        printFooter();
-        ?>
-    </TABLE>
-</CENTER>
-
-</BODY>
-</HTML>
+        echo "</rubrica>";

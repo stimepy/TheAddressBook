@@ -1,4 +1,14 @@
 <?php
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
+ *  list.Template.php
+ *  list html
+ *
+ *************************************************************/
 
 function listbodystart($body, $list)
 {

@@ -1,9 +1,12 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.04
- *  
- *  lib/class-contactlist.php
- *  Object: Retrieves information relating to the contact list to be displayed.
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
+ *  class-contactlist.php
+ *  functions used along with contact.
  *
  *************************************************************/
 

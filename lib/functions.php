@@ -8,8 +8,8 @@
  *  Defines functions to be used within other scripts.
  *
  *************************************************************/
-session_start();
-
+// session_start();
+// Deprecated  2022
 function chronometer($msg) {
 global $elapsed;
 global $CHRONO_STARTTIME;
@@ -124,13 +124,9 @@ function check_id() {
 	global $globalSqlLink;
 	global $lang;
 
-	// Get 'id' if passed through GET
-	$id = (integer) $_GET['id'];
-	// If 'id' is provided through POST, it takes precedence over the GET value.
-	if ($_POST['id']) {
-		$id = (integer) $_POST['id'];
-	}
-	
+	// Get 'id' if passed through GET/POST
+	$id = (integer) $_REQUEST['id'];
+
 	// Check if anything was given for ID
 	if (empty($id)) {
 		reportScriptError("<b>invalid entry ID</b>");
@@ -224,7 +220,7 @@ If necessary, please press the BACK button on your browser to return to the prev
 
 
 
-//
+//Deprecate 2022
 // SQL ERROR MESSAGE - reportSQLError();
 // If an error is encountered, report it to the user and halt further execution of script.
 //

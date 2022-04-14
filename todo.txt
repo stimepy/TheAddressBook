@@ -3,3 +3,4 @@ Get the entire thing running
 	Saving/Updating
 bring html into the modren html 5 era
 Flush out a contact class
+Define what the CSV actually Needs!

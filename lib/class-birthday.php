@@ -1,9 +1,12 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.04
- *  
- *  lib/class-birthday.php
- *  Object: Creates birthday list
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
+ *  class-birthday.php
+ *  Birthday stuff?
  *
  *************************************************************/
 // NOT DONE.

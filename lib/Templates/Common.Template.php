@@ -1,5 +1,14 @@
 <?php
-
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
+ *  Common.Template.php
+ *  Common use HTML template
+ *
+ *************************************************************/
 
 function webheader($title, $language, $javascriptfile = -1){
 

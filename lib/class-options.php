@@ -1,7 +1,10 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.04
- *  
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
  *  lib/class-options.php
  *  Object: retrieve and set global or user options
  *

@@ -1,5 +1,14 @@
 <?php
-
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
+ *  index.Template.php
+ *  index HTML template
+ *
+ *************************************************************/
 
 function indexBodyStart($body)
 {

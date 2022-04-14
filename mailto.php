@@ -1,23 +1,27 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.04d
- *  
- *****************************************************************  
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
  *  mailto.php
  *  Sends e-mail to one or more addresses
  *  Originally written by Joe Chen
  *
  *************************************************************/
 
+
+
 // BUG: Mailing List displays entries without email addresses.
 
 
 require_once('.\Core.php');
-
+require_once ('.\lib\Templates\mail.Template.php');
 
 global $globalSqlLink, $globalUsers, $lang;
 
-
+$myTemplate = new mailTemplate();
 // ** CHECK FOR LOGIN **
 $globalUsers->checkForLogin('admin','user');
 
@@ -52,76 +56,26 @@ else {							// If there is no target e-mail in either, then we go to default ma
 }
 $body['FILE_MAILTO'] = FILE_MAILTO;
 $body['FILE_MAILSEND'] = FILE_MAILSEND;
+$body['userName'] = $_SESSION['username'];
 
 // ** RETRIEVE USER CONTACT INFORMATION **
 	$globalSqlLink->SelectQuery('email', TABLE_USERS, "username='". $_SESSION['username'] ."'", "LIMIT 1");
     $r_user = $globalSqlLink->FetchQueryResult();
 
-	$mail_from = $r_user['email'];
-	$SendMailButton = "Yes";
-	if(!$mail_from){
-		$mail_from = $lang['ERR_NO_EMAIL1']."<A HREF =\"".FILE_USERS."\"> ".$lang['ERR_NO_EMAIL2'];
-		$SendMailButton = "No";
+	$body['mail_from'] = $r_user['email'];
+	$body['SendMailButton'] = 1;//Yes
+	if(!$body['mail_from']){
+		$body['mail_from'] = $lang['ERR_NO_EMAIL1']."<A HREF =\"".FILE_USERS."\"> ".$lang['ERR_NO_EMAIL2'];
+		$body['SendMailButton'] = 0;//no
 	}
 
-    // webheader($lang['TAB']." - ".$lang['TITLE_OPT'], $lang['CHARSET'], 'mail.js' )
+
 
 // A function that sets up
 $options->setupAllGroups($body, $list);
 
+$output = webheader($lang['TAB']." - ".$lang['TITLE_OPT'], $lang['CHARSET'], 'mail.js' );
+$output .=$myTemplate->createMailToTemplate($body,$lang,$list);
 
-	// END, AND BEGIN COMMON STUFF
-?>				
-				<TR>
-					<TD WIDTH=200 CLASS="data"><H4>CC:</H4></TD>
-					<TD WIDTH=300 CLASS="data">
-					<INPUT TYPE="text" CLASS="formMailbox" VALUE="" NAME="mail_cc" SIZE=80><BR><BR>
-					</TD>
-				</TR>
-				<TR>
-					<TD WIDTH=200 CLASS="data"><H4>BCC:</H4></TD>
-					<TD WIDTH=300 CLASS="data">
-					<INPUT TYPE="text" CLASS="formMailbox" VALUE="" NAME="mail_bcc" SIZE=80><BR><BR>
-					</TD>
-				</TR>
+Display($output);
 
-				<TR><TD WIDTH=200 CLASS="data"><H4>From:</H4></TD>
-					<TD WIDTH=300 CLASS="data"><?php echo $_SESSION['username']; ?>
-					<INPUT TYPE="hidden"  VALUE="<?php echo $_SESSION['username'] ; ?>" NAME="mail_from_name" ><BR><BR>
-				</TD></TR>
-
-
-				<TR><TD WIDTH=200 CLASS="data"><H4>From Email:</H4></TD>
-					<TD  width="300" class="data"><?php echo$mail_from; ?></TD></TR>
-				<TR><TD WIDTH=200 CLASS="data"><H4><?php  echo $lang['MAIL_SUBJ']?>:</H4></TD>
-					<TD WIDTH=300 CLASS="data">
-					<INPUT TYPE="text" CLASS="formTextbox" VALUE="" NAME="mail_subject" SIZE=80><BR><BR>
-				</TD></TR>
-				<TR><TD WIDTH=200 CLASS="data"><H4><?php echo $lang['MAIL_MSG']?>:</H4></TD>
-					<TD WIDTH=300 CLASS="data">
-					<TEXTAREA CLASS="formTextarea" ROWS="20" COLS="75" NAME="mail_body"></TEXTAREA><BR><BR>
-				</TD></TR>
-				<TR><TD WIDTH=200 CLASS="data"></TD>
-					<TD WIDTH=300 CLASS="data">
-<?php
-//   If there is valid email in FROM, then send mail from to mailsend with other values and dispaly the send mail button. Value set above when contact info obtained
-if($SendMailButton == "Yes"){	
-echo " 					<INPUT TYPE=\"submit\" VALUE=\"".$lang['BTN_SEND']."\" NAME=\"sendEmail\" CLASS=\"formButton\"><BR>";
-echo"					<INPUT TYPE=\"hidden\"  VALUE=\"$mail_from\" NAME=\"mail_from\" ><BR><BR>";
-
-}  ?>
-				</TD></TR>
-				</FORM>
-			</TABLE>
-			</CENTER>
-			<BR>
-	    </TD>
-	</TR>
-<?php
-	printFooter();
-?>
-</TABLE>
-</CENTER>
-
-</BODY>
-</HTML>

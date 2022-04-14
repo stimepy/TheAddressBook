@@ -1,10 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Stimepy
- * Date: 4/17/2019
- * Time: 9:03 PM
- */
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
+ *  class.user.php
+ *  Stuff to do with users
+ *
+ *************************************************************/
 
 class users
 {
