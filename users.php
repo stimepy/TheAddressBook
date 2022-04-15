@@ -11,7 +11,7 @@
 
 
 	session_start();
-require_once('.\lib\Core.php');
+require_once('.\Core.php');
 
 
 global $globalSqlLink;
@@ -30,9 +30,9 @@ $globalUsers->checkForLogin();
 		case "adduser":
             $globalUsers->checkForLogin("admin");
 			// Perform checks and then add if things are OK
-			$newuserName = ;
+			$newuserName = "";
 			if ((!empty($_POST['newuserName'])) && (isAlphaNumeric($_POST['newuserName']))) {
-                $insert[username] = $_POST['newuserName']
+                $insert[username] = $_POST['newuserName'];
 				if ($_POST['newuserPass'] == $_POST['newuserConfirmPass']) {
                     $insert[password] = MD5($_POST['newuserPass']);
                     $insert[usertype] = $_POST['newuserType'];
@@ -196,7 +196,7 @@ $globalUsers->checkForLogin();
 	}
 if ($_SESSION['usertype'] == "admin") {
     $globalSqlLink->SelectQuery('*', TABLE_USERS, '', '');
-    $r_users = FetchQueryResult();
+    $r_users = $globalSqlLink->FetchQueryResult();
 }
 
 ?>
@@ -222,7 +222,7 @@ if ($_SESSION['usertype'] == "admin") {
 <CENTER>
 <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
 <TR align="right"><TD ><b><A HREF="<?php echo(FILE_LIST); ?>"><?php echo $lang['BTN_RETURN']?></A></b></TD> </TR>
- 	<TR><TD CLASS="headTitle"><?php echo $lang['LBL_USR_ACCT_SET']. " ".$lang['LBL_FOR']. " ".$_SESSION[username];?></TD> </TR>
+ 	<TR><TD CLASS="headTitle"><?php echo $lang['LBL_USR_ACCT_SET']. " ".$lang['LBL_FOR']. " ".$_SESSION['username'];?></TD> </TR>
 	<TR><TD CLASS="infoBox"> 
        <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=5 WIDTH=560>
 		<?php
@@ -346,8 +346,8 @@ if ($_SESSION['usertype'] == "admin") {
               <TD CLASS="data">
 <?php
 	// GET THE USER'S EMAIL ADDRESS
-    $globalSqlLink->SelectQuery('email', TABLE_USERS, "WHERE username='". $_SESSION['username']."'", '');
-    $r_user = FetchQueryResult();
+    $globalSqlLink->SelectQuery('email', TABLE_USERS, "username='". $_SESSION['username']."'", '');
+    $r_user =$globalSqlLink->FetchQueryResult();
 	//$r_user = mysql_fetch_array(mysql_query("SELECT email FROM " . TABLE_USERS . " AS users WHERE username='". $_SESSION['username'] ."' LIMIT 1", $db_link))
 	//	or die(reportSQLError());
 	$email = $r_user['email'];
@@ -384,7 +384,7 @@ if ($_SESSION['usertype'] == "admin") {
 			<TR VALIGN="top">
 			<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_BIRTHDAY_DISPLAY_LBL']?></B></TD>
 			<TD WIDTH=60 CLASS="data"><?php
-					if ($options->user_options['bdayDisplay'] == 1) {
+					if ($options->getbdayDisplay() == 1) {
 						$check = " CHECKED";
 					}
 					echo("<INPUT TYPE=\"checkbox\" NAME=\"bdayDisplay\" VALUE=\"1\"$check>");
@@ -398,7 +398,7 @@ if ($_SESSION['usertype'] == "admin") {
 			</TR>
 			<TR VALIGN="top">
 			<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_BIRTHDAY_DAYS_LBL']?></B></TD>
-			<TD WIDTH=60 CLASS="data"><INPUT TYPE="text" SIZE=3 STYLE="width:30px;" CLASS="formTextbox" NAME="bdayInterval" VALUE="<?php echo($options->user_options['bdayInterval']); ?>" MAXLENGTH=3></TD>
+			<TD WIDTH=60 CLASS="data"><INPUT TYPE="text" SIZE=3 STYLE="width:30px;" CLASS="formTextbox" NAME="bdayInterval" VALUE="<?php echo($options->bdayInterval()); ?>" MAXLENGTH=3></TD>
 			<TD WIDTH=300 CLASS="data">
 					<?php echo $lang['OPT_BIRTHDAY_DAYS_HELP']?><br><b>
 					<?php echo $lang['LBL_DEFAULT']?>:</B> </b> 21 <?php echo $lang['OPT_DAYS']?>
@@ -406,7 +406,7 @@ if ($_SESSION['usertype'] == "admin") {
 			<TR VALIGN="top">
 			<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_OPEN_POPUP_LBL']?></B></TD>
 			<TD WIDTH=60 CLASS="data"><?php
-					if ($options->user_options['displayAsPopup'] == 1) {
+					if ($options->getdisplayAsPopup() == 1) {
 						$check = " CHECKED";
 					}
 					echo("<INPUT TYPE=\"checkbox\" NAME=\"displayAsPopup\" VALUE=\"1\"$check>");
@@ -421,7 +421,7 @@ if ($_SESSION['usertype'] == "admin") {
 			<TR VALIGN="top">
 			<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_USE_MAIL_SCRIPT_LBL']?></B></TD>
 			<TD WIDTH=60 CLASS="data"><?php
-				if ($options->user_options['useMailScript'] == 1) {
+				if ($options->getuseMailScript() == 1) {
 						$check = " CHECKED";
 				}
 				echo("<INPUT TYPE=\"checkbox\" NAME=\"useMailScript\" VALUE=\"1\"$check>");
@@ -460,7 +460,7 @@ if ($_SESSION['usertype'] == "admin") {
 		if ($languagename[0] != "") {
 			// value used is the filename minus extension.
 			$filename = (explode(".", $files[$i]));
-    		echo("<option value=\"" . $filename[0] . "\"" . (($filename[0] == $options->language) ? " selected" : "") . ">" . $languagename[0] . "</option>\n");
+    		echo("<option value=\"" . $filename[0] . "\"" . (($filename[0] == $options->getlanguage()) ? " selected" : "") . ">" . $languagename[0] . "</option>\n");
 		}
 	}
 
@@ -471,7 +471,7 @@ if ($_SESSION['usertype'] == "admin") {
 			<BR><B><?php echo $lang['LBL_DEFAULT']?>:</B> english </TD></TR>	
 			
 		<?php /* $defaultLetter */ 
-			$abc=array(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z);
+			$abc=array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		?>
 		
 			<TR VALIGN="top">
@@ -483,7 +483,7 @@ if ($_SESSION['usertype'] == "admin") {
 		
 	foreach ($abc as $letter){
 		echo("						<OPTION VALUE=\"$letter\"");
-		if ($letter == $options->defaultLetter) {
+		if ($letter == $options->getdefaultLetter()) {
 			echo(" SELECTED");
 		}
 		echo(">$letter</OPTION>\n");
@@ -499,7 +499,7 @@ if ($_SESSION['usertype'] == "admin") {
 			<TR VALIGN="top">
 				<TD WIDTH=200 CLASS="data" ALIGN="right"><B><?php echo $lang['OPT_LIMIT_ENTRIES_LBL']?></B></TD>
 				<TD WIDTH=360 CLASS="data" COLSPAN=2>
-					<INPUT TYPE="text" NAME="limitEntries" VALUE="<?php echo $options->limitEntries ?>"
+					<INPUT TYPE="text" NAME="limitEntries" VALUE="<?php echo $options->getlimitEntries() ?>"
 					<?php echo $lang['OPT_LIMIT_ENTRIES_HELP']?>
 				</TD>
 			</TR>

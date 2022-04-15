@@ -9,19 +9,15 @@
 
 
 // ** GET CONFIGURATION DATA **
-require_once('.\lib\Core.php');
+require_once('.\Core.php');
 
-
-global $globalSqlLink;
-global $globalUsers;
+global $globalSqlLink, $globalUsers, $lang;
 
 $globalUsers->checkForLogin();
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
-	$options = new Options();
+$options = new Options();
 
-// ** CHECK FOR LOGIN **
-//	checkForLogin();
 
 ?>
 <HTML>
@@ -82,13 +78,13 @@ function saveEntry() {
 <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
   <TR>
     <TD CLASS="navMenu">
-      <A HREF="#edit"><?php echo $lang[BTN_EDIT]?></A>
-      <A HREF= "<?php echo FILE_LIST?>"><?php echo $lang[BTN_LIST]?></A>
+      <A HREF="#edit"><?php echo $lang['BTN_EDIT']?></A>
+      <A HREF= "<?php echo FILE_LIST?>"><?php echo $lang['BTN_LIST']?></A>
     </TD>
   </TR>
   <TR>
     <TD CLASS="headTitle">
-       <?php echo $lang[TITLE_SCRATCH]?>
+       <?php echo $lang['TITLE_SCRATCH']?>
     </TD>
   </TR>
   <TR>
@@ -97,7 +93,7 @@ function saveEntry() {
         <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=5 WIDTH=560>
            <TR VALIGN="top">
               <TD CLASS="data">
-                 <?php echo $lang[SCRATCH_HELP]?>
+                 <?php echo $lang['SCRATCH_HELP']?>
               </TD>
            </TR>
            <TR VALIGN="top">
@@ -121,7 +117,7 @@ function saveEntry() {
     // Determine the number of lines in the array
     //$z = 0;
     //while (each($displayArray)) {
-    $z=size_of($displayArray);
+    $z=sizeof($displayArray);
     //}
     reset($displayArray);
 
@@ -138,7 +134,7 @@ function saveEntry() {
            </TR>
                       
            <TR VALIGN="top">
-              <TD WIDTH=550 CLASS="listHeader"><A NAME="edit"></A><?php echo ucfirst($lang[BTN_EDIT])?></TD>
+              <TD WIDTH=550 CLASS="listHeader"><A NAME="edit"></A><?php echo ucfirst($lang['BTN_EDIT'])?></TD>
            </TR>
            <TR VALIGN="top">
               <TD WIDTH=550 CLASS="data">
@@ -162,8 +158,8 @@ function saveEntry() {
         <!-- There is no delete button -->
         <!-- later make it so link versions don't appear -->
       </NOSCRIPT>
-      <A HREF="#" onClick="saveEntry(); return false;"><?php echo $lang[BTN_SAVE]?></A>
-      <A HREF="<?php echo(FILE_LIST); ?>"><?php echo $lang[BTN_RETURN]?></A>
+      <A HREF="#" onClick="saveEntry(); return false;"><?php echo $lang['BTN_SAVE']?></A>
+      <A HREF="<?php echo(FILE_LIST); ?>"><?php echo $lang['BTN_RETURN']?></A>
               </TD>
            </TR>
 

@@ -1,177 +1,180 @@
-// QUERY
-$xmlCreator = new XMLWriter();
-
-$xmlCreator->startDocument(1.0,$lang['CHARSET']);
-echo "<?xml version=\"1.0\" encoding=\"".$lang['CHARSET']."\"?>\n\n";
-        echo "<rubrica>\n\n";
-        $globalSqlLink->SelectQuery('*',TABLE_CONTACT, NULL, NULL );
-        $r_contact = $globalSqlLink->FetchQueryResult();
-        foreach($r_contact as $tbl_contact ){
-            // while ($tbl_contact = mysql_fetch_array($r_contact)) {
-
-            # short id
-            $XID = $tbl_contact['id'];
-
-            echo "<CONTACT id=\"".$XID."\" update=\"".$tbl_contact['lastUpdate']."\">\n";
-
-            # personal data from TABLE_CONTACT
-            echo "<PERSONALDATA>\n";
-            echo "<firstname>".$tbl_contact['firstname']."</firstname>\n";
-            echo "<middlename>".$tbl_contact['middlename']."</middlename>\n";
-            echo "<lastname>".$tbl_contact['lastname']."</lastname>\n";
-            echo "<birthday>".$tbl_contact['birthday']."</birthday>\n";
-            echo "<nick>".$tbl_contact['nickname']."</nick>\n";
-            echo "<notes><![CDATA[\n".$tbl_contact['notes']."\n]]></notes>\n";
-            echo "</PERSONALDATA>\n";
-
-            # below this line you can move
-            # up or down section data
-
-            # ********************
-            # TABLE_EMAIL
-            # ********************
-            echo "<EMAIL>\n";
-            //$xmlMail = "SELECT * FROM ". TABLE_EMAIL . " WHERE id=$XID";
-            $globalSqlLink->SelectQuery('*',TABLE_EMAIL, "id=".$XID, NULL );
-            $r_mail = $globalSqlLink->FetchQueryResult();
-            //$r_mail = mysql_query($xmlMail, $db_link);
-            foreach( $r_mail as $tbl_mail){
-                //while ($tbl_mail = mysql_fetch_array($r_mail)) {
-                echo "<mail type=\"".$tbl_mail['type']."\">".$tbl_mail['email']."</mail>\n";
-            }
-
-            echo "</EMAIL>\n";
-            # ********************
-            # /END TABLE_EMAIL
-            # ********************
-
-            # ********************
-            # TABLE_ADDRESS
-            # ********************
-            echo "<ADDRESS>\n";
-
-            //$xmlAddr = "SELECT * FROM ". TABLE_ADDRESS . " WHERE id=$XID";
-            $globalSqlLink->SelectQuery('*',TABLE_ADDRESS, "id=".$XID, NULL );
-            $r_addr = $globalSqlLink->FetchQueryResult();
-            //$r_addr = mysql_query($xmlAddr, $db_link);
-            foreach($r_addr as $tbl_addr){
-                //while ($tbl_addr = mysql_fetch_array($r_addr)) {
-
-                echo "<address type=\"".$tbl_addr['type']."\">\n";
-                echo "<line1>".$tbl_addr['line1']."</line1>\n";
-                echo "<line2>".$tbl_addr['line2']."</line2>\n";
-                echo "<city>".$tbl_addr['city']."</city>\n";
-                echo "<state>".$tbl_addr['state']."</state>\n";
-                echo "<zip>".$tbl_addr['zip']."</zip>\n";
-
-                # TABLE_COUNTRY
-                $xmlCountry = $tbl_addr['country'];
-
-                echo "<country>".$country[$xmlCountry]."</country>\n";
-                echo "<phone1>".$tbl_addr['phone1']."</phone1>\n";
-                echo "<phone2>".$tbl_addr['phone2']."</phone2>\n";
-                echo "</address>\n";
-
-            }
-
-            echo "</ADDRESS>\n";
-            # ********************
-            # /END TABLE_ADDRESS
-            # ********************
-
-            # ********************
-            # TABLE_OTHERPHONE
-            # ********************
-            echo "<OTHER-PHONE>\n";
-            //$xmlPhone = "SELECT * FROM ". TABLE_OTHERPHONE . " WHERE id=$XID";
-            $globalSqlLink->SelectQuery('*',TABLE_OTHERPHONE, "id=".$XID, NULL );
-            $r_phone = $globalSqlLink->FetchQueryResult();
-            //$r_phone = mysql_query($xmlPhone, $db_link);
-
-            foreach($r_phone as $tbl_phone){
-                //while ($tbl_phone = mysql_fetch_array($r_phone)) {
-
-                echo "<phone type=\"".$tbl_phone['type']."\">".$tbl_phone['phone']."</phone>\n";
-
-            }
-
-            echo "</OTHER-PHONE>\n";
-            # ********************
-            # /END TABLE_OTHERPHONE
-            # ********************
-
-            # ********************
-            # TABLE_WEBSITES
-            # ********************
-            echo "<WEBSITES>\n";
-            $xmlWWW = "SELECT * FROM ". TABLE_WEBSITES . " WHERE id=$XID";
-            //$r_www = mysql_query($xmlWWW, $db_link);
-            $globalSqlLink->SelectQuery('*',TABLE_WEBSITES, "id=".$XID, NULL );
-            $r_www = $globalSqlLink->FetchQueryResult();
-
-            foreach($r_www as $tbl_www){
-                //while ($tbl_www = mysql_fetch_array($r_www)) {
-
-                echo "<www label=\"".$tbl_www['webpageName']."\">".$tbl_www['webpageURL']."</www>\n";
-
-            }
-
-            echo "</WEBSITES>\n";
-            # ********************
-            # /END TABLE_WEBSITES
-            # ********************
-
-            # ********************
-            # TABLE_ADDITIONALDATA
-            # ********************
-            echo "<ADDITIONAL-DATA>\n";
-            //$xmlData = "SELECT * FROM ". TABLE_ADDITIONALDATA . " WHERE id=$XID";
-            //$r_data = mysql_query($xmlData, $db_link);
-            $globalSqlLink->SelectQuery('*',TABLE_ADDITIONALDATA, "id=".$XID, NULL );
-            $r_data = $globalSqlLink->FetchQueryResult();
-            foreach($r_data as $tbl_data){
-                //while ($tbl_data = mysql_fetch_array($r_data)) {
-
-                echo "<data type=\"".$tbl_data['type']."\">".$tbl_data['value']."</data>\n";
-
-            }
-
-            echo "</ADDITIONAL-DATA>\n";
-            # ************************
-            # /END TABLE_ADDITIONALDATA
-            # ************************
-
-            # ********************
-            # GROUPS SUBSCRIPTIONS
-            # ********************
-            echo "<GROUPS>\n";
-            //$xmlGroups = "SELECT * FROM ". TABLE_GROUPS . " WHERE id=$XID";
-            //$r_groups = mysql_query($xmlGroups, $db_link);
-            $globalSqlLink->SelectQuery('*',TABLE_GROUPS, "id=".$XID, NULL );
-            $r_groups = $globalSqlLink->FetchQueryResult();
-            foreach($r_groups as $tbl_groups){
-                //while ($tbl_groups = mysql_fetch_array($r_groups)) {
-
-                # groups name
-                $xmlGN = "SELECT * FROM ". TABLE_GROUPLIST . " WHERE groupid=".$tbl_groups['groupid'];
-                //$r_gn = mysql_query($xmlGN, $db_link);
-                //$tbl_gn = mysql_fetch_array($r_gn);
-                $globalSqlLink->SelectQuery('*',TABLE_GROUPS, "groupid=".$tbl_groups['groupid'], NULL );
-                $tbl_gn = $globalSqlLink->FetchQueryResult();
-
-                echo "<group id=\"".$tbl_gn['groupid']."\" name=\"".$tbl_gn['groupname']."\"/>\n";
-
-            }
-
-            echo "</GROUPS>\n";
-            # ***********************
-            # /END GROUPS SUBSCRIPTION
-            # ***********************
-
-            #### do not move ########
-            echo "</CONTACT>\n\n";
-        }
-        ### close xmlQuery ######
+<?php
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.04
+ *
+ *  scratchpad.php
+ *  Temporary placeholder for notes and such.
+ *
+ *************************************************************/
 
 
-        echo "</rubrica>";
+// ** GET CONFIGURATION DATA **
+require_once('.\Core.php');
+
+
+global $globalSqlLink;
+global $globalUsers;
+
+$globalUsers->checkForLogin();
+
+// ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
+$options = new Options();
+
+
+?>
+<HTML>
+<HEAD>
+    <TITLE><?php echo "$lang[TITLE_TAB] - $lang[TITLE_SCRATCH]"?></TITLE>
+    <LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
+    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['CHARSET']?>">
+    <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+    <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+    <META HTTP-EQUIV="EXPIRES" CONTENT="-1">
+</HEAD>
+
+<BODY>
+
+<?php
+// CHECK TO SEE IF A FORM HAS BEEN SUBMITTED, AND SAVE THE SCRATCHPAD.
+if ($_POST['saveNotes'] == "YES") {
+
+    $notes = addslashes( trim($_POST['notes']) );
+
+    // UPDATES THE SCRATCHPAD TABLE
+    //$sql = "UPDATE ". TABLE_SCRATCHPAD ." SET notes='$notes'";
+    $globalSqlLink->UpdateQuery(array('notes'=> "'".$notes."'" ), TABLE_SCRATCHPAD, NULL);
+    //$update = mysql_query($sql, $db_link)
+    //	or die(reportSQLError($sql));
+
+    echo($lang[SCRATCH_SAVED]."\n");
+    /*
+            echo("<P><A HREF=\"" . FILE_LIST . "\"><B>Return to List</B></A>\n");
+            echo("</BODY>");
+            echo("</HTML>");
+            exit();
+    */
+}
+
+
+?>
+
+
+<SCRIPT LANGUAGE="JavaScript">
+    <!--
+
+    function saveEntry() {
+        //CONFIRMATION DISABLED.
+        //if (confirm('Are you sure you want to save?\nChanges cannot be undone.')) {
+        document.Scratchpad.submit();
+        //}
+    }
+
+    // -->
+</SCRIPT>
+
+
+<FORM NAME="Scratchpad" ACTION="<?php echo(FILE_SCRATCHPAD); ?>" METHOD="post">
+    <INPUT TYPE="hidden" NAME="saveNotes" VALUE="YES">
+
+    <CENTER>
+        <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
+            <TR>
+                <TD CLASS="navMenu">
+                    <A HREF="#edit"><?php echo $lang['BTN_EDIT']?></A>
+                    <A HREF= "<?php echo FILE_LIST?>"><?php echo $lang['BTN_LIST']?></A>
+                </TD>
+            </TR>
+            <TR>
+                <TD CLASS="headTitle">
+                    <?php echo $lang['TITLE_SCRATCH']?>
+                </TD>
+            </TR>
+            <TR>
+                <TD CLASS="infoBox">
+
+                    <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=5 WIDTH=560>
+                        <TR VALIGN="top">
+                            <TD CLASS="data">
+                                <?php echo $lang['SCRATCH_HELP']?>
+                            </TD>
+                        </TR>
+                        <TR VALIGN="top">
+                            <TD WIDTH=550 CLASS="listDivide">&nbsp;</TD>
+                        </TR>
+                        <TR VALIGN="top">
+                            <TD WIDTH=550 CLASS="data">
+                                <?php
+                                // DISPLAY CONTENTS OF SCRATCHPAD.
+
+                                // Retrieve data
+                                $globalSqlLink->SelectQuery('notes',TABLE_SCRATCHPAD, NULL, "limit 1" );
+                                $notes = $globalSqlLink->fetchQueryResult();
+                                //$notes = mysql_query("SELECT notes FROM " . TABLE_SCRATCHPAD . " LIMIT 1", $db_link);
+                                //$notes = mysql_fetch_array($notes);
+                                $notes = stripslashes( $notes["notes"] );
+
+                                // Split $notes into an array by newline character
+                                $displayArray = explode("\n",$notes);
+
+                                // Determine the number of lines in the array
+                                //$z = 0;
+                                //while (each($displayArray)) {
+                                $z=sizeof($displayArray);
+                                //}
+                                reset($displayArray);
+
+                                // Grab each line of the array and display it
+                                for ($a = 0; $a < $z; $a++) {
+                                    echo("<BR>$displayArray[$a]");
+                                }
+
+                                ?>
+                            </TD>
+                        </TR>
+                        <TR VALIGN="top">
+                            <TD WIDTH=550 CLASS="listDivide">&nbsp;</TD>
+                        </TR>
+
+                        <TR VALIGN="top">
+                            <TD WIDTH=550 CLASS="listHeader"><A NAME="edit"></A><?php echo ucfirst($lang['BTN_EDIT'])?></TD>
+                        </TR>
+                        <TR VALIGN="top">
+                            <TD WIDTH=550 CLASS="data">
+<TEXTAREA STYLE="width:530px;" ROWS=30 CLASS="formTextarea" NAME="notes" WRAP=off>
+<?php
+echo("$notes");
+?>
+</TEXTAREA>
+                            </TD>
+                        </TR>
+
+                        <TR VALIGN="top">
+                            <TD WIDTH=550 CLASS="listDivide">&nbsp;</TD>
+                        </TR>
+
+                        <TR VALIGN="top">
+                            <TD WIDTH=550 CLASS="navmenu">
+                                <NOSCRIPT>
+                                    <!-- Will display Form Submit buttons for browsers without Javascript -->
+                                    <INPUT TYPE="submit" VALUE="Save">
+                                    <!-- There is no delete button -->
+                                    <!-- later make it so link versions don't appear -->
+                                </NOSCRIPT>
+                                <A HREF="#" onClick="saveEntry(); return false;"><?php echo $lang['BTN_SAVE']?></A>
+                                <A HREF="<?php echo(FILE_LIST); ?>"><?php echo $lang['BTN_RETURN']?></A>
+                            </TD>
+                        </TR>
+
+
+                    </TABLE>
+
+                </TD>
+            </TR>
+        </TABLE>
+    </CENTER>
+
+</FORM>
+
+
+</BODY>
+</HTML>

@@ -21,8 +21,6 @@ global $globalUsers;
 
 $globalUsers->checkForLogin('admin');
 
-// ** OPEN CONNECTION TO THE DATABASE **
-    $db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
 // ** CHECK FOR LOGIN **
 	// checkForLogin("admin");  // How in the....
