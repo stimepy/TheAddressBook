@@ -156,7 +156,7 @@ function listbodystart($body, $list)
             $output .= "&nbsp;</TD>\n
                                <TD WIDTH=160 CLASS=\"listEntry\">";
             if ($tbl_contact['line1']) {
-               $output .= $listFunctions->buildcontact($tbl_contact);
+               $output .= $list->buildcontact($tbl_contact);
             }
             $output .= "&nbsp;</TD>\n";
             // DISPLAY E-MAILS
@@ -200,32 +200,7 @@ class listTemplateFunctions{
         return $output;
     }
 
-    function buildcontact($tbl_contact){
-        global $country;
-                $output = $tbl_contact['line1']."<br />";
-            if ($tbl_contact['line2']) {
-                $output .= $tbl_contact['line2']."<br />";
-            }
-            if ($tbl_contact['city'] || $tbl_contact['state']) {
-                if($tbl_contact['city'] && $tbl_contact['state']) {
-                    $output .= $tbl_contact['city'] . ", " . $tbl_contact['state'];
-                }
-                else if($tbl_contact['city']){
-                    $output .=  $tbl_contact['city'];
-                }
-                else if($tbl_contact['state']){
-                    $output .= $tbl_contact['state'];
-                }
-            }
-            if ($tbl_contact['zip']) {
-                $output .= " ".$tbl_contact['zip'];
-            }
-            if ($tbl_contact['country']) {
-                $output .= "\n<br />" . $country[$tbl_contact['country']];
-            }
-            return $output;
 
-    }
 
 
 }

@@ -193,7 +193,7 @@ class optionTemplate
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_LANGUAGE_LBL']."</b></TD>
 				<TD WIDTH=360 CLASS=\"data\" COLSPAN=2>
 				<SELECT NAME=\"language\" CLASS=\"formSelect\" STYLE=\"width:160px;\">";
-        $output .= $this->createLanguage($body['r_language']);
+        $output .= $option->createLanguage($body['r_language']);
         $output .= "            </SELECT> 
 					<br>".$lang['OPT_LANGUAGE_HELP']."
 					<br><b>".$lang['LBL_DEFAULT'].":</b> english
@@ -203,7 +203,7 @@ class optionTemplate
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_VIEW_LTR_LABEL']."</b></TD>
 				<TD WIDTH=360 CLASS=\"data\" COLSPAN=2>
 					<SELECT NAME=\"defaultLetter\" CLASS=\"formSelect\" STYLE=\"width:160px;\">";
-        $output .= $this->alphabetSoup($option->getdefaultLetter());
+        $output .= $option->alphabetSoup($option->getdefaultLetter());
         $output .= "					</SELECT>
 					".$lang['OPT_VIEW_LTR_HELP']."
 				</TD>
@@ -243,30 +243,9 @@ class optionTemplate
     }
 
 
-    private function alphabetSoup($defaultLetter){
-        $abc=array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z");
-        $checked = "";
-        if(!isset($defaultLetter)){
-            $checked = "selected";
-        }
-        $output = "<OPTION VALUE=\"0\" ". $checked .">(off)</OPTION>";
-	    foreach ($abc as $letter){
-            $checked = "";
-            if ($letter == $defaultLetter) {
-                $checked = "SELECTED";
-            }
-            $output .= "<OPTION VALUE=\"$letter\" ".$checked.">$letter</OPTION>\n";
-        }
-        return $output;
-    }
 
 
-    private function createLanguage($language){
-        $output ="";
-        foreach ($language as $langpick){
-            $output .="<option value=\"" . $langpick['filename'] . "\"". (($langpick['defaultLang'] == 1 ) ? " selected" : "") .">". $langpick['fileLanguage'] ."</option>\n";
-        }
-        return $output;
-    }
+
+
 
 }

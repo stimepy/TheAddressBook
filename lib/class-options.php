@@ -374,9 +374,34 @@ class Options {
         $body['G_count'] = $x;
     }
 
+    private function AlhpabetArray(){
+        Return array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z");
+    }
 
+    function createLanguage($language){
+        $output ="";
+        foreach ($language as $langpick){
+            $output .="<option value=\"" . $langpick['filename'] . "\"". (($langpick['defaultLang'] == 1 ) ? " selected" : "") .">". $langpick['fileLanguage'] ."</option>\n";
+        }
+        return $output;
+    }
 
-	
-// END Options
+    function alphabetSoup($defaultLetter){
+        $abc=$this->AlhpabetArray();
+        $checked = "";
+        if(!isset($defaultLetter)){
+            $checked = "selected";
+        }
+        $output = "<OPTION VALUE=\"0\" ". $checked .">(off)</OPTION>";
+        foreach ($abc as $letter){
+            $checked = "";
+            if ($letter == $defaultLetter) {
+                $checked = "SELECTED";
+            }
+            $output .= "<OPTION VALUE=\"$letter\" ".$checked.">$letter</OPTION>\n";
+        }
+        return $output;
+    }
+
 }
 

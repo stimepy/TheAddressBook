@@ -60,6 +60,7 @@ function birthdaylist($body){
 }
 
 function outputloop($item){
+    if(empty($item)){return "";}
     $maxx = count($item);
     $x = 0;
     $text = '';

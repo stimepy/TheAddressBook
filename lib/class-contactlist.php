@@ -312,6 +312,34 @@ class ContactList {
 
     }
 
+    //deprecated going to list.... ?
+    function buildcontact($tbl_contact){
+        global $country;
+        $output = $tbl_contact['line1']."<br />";
+        if ($tbl_contact['line2']) {
+            $output .= $tbl_contact['line2']."<br />";
+        }
+        if ($tbl_contact['city'] || $tbl_contact['state']) {
+            if($tbl_contact['city'] && $tbl_contact['state']) {
+                $output .= $tbl_contact['city'] . ", " . $tbl_contact['state'];
+            }
+            else if($tbl_contact['city']){
+                $output .=  $tbl_contact['city'];
+            }
+            else if($tbl_contact['state']){
+                $output .= $tbl_contact['state'];
+            }
+        }
+        if ($tbl_contact['zip']) {
+            $output .= " ".$tbl_contact['zip'];
+        }
+        if ($tbl_contact['country']) {
+            $output .= "\n<br />" . $country[$tbl_contact['country']];
+        }
+        return $output;
+
+    }
+
 
 }
 // END ContactList

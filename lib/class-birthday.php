@@ -47,9 +47,10 @@ class Birthday
         $r_bday = $this->getBirthdayData($options->bdayInterval());
         $body['langbirth'] = $lang['BIRTHDAY_UPCOMING1'] . $options->bdayInterval() . $lang['BIRTHDAY_UPCOMING2'];
         $x = 0;
-
-        foreach ($r_bday as $tbl_birthday) {
-           $this-> fillInBirthday($tbl_birthday, $options, $lang, $file_address, $x,$body);
+        if($r_bday != -1) {
+            foreach ($r_bday as $tbl_birthday) {
+                $this->fillInBirthday($tbl_birthday, $options, $lang, $file_address, $x, $body);
+            }
         }
 
     }

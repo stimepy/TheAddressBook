@@ -31,7 +31,7 @@ define('FILE_CELL', 'cell.' . $php_ext);
 define('FILE_CLASS_CONTACTLIST', 'lib/class-contactlist.' . $php_ext);
 define('FILE_CLASS_OPTIONS', 'lib/class-options.' . $php_ext);
 define('FILE_CLASS_BIRTHDAY', 'lib/class-birthday.' . $php_ext);
-define('FILE_CLASSES', 'classes.' . $php_ext); // temporary
+// define('FILE_CLASSES', './lib/classes.' . $php_ext); // temporary
 define('FILE_CONFIG', 'config.' . $php_ext);
 define('FILE_EDIT', 'edit.' . $php_ext);
 define('FILE_EXPORT', 'export.' . $php_ext);

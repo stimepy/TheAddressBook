@@ -126,22 +126,11 @@ function check_id() {
 
 	// Get 'id' if passed through GET/POST
 	$id = (integer) $_REQUEST['id'];
-
 	// Check if anything was given for ID
 	if (empty($id)) {
 		reportScriptError("<b>invalid entry ID</b>");
 		exit();
 	}
-	
-	// Check to see if contact exists
-	//$exists = mysql_num_rows(mysql_query("SELECT id FROM " . TABLE_CONTACT . " WHERE id=$id LIMIT 1", $db_link));
-    $globalSqlLink->SelectQuery('id', TABLE_CONTACT, "WHERE id=".$id);
-    $results = $globalSqlLink->FetchQueryResult();
-	if ($globalSqlLink->GetRowCount() != 1) {
-		reportScriptError("<b>no entry by that id</b>");
-		exit();
-	}	
-	
 	// Return id
 	return $id;
 

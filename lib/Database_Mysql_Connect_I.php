@@ -103,9 +103,9 @@ class Mysql_Connect_I
             die(reportScriptError("<B>Unable to locate the database.</B> Please double check <I>config.php</I> to make sure the <I>\$db_name</I> variable is set correctly."));
         }
     }
-// end
 
-    public Function SelectQuery($select, $table, $where, $orderby)
+
+    public Function SelectQuery($select, $table, $where, $orderby = null)
     {
         $query = $this->buildquery($select, $table, $where, $orderby, 'SELECT');
         if($query == -1){
