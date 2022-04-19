@@ -7,6 +7,8 @@ or help out, please feel free.
 
 
 Current Plan: 
-Update to use SQLi  - Inprogress
-Remove any deprecated PHP code.    - Inprogress
-More to come?
+Update to use SQLi  - Complete
+Remove any deprecated PHP code.    - complete
+Update to html 5        - Inproogress
+
+Release  - Sure.  Why not?

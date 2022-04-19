@@ -87,7 +87,7 @@ global $globalSqlLink, $globalUsers, $lang;
     $body['LBL_PASSWORD'] = $lang['LBL_PASSWORD'];
     $body['BTN_LOGIN'] = $lang['BTN_LOGIN'];
 
-	if ($options->geta1llowUserReg() == 1) {
+	if ($options->getallowUserReg() == 0) {
 	    $body['MSG_REGISTER_LOST'] = "<p><A HREF=\"" .FILE_INDEX. "?mode=register\">". $lang[MSG_REGISTER_LOST] ."</A></p>";
 	}
 	else{

@@ -1,6 +1,5 @@
 Get the entire thing running
-	Pages can be views
-	Saving/Updating
+	Saving/Updating  - Get composer loaded in.
 bring html into the modren html 5 era
 Flush out a contact class
 Define what the CSV actually Needs!

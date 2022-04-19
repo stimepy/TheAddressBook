@@ -59,7 +59,7 @@ define('PATH_LANGUAGES', 'languages/');
 
 
 // DEFINE WEBSITES
-define('URL_HOMEPAGE', 'http://www.corvalis.net/address/');
+define('URL_HOMEPAGE', https//aodhome.com) //  'http://www.corvalis.net/address/');
 // http://www.corvalis.net/phpBB2/
 define('URL_SOURCEFORGE', 'http://sourceforge.net/projects/theaddressbook/');
 
