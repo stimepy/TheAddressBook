@@ -129,7 +129,7 @@ $contact = new ContactInformation(check_id());
     $r_email = $list->getEmailsByContactId($contact->getid());
     $emlcnt = 0;
 	if ($r_email != -1) {
-		echo("<P>\n<B>$lang[LBL_EMAIL]</B>\n");
+
         $body["emails"][$emlcnt] ="";
 		foreach( $r_email as $tbl_email){
             $body["emails"][$emlcnt] .= $list->createEmail($options->getuseMailScript(), hasValueOrBlank($tbl_email['email'] ));
@@ -248,7 +248,7 @@ $contact = new ContactInformation(check_id());
     $body['lastUpdatetxt'] = $lang['LAST_UPDATE'];
     $body['lastupdate'] = $contact->getlast_update();
 
-    $output .=  addressBodyStart($body);
+    $output .=  addressBodyStart($body, $lang);
     display($output);
 
 

@@ -16,15 +16,16 @@
 error_reporting (E_ALL);
 
 // ** GET CONFIGURATION DATA **
+
 require_once('constants.inc');
 require_once(FILE_FUNCTIONS);
 require_once(FILE_CLASS_OPTIONS);
 require_once(FILE_CLASS_CONTACTLIST);
-// require_once(FILE_CLASSES);
+require_once(FILE_CLASSES);
 require_once(FILE_CONFIG);
 require_once (FILE_FUNCTIONS);
 
-require_once(FILE_LIB_MAIL);
+// require_once(FILE_LIB_MAIL);
 require_once('./lib/Templates/Common.Template.php');
 
 // Note: That is not appropriate.  Must move to individual calls.

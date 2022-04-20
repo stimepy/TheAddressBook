@@ -83,10 +83,10 @@ class users
         $t_getUser = $globalSqlLink->FetchQueryResult();
 
         // THE USERNAME IS FOUND AND ACCOUNT IS CONFIRMED
-        if (($globalSqlLink->GetRowCount() != 0) && ($t_getUser['is_confirmed'] == 1)) {
+        if (($globalSqlLink->GetRowCount() != 0) && ($t_getUser[0]['is_confirmed'] == 1)) {
             // REGISTER SESSION VARIABLES
-            $_SESSION['username'] = $t_getUser['username'];
-            $_SESSION['usertype'] = $t_getUser['usertype'];
+            $_SESSION['username'] = $t_getUser[0]['username'];
+            $_SESSION['usertype'] = $t_getUser[0]['usertype'];
             if (!isset($_SESSION['abspath'])) {
                 $_SESSION['abspath'] = dirname($_SERVER['SCRIPT_FILENAME']);
             }
@@ -96,7 +96,7 @@ class users
         }
 
         // ACCOUNT MUST BE CONFIRMED
-        elseif (($globalSqlLink->GetRowCount() != 0) && ($t_getUser['is_confirmed'] != 1)) {
+        elseif (($globalSqlLink->GetRowCount() != 0) && ($t_getUser[0]['is_confirmed'] != 1)) {
             // END SESSION
             session_destroy();
             // PRINT ERROR MESSAGE AND LOGIN SCREEN

@@ -23,7 +23,7 @@ $php_ext = "php";
 error_reporting (E_ALL ^ E_NOTICE); 
 
 // DEFINE VERSION NUMBER
-define('VERSION_NO', '1.04e');
+define('VERSION_NO', '1.2');
 
 // DEFINE FILE NAMES
 define('FILE_ADDRESS', 'address.' . $php_ext);
@@ -31,15 +31,14 @@ define('FILE_CELL', 'cell.' . $php_ext);
 define('FILE_CLASS_CONTACTLIST', 'lib/class-contactlist.' . $php_ext);
 define('FILE_CLASS_OPTIONS', 'lib/class-options.' . $php_ext);
 define('FILE_CLASS_BIRTHDAY', 'lib/class-birthday.' . $php_ext);
-// define('FILE_CLASSES', './lib/classes.' . $php_ext); // temporary
+define('FILE_CLASSES', './lib/ContactInformation.' . $php_ext); // temporary
 define('FILE_CONFIG', 'config.' . $php_ext);
 define('FILE_EDIT', 'edit.' . $php_ext);
 define('FILE_EXPORT', 'export.' . $php_ext);
 define('FILE_FUNCTIONS', './lib/functions.' . $php_ext);
 define('FILE_GROUPS', 'groups.' . $php_ext);
 define('FILE_INDEX', 'index.' . $php_ext);
-define('FILE_INSTALL', 'install.' . $php_ext);
-define('FILE_LIB_MAIL', 'lib/phpmailer/class.phpmailer.' . $php_ext);
+// define('FILE_LIB_MAIL', 'lib/phpmailer/class.phpmailer.' . $php_ext);
 define('FILE_LIB_UPLOAD', 'lib/fileupload-class.' . $php_ext);
 define('FILE_LIB_USER', 'lib/userfunctions.' . $php_ext);
 define('FILE_LIST', 'list.' . $php_ext);
@@ -59,9 +58,9 @@ define('PATH_LANGUAGES', 'languages/');
 
 
 // DEFINE WEBSITES
-define('URL_HOMEPAGE', https//aodhome.com) //  'http://www.corvalis.net/address/');
+define('URL_HOMEPAGE', 'https//aodhome.com'); //  );
 // http://www.corvalis.net/phpBB2/
-define('URL_SOURCEFORGE', 'http://sourceforge.net/projects/theaddressbook/');
+define('URL_SOURCEFORGE', 'https://github.com/stimepy/TheAddressBook/');
 
 // DEFINE USER CAPABILITIES (bitmap)
 // -- Originally by Joe Chen

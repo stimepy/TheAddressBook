@@ -128,8 +128,7 @@ function check_id() {
 	$id = (integer) $_REQUEST['id'];
 	// Check if anything was given for ID
 	if (empty($id)) {
-		reportScriptError("<b>invalid entry ID</b>");
-		exit();
+		die('<b>invalid entry ID</b>');
 	}
 	// Return id
 	return $id;
@@ -160,7 +159,7 @@ function isAlphaNumeric($string) {
 
 
 
-//
+// Deprcated  2022
 // SCRIPT ERROR MESSAGE - reportScriptError();
 // If an error is encountered, report it to the user and halt further execution of script.
 //

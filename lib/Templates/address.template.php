@@ -10,7 +10,7 @@
  *
  *************************************************************/
 
-function addressBodyStart($body)
+function addressBodyStart($body, $lang)
 {
     $output = "
    <BODY>
@@ -67,8 +67,8 @@ function addressBodyStart($body)
 
     $output .="</p>
 `              </TD>
-               <td WIDTH=". $body['tableColumnWidth'] ." CLASS=\"data\">";
-
+               <td WIDTH=". $body['tableColumnWidth'] ." CLASS=\"data\">
+                <P>\n<B>". $lang['LBL_EMAIL']."</B>\n";
     $output .=outputloop($body['addreemailsses']);
     $output .=outputloop($body["otherphonecnt"]);
     $output .=outputloop($body['message']);
@@ -77,7 +77,7 @@ function addressBodyStart($body)
 		<TR>
 		    <TD COLSPAN=". $body['tableColumnAmt2'] ."  CLASS=\"data\">
                  <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=540>
-                   ". $body["birthday"] ."bob";
+                   ". $body["birthday"];
      $output .= outputloop($body['additional']);
      $output .= outputloop( $body['Websites']);
 
