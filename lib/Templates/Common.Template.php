@@ -3,7 +3,7 @@
  *  THE ADDRESS BOOK  :  version 1.2
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-13-2022
+ * Last Modified: 4-23-2022
  ****************************************************************
  *  Common.Template.php
  *  Common use HTML template
@@ -12,14 +12,11 @@
 
 function webheader($title, $language, $javascriptfile = -1){
 
-    $output =" <HTML>
+    $output ="<html>
         <head>
-            <TITLE> $title </TITLE>
+            <title> $title </title>
             <link rel=\"stylesheet\" href=\"./lib/Stylesheet/styles.css\">            
-              <META HTTP-EQUIV=\"CACHE-CONTROL\" CONTENT=\"NO-CACHE\">
-            <META HTTP-EQUIV=\"PRAGMA\" CONTENT=\"NO-CACHE\">
-            <META HTTP-EQUIV=\"EXPIRES\" CONTENT=\"-1\">
-            <META http-equiv=\"Content-Type\" content=\"text/html; charset=$language\">";
+            <meta http-equiv=\"content-type\" content=\"text/html; charset=$language\">";
     if($javascriptfile != -1){
         $output .="            <script src=\"./lib/Javascript/".$javascriptfile."\"></script>";
     }
@@ -39,22 +36,22 @@ function printFooter() {
 
     return "  <tr>
         <td CLASS=\"data\" align =\"center\">
-            <br /><br /><b>". $lang['TITLE_TAB'] . "</b> " . $lang['FOOTER_VERSION'] ." ". VERSION_NO. " | <a HREF=\"" . URL_HOMEPAGE . "\" TARGET=\"_blank\">" . $lang['FOOTER_HOMEPAGE_LINK'] . "</a> | <a HREF=\"" . URL_SOURCEFORGE . "\" TARGET=\"_blank\">". $lang['FOOTER_SOURCEFORGE_LINK'] ."</a>
+            <br /><br /><b>". $lang['TITLE_TAB'] . "</b> " . $lang['FOOTER_VERSION'] ." ". VERSION_NO. " | <a href=\"" . URL_HOMEPAGE . "\" target=\"_blank\">" . $lang['FOOTER_HOMEPAGE_LINK'] . "</a> | <a href=\"" . URL_SOURCEFORGE . "\" target=\"_blank\">". $lang['FOOTER_SOURCEFORGE_LINK'] ."</a>
             <br />" . $lang['FOOTER_COPYRIGHT'] . "<br />
         </td>
     </tr>";
 }
-// end
+
 
 function birthdaylist($body){
-    $output = "                <TABLE WIDTH=\"100%\" BORDER=0 CELLPADDING=0 CELLSPACING=0>
+    $output = "                <table WIDTH=\"100%\" BORDER=0 CELLPADDING=0 CELLSPACING=0>
                       <tr>
-                        <td CLASS=\"headText\" COLSPAN=3> 
+                        <td class=\"headTextcspan3\"> 
                             ". $body['langbirth'] ."
                         </td>
                       </tr>";
     $output .=outputloop($body['bithinfo']);
-    $output .="                </TABLE>";
+    $output .="                </table>";
 
 
 }
@@ -77,16 +74,15 @@ function Display($input){
 }
 
 function createTextArea($width, $rows, $title, $data, $wrap = 'off'){
-    $output = "<TEXTAREA STYLE=\"width:".$width."px;\" ROWS=".$rows." CLASS=\"formTextarea\" NAME=\"".$title."\" WRAP=".$wrap.">";
+    $output = "<textarea style=\"width:".$width."px;\" rows=".$rows." class=\"formTextarea\" name=\"".$title."\" wrap=".$wrap.">";
     if(is_array($data)){
         $output.= outputloop($data);
     }
     else{
         $output.= $data;
     }
-    $output .= "</TEXTAREA>";
+    $output .= "</textarea>";
     return $output;
-
 }
 
 function hasValueOrBlank($value){
@@ -103,14 +99,14 @@ function sortandSetCountry($country){
 }
 
 function errorPleaseclicktoTeturn($errorMessage){
-        return "<BODY>
-                <P><B>".$errorMessage."<A HREF=\"".FILE_LIST."\">Click here to return.</A>
-                </BODY>
-                </HTML>";
+        return "<body>
+                <p><b>".$errorMessage."<a href=\"".FILE_LIST."\">Click here to return.</b></a></p>
+                </body>
+                </html>";
 }
 
 function createGroupOptions($body, $lang){
-    $output = $lang['GROUP_SELECT'] ."<SELECT NAME=\"groupid\" CLASS=\"formSelect\" onChange=\"document.selectGroup.submit();\">";
+    $output = $lang['GROUP_SELECT'] ."<select name=\"groupid\" class=\"formSelect\" onChange=\"document.selectGroup.submit();\">";
     for ($groupcount = 0; $groupcount < $body['G_count']; $groupcount++) {
         $sel = "";
         $group = $body['G_' . $groupcount];
@@ -119,9 +115,9 @@ function createGroupOptions($body, $lang){
            $sel = "Selected";
         }
 
-        $output .= "                       <OPTION VALUE=" . $group['groupid'] . " " . $sel . ">" . $group['groupname'] . "</OPTION>\n";
+        $output .= "                       <option value=" . $group['groupid'] . " " . $sel . ">" . $group['groupname'] . "</option>\n";
     }
-    $output .= "</SELECT>";
+    $output .= "</select>";
     return $output;
 }
 

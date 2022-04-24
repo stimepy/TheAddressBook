@@ -13,7 +13,7 @@
 
 // ** GET CONFIGURATION DATA **
 
-require_once('.\lib\Core.php');
+require_once('.\Core.php');
 
 
 global $globalSqlLink;
@@ -103,7 +103,7 @@ $globalUsers->checkForLogin('admin');
 <HTML>
 <HEAD>
 	<TITLE>Address Book - Edit Group</TITLE>
-	<LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
+	<LINK REL="stylesheet" HREF="../lib/Stylesheet/styles.css" TYPE="text/css">
 	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="EXPIRES" CONTENT="-1">
@@ -361,7 +361,7 @@ $globalUsers->checkForLogin('admin');
 <HTML>
 <HEAD>
 	<TITLE>Address Book - Manage Groups</TITLE>
-	<LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
+	<LINK REL="stylesheet" HREF="../lib/Stylesheet/styles.css" TYPE="text/css">
 	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="EXPIRES" CONTENT="-1">
@@ -408,12 +408,14 @@ $globalUsers->checkForLogin('admin');
 	//			 WHERE grouplist.groupid >= 3
 	//			 ORDER BY groupname";
 	//$r_grouplist = mysql_query($groupsql, $db_link);
+    if($r_grouplist !=-1){
     foreach($r_grouplist as $tbl_grouplist){
 	//while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
 		$group_id = $tbl_grouplist['groupid'];
 		$group_name = $tbl_grouplist['groupname'];
 		echo("<INPUT TYPE=\"checkbox\" NAME=\"groups[]\" VALUE=\"$group_id\"><B>$group_name</B>\n<BR>");
 	}
+    }
 
 ?>
 			  </TD>

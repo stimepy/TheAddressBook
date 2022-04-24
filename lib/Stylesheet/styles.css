@@ -1,120 +1,152 @@
-BODY				{	background-color: #FFFFFF;
-						color: #000000;
-						font-family: Tahoma, sans-serif;
-						font-size: 11px;
-						font-weight: normal;
-					}
-A					{	font-family: Tahoma, sans-serif;
-						font-size: 11px;
-						font-weight: none;
-						color: #0066CC;
-						text-decoration: none;
-					}
-A.group				{	color: #FFFFFF;
-					}
-A:hover				{	text-decoration: underline;
-					}
-.navMenu			{	font-family: Tahoma, sans-serif;
-						font-size: 11px;
-						font-weight: bold;
-						color: #0088EE;
-						text-align: right;
-						padding-bottom: 3px;
-					}
-.headTitle			{	background-color: #000000;
-						color: #FFFFFF;
-						font-family: Tahoma, sans-serif;
-						font-size: 20px;
-						font-weight: bold;
-						border: 3px solid #000000;
-					}
-.headText			{	background-color: #000000;
-						color: #FFFFFF;
-						font-family: Tahoma, sans-serif;
-						font-size: 11px;
-						font-weight: bold;
-						border: 3px solid #000000;
-					}
-.infoBox			{	font-family: Tahoma, sans-serif;
-						font-size: 11px;
-						font-weight: normal;
-						color: #000000;
-						border: 1px solid #000000;
-					}
-.data				{	font-family: Tahoma, sans-serif;
-						font-size: 11px;
-						font-weight: normal;
-						color: #000000;
-						vertical-align: top; 
-					}
-.update				{	font-family: Tahoma, sans-serif;
-						font-size: 9px;
-						font-weight: normal;
-						color: #000000;
-					}
-.listEntry			{	font-family: Tahoma, sans-serif;
+BODY{
+	background-color: #FFFFFF;
+	color: #000000;
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+}
+
+A{
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: none;
+	color: #0066CC;
+	text-decoration: none;
+}
+A.group{
+	color: #FFFFFF;
+}
+A:hover{
+	text-decoration: underline;
+}
+.navMenu{
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #0088EE;
+	text-align: right;
+	padding-bottom: 3px;
+}
+.headTitle{
+	background-color: #000000;
+	color: #FFFFFF;
+	font-family: Tahoma, sans-serif;
+	font-size: 20px;
+	font-weight: bold;
+	border: 3px solid #000000;
+}
+.headText{
+	background-color: #000000;
+	color: #FFFFFF;
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	border: 3px solid #000000;
+}
+.headTextcspan3
+{
+	background-color: #000000;
+	color: #FFFFFF;
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	border: 3px solid #000000;
+	column-span: 3;
+}
+.infoBox{
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	border: 1px solid #000000;
+}
+.data{
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	vertical-align: top;
+	text-align: center;
+}
 
 
-						font-size: 11px;
-						font-weight: normal;
-						color: #000000;
-						border-bottom: 1px solid #AAAAAA;
-						padding-top: 2px;
-						padding-bottom: 2px;
-					}
-.listHeader			{	font-family: Tahoma, sans-serif;
-						font-size: 14pt;
-						font-weight: bold;
-						color: #000000;
-						border-bottom: 1px solid #AAAAAA;
-						padding-top: 10px;
-						padding-bottom: 2px;
-                    }
-.listDivide			{	font-family: Tahoma, sans-serif;
-						font-size: 1px;
-						color: #FFFFFF;
-						border-bottom: 1px solid #AAAAAA;
-					}
-.formMailbox		{	font-family: Tahoma, sans-serif;
-						font-size: 11px;
-						font-weight: normal;
-						color: #000000;
-						width: 250px;
-					}					
-.formTextbox		{	font-family: Tahoma, sans-serif;
-						font-size: 11px;
-						font-weight: normal;
-						color: #000000;
-						width: 150px;
-					}
-.formTextarea		{	font-family: Tahoma, sans-serif;
-						font-size: 11px;
-						font-weight: normal;
-						color: #000000;
-						overflow: auto;
-					}
-.formSelect			{	font-family: Tahoma, sans-serif;
-						font-size: 11px;
-						font-weight: normal;
-						color: #000000;
-					}
-.formButton			{	font-family: Tahoma, sans-serif;
-						font-size: 11px;
-						font-weight: bold;
-						color: #0066CC;
-						background: #FFFFFF;
-						border: 1px;
-						border-color: #CCCCCC;
-						text-decoration: none;
-					}
-.formButton:hover	{	background: #EEEEEE;
-					}
+.update{
+	font-family: Tahoma, sans-serif;
+	font-size: 9px;
+	font-weight: normal;
+	color: #000000;
+}
+.listEntry{
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	border-bottom: 1px solid #AAAAAA;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.listHeader{
+	font-family: Tahoma, sans-serif;
+	font-size: 14pt;
+	font-weight: bold;
+	color: #000000;
+	border-bottom: 1px solid #AAAAAA;
+	padding-top: 10px;
+	padding-bottom: 2px;
+}
+.listDivide			{
+	font-family: Tahoma, sans-serif;
+	font-size: 1px;
+	color: #FFFFFF;
+	border-bottom: 1px solid #AAAAAA;
+}
+.formMailbox{
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	width: 250px;
+}
+.formTextbox{
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	width: 150px;
+}
+.formTextarea{
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+	overflow: auto;
+}
+.formSelect{
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #000000;
+}
+.formButton{
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+	font-weight: bold;
+	color: #0066CC;
+	background: #FFFFFF;
+	border: 1px;
+	border-color: #CCCCCC;
+	text-decoration: none;
+}
+.formButton:hover	{
+	background: #EEEEEE;
+}
 
-.error				{	background-color: #DDDDDD;
-						border: 1px solid #333333;
-						margin-left: 20px;
-						padding: 10px;
-						width: 400px;
-						font-family: Tahoma, sans-serif;
-						font-size: 11px;
-					}
+.error{
+	background-color: #DDDDDD;
+	border: 1px solid #333333;
+	margin-left: 20px;
+	padding: 10px;
+	width: 400px;
+	font-family: Tahoma, sans-serif;
+	font-size: 11px;
+}
