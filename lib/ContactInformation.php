@@ -29,6 +29,7 @@ class ContactInformation {
     private $hidden;
     private $who_added;
     private $previousID;
+    private $nextID;
     private $currentID;
     private $fullname;
 
@@ -43,36 +44,45 @@ class ContactInformation {
         $contact = $globalSqlLink->FetchQueryResult();
 
         // Fill in variables from database
-        $this->firstname        = hasValueOrBlank( $contact[0]['firstname'] );
-        $this->lastname         = hasValueOrBlank( $contact[0]['lastname'] );
-        $this->middlename       = hasValueOrBlank( $contact[0]['middlename'] );
-        $this->primary_address  = hasValueOrBlank( $contact[0]['primaryAddress'] );
-        $this->birthday         = $contact[0]['birthday'];
-        $this->nickname         = hasValueOrBlank( $contact[0]['nickname'] );
-        $this->picture_url      = hasValueOrBlank( $contact[0]['pictureURL'] );
-        $this->notes            = hasValueOrBlank( nl2br( $contact[0]['notes'] ));
-        $this->last_update      = new DateTime( $contact[0]['lastUpdate']);   //  );
-        $this->hidden           = $contact[0]['hidden'];
-        $this->who_added        = hasValueOrBlank( $contact[0]['whoAdded'] );
+        $this->firstname        = hasValueOrBlank( $contact['firstname'] );
+        $this->lastname         = hasValueOrBlank( $contact['lastname'] );
+        $this->middlename       = hasValueOrBlank( $contact['middlename'] );
+        $this->primary_address  = hasValueOrBlank( $contact['primaryAddress'] );
+        $this->birthday         = $contact['birthday'];
+        $this->nickname         = hasValueOrBlank( $contact['nickname'] );
+        $this->picture_url      = hasValueOrBlank( $contact['pictureURL'] );
+        $this->notes            = hasValueOrBlank( nl2br( $contact['notes'] ));
+        $this->last_update      = new DateTime( $contact['lastUpdate']);   //  );
+        $this->hidden           = $contact['hidden'];
+        $this->who_added        = hasValueOrBlank( $contact['whoAdded'] );
         $this->fullname       = $this->lastname . ", " . $this->firstname;
-        $this->currentID    =  hasValueOrBlank($contact[0]['id']);
+        $this->currentID    =  hasValueOrBlank($contact['id']);
 
         $this->FindAllAddress();
 
     }
 
-    function determinePreviousAddress(){
+    function determinePrevNextAddress(){
         global $globalSqlLink;
-        $globalSqlLink->SelectQuery("id, CONCAT(lastname,', ',firstname) AS fullname",TABLE_CONTACT,  "CONCAT(lastname, ', ', firstname) < '" .$this->fullname . "' AND hidden != 1", "ORDER BY fullname DESC LIMIT 1");
-
+        $globalSqlLink->SelectQuery("id, 'P' pre",TABLE_CONTACT,  "CONCAT(lastname, ', ', firstname) > '" .$this->fullname . "' AND hidden != 1", "ORDER BY CONCAT(lastname,', ',firstname)  LIMIT 1");
         $r_prev =$globalSqlLink->FetchQueryResult();
-        if ( $r_prev['id']<1) {
-            $this->previousID= $this->currentID;
+        $globalSqlLink->SelectQuery("id, 'N' pre",TABLE_CONTACT,  "CONCAT(lastname, ', ', firstname) < '" .$this->fullname . "' AND hidden != 1", "ORDER BY CONCAT(lastname,', ',firstname) desc LIMIT 1");
+        $r_next =$globalSqlLink->FetchQueryResult();
+        if(isset($r_prev['pre']) && isset($r_next['pre'])){
+            $this->previousID =$r_prev['id'];
+            $this->nextID = $r_next['id'];
+        }
+        else if(!isset($r_prev['pre']) && isset($r_next['pre'])) {
+            $this->previousID =$this->currentID;
+            $this->nextID = $r_next['id'];
+        }
+        else if(isset($r_prev['pre']) && !isset($r_next['pre'])){
+            $this->previousID =$r_prev['id'];
+            $this->nextID = $this->currentID;
         }
         else{
-            $this->previousID =$r_prev['id'];
+            $this->previousID = $this->nextID = $this->currentID;
         }
-        return $this->previousID;
     }
 
     function birthday($format) {
@@ -99,6 +109,19 @@ class ContactInformation {
         $this->addresses = $globalSqlLink->FetchQueryResult();
     }
 
+    function getPreviousId(){
+        if(isset($this->previousID)) {
+            return $this->previousID;
+        }
+        return "";
+    }
+    function getNextID(){
+        if(isset($this->nextID)) {
+            return $this->nextID;
+        }
+        return "";
+
+    }
     function age() {
         // Returns the upcoming age of the person on his or her next birthday.
         return 0;

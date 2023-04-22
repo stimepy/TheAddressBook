@@ -63,23 +63,21 @@ function addressBodyStart($body, $lang)
     $output .= "	                    <TD WIDTH=". $body['tableColumnWidth'] ." CLASS=\"data\">";
     //$output .= outputloop($body['address']);
     $output .=$body['address'];
-
-
-    $output .="</p>
-`              </TD>
+    $output .="
+              </TD>
                <td WIDTH=". $body['tableColumnWidth'] ." CLASS=\"data\">
                 <P>\n<B>". $lang['LBL_EMAIL']."</B>\n";
-    $output .=outputloop($body['addreemailsses']);
-    $output .=outputloop($body["otherphonecnt"]);
+    $output .=outputloop($body["emails"]);
+    $output .=outputloop($body["otherphone"]);
     $output .=outputloop($body['message']);
-    $output .="		  </TD>
+    $output .="		 </TD>
 		</TR>
 		<TR>
 		    <TD COLSPAN=". $body['tableColumnAmt2'] ."  CLASS=\"data\">
                  <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=540>
                    ". $body["birthday"];
      $output .= outputloop($body['additional']);
-     $output .= outputloop( $body['Websites']);
+     $output .= outputloop( $body['Websites']) ;
 
 	 $output .="		   </TABLE>
 			 </TD>

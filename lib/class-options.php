@@ -69,25 +69,25 @@ class Options {
 		 // =mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
 		 //		or die(reportScriptError("Unable to retrieve global options."));
 
-		$this->bdayInterval     = $this->global_options[0]['bdayInterval'];
-		$this->bdayDisplay      = $this->global_options[0]['bdayDisplay'];
-		$this->displayAsPopup   = $this->global_options[0]['displayAsPopup'];
-		$this->useMailScript    = $this->global_options[0]['useMailScript'];
-		$this->picAlwaysDisplay = $this->global_options[0]['picAlwaysDisplay'];
-		$this->picWidth         = $this->global_options[0]['picWidth'];
-		$this->picHeight        = $this->global_options[0]['picHeight'];
-		$this->picDupeMode      = $this->global_options[0]['picDupeMode'];
-		$this->picAllowUpload   = $this->global_options[0]['picAllowUpload'];
-		$this->modifyTime       = $this->global_options[0]['modifyTime'];
-		$this->msgLogin         = stripslashes( $this->global_options[0]['msgLogin'] );
-		$this->msgWelcome       = stripslashes( $this->global_options[0]['msgWelcome'] );
-		$this->countryDefault   = $this->global_options[0]['countryDefault'];
-		$this->allowUserReg     = $this->global_options[0]['allowUserReg'];
-		$this->eMailAdmin       = $this->global_options[0]['eMailAdmin'];
-		$this->requireLogin     = $this->global_options[0]['requireLogin'];
-		$this->language         = $this->load_lang($this->global_options[0]['language']);
-		$this->defaultLetter    = $this->global_options[0]['defaultLetter'];
-		$this->limitEntries     = $this->global_options[0]['limitEntries'];
+		$this->bdayInterval     = $this->global_options['bdayInterval'];
+		$this->bdayDisplay      = $this->global_options['bdayDisplay'];
+		$this->displayAsPopup   = $this->global_options['displayAsPopup'];
+		$this->useMailScript    = $this->global_options['useMailScript'];
+		$this->picAlwaysDisplay = $this->global_options['picAlwaysDisplay'];
+		$this->picWidth         = $this->global_options['picWidth'];
+		$this->picHeight        = $this->global_options['picHeight'];
+		$this->picDupeMode      = $this->global_options['picDupeMode'];
+		$this->picAllowUpload   = $this->global_options['picAllowUpload'];
+		$this->modifyTime       = $this->global_options['modifyTime'];
+		$this->msgLogin         = stripslashes( $this->global_options['msgLogin'] );
+		$this->msgWelcome       = stripslashes( $this->global_options['msgWelcome'] );
+		$this->countryDefault   = $this->global_options['countryDefault'];
+		$this->allowUserReg     = $this->global_options['allowUserReg'];
+		$this->eMailAdmin       = $this->global_options['eMailAdmin'];
+		$this->requireLogin     = $this->global_options['requireLogin'];
+		$this->language         = $this->load_lang($this->global_options['language']);
+		$this->defaultLetter    = $this->global_options['defaultLetter'];
+		$this->limitEntries     = $this->global_options['limitEntries'];
 	}
 	
 	function set_user() {

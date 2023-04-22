@@ -25,9 +25,9 @@ $contact = new ContactInformation(check_id());
 
 
 // CALCULATE 'NEXT' AND 'PREVIOUS' ADDRESS ENTRIES
-
-
-    $body['next'] = $contact->determinePreviousAddress();
+    $contact->determinePrevNextAddress();
+    $body['next'] = $contact->getPreviousId();
+    $body['prev'] = $contact->getNextID();
 
 
 
@@ -114,11 +114,15 @@ $contact = new ContactInformation(check_id());
 
 	$body['tableColumnWidth'] = $body['tableColumnAmt'];
 
-
-    $forcnt=0;
-    foreach( $contact->getAlladdress() as $tbl_address){
-        $body['address'] = $list->buildcontact($tbl_address);
-	}
+    $allAddresses= $contact->getAlladdress() ;
+    if(is_array($allAddresses[0])) {
+        foreach ($contact->getAlladdress() as $tbl_address) {
+            $body['address'] = $list->buildcontact($tbl_address);
+        }
+    }
+    else{
+        $body['address'] = $list->buildcontact($allAddresses);
+    }
 
 
 
@@ -129,23 +133,33 @@ $contact = new ContactInformation(check_id());
     $r_email = $list->getEmailsByContactId($contact->getid());
     $emlcnt = 0;
 	if ($r_email != -1) {
-
         $body["emails"][$emlcnt] ="";
-		foreach( $r_email as $tbl_email){
-            $body["emails"][$emlcnt] .= $list->createEmail($options->getuseMailScript(), hasValueOrBlank($tbl_email['email'] ));
-			if ($tbl_email['type']) {
-                $body["emails"][$emlcnt] .=" (".hasValueOrBlank( $tbl_email['type']).")";
-			}
+        if(is_array($r_email[0])) {
+            foreach ($r_email as $tbl_email) {
+                $body["emails"][$emlcnt] .= $list->createEmail($options->getuseMailScript(), hasValueOrBlank($tbl_email['email']));
+                if ($tbl_email['type']) {
+                    $body["emails"][$emlcnt] .= " (" . hasValueOrBlank($tbl_email['type']) . ")";
+                }
+                $body["emails"][$emlcnt] .= "</p>";
+                $emlcnt++;
+            }
+        }
+        else{
+            $body["emails"][$emlcnt] .= $list->createEmail($options->getuseMailScript(), hasValueOrBlank($r_email['email']));
+            if ($r_email['type']) {
+                $body["emails"][$emlcnt] .= " (" . hasValueOrBlank($r_email['type']) . ")";
+            }
             $body["emails"][$emlcnt] .= "</p>";
             $emlcnt++;
-		}
+        }
+
 	}
 
 
 // ** OTHER PHONE NUMBERS **
     $globalSqlLink->SelectQuery('*', TABLE_OTHERPHONE, "id=".$contact->getid(), NULL);
     $r_otherPhone = $globalSqlLink->FetchQueryResult();
-
+    $body["otherphone"]="";
 	if ($globalSqlLink->GetRowCount() > 0) {
 
         $otherphonecnt = 0;
@@ -174,14 +188,17 @@ $contact = new ContactInformation(check_id());
 		//while ($tbl_messaging = mysql_fetch_array($r_messaging)) {
 		   	$messaging_handle = stripslashes( $tbl_messaging['handle'] );
 		   	$messaging_type = stripslashes( $tbl_messaging['type'] );
-            $body["message"][$otherphonecnt] = "<br />".stripslashes( $tbl_messaging['type'] ) .": ". stripslashes( $tbl_messaging['handle'] );
+            $body["message"][$otherphonecnt] = "<br />".removeSlashes( $tbl_messaging['type'] ) .": ". removeSlashes( $tbl_messaging['handle'] );
 		   	$otherphonecnt++;
 		}
 	}
+    else{
+        $body["message"] = "";
+    }
 
 	// ** BIRTHDAY **
 	if ($contact->getBirthday()) {
-        $body["birthday"] ="                 <tr VALIGN=\"top\">\
+        $body["birthday"] ="                 <tr VALIGN=\"top\">
                    <td WIDTH=120 CLASS=\"data\">
                         <b>". $lang['LBL_BIRTHDATE'] ."</b>
                     </td>
@@ -209,6 +226,9 @@ $contact = new ContactInformation(check_id());
                  </tr>";
         }
     }
+    else{
+        $body["additional"] = "";
+    }
 
 	// ** WEBSITES **
     $globalSqlLink->SelectQuery('*', TABLE_WEBSITES, 'id='.$contact->getid(), NULL);
@@ -221,21 +241,24 @@ $contact = new ContactInformation(check_id());
         $x = 0;
 		$body['Websites'][$x] ="                 <TR VALIGN=\"top\">
 		                   <td WIDTH=120 CLASS=\"data\">
-		                        <b>". $lang[LBL_WEBSITES] ."</b>
+		                        <b>". $lang['LBL_WEBSITES'] ."</b>
 		                   </td>
 		                   <TD WIDTH=440 CLASS=\"data\">\n";
 
 
-        foreach($r_websites as $r_websites){
+        foreach($r_websites as $r_website){
 		// while ($tbl_websites = mysql_fetch_array($r_websites)) {
-			$websiteURL = stripslashes( $tbl_websites['webpageURL'] );
-			$websiteName = stripslashes( $tbl_websites['webpageName'] );
+			$websiteURL = stripslashes( $r_website['webpageURL'] );
+			$websiteName = stripslashes( $r_website['webpageName'] );
             $body['Websites'][$x] .="                      <BR><A HREF=\"$websiteURL\" TARGET=\"out\">
 				". ($websiteName)? websiteName : $websiteURL ."</A>";
 		}
         $body['Websites'][$x] .="                   </TD>
 		                 </TR>";
 	}
+    else{
+        $body['Websites'] = "";
+    }
 
 
 
@@ -244,6 +267,10 @@ $contact = new ContactInformation(check_id());
         $body['note'] = $contact->getnotes();
         $body['LBL_NOTES'] = $lang['LBL_NOTES'];
 	}
+    else{
+        $body['note'] = "";
+    }
+
 
     $body['lastUpdatetxt'] = $lang['LAST_UPDATE'];
     $body['lastupdate'] = $contact->getlast_update();

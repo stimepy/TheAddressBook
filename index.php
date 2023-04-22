@@ -16,12 +16,15 @@ require_once('.\Core.php');
 //	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
 global $globalSqlLink, $globalUsers, $lang;
-
+$forceLoginScreen = -1;
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 	$options = new Options();
-
+    $errorMsg = NULL;
 	// ** FIGURE OUT WHAT'S GOING ON
+	if(!isset($_GET['mode'])){
+		$_GET['mode'] = -1;
+	}
 	switch($_GET['mode']) {
 		case "logout":
 			$errorMsg =$globalUsers->Logout($options);
@@ -80,9 +83,10 @@ global $globalSqlLink, $globalUsers, $lang;
 
 	}
 	// PRINT ERROR MESSAGES
-	if ($errorMsg != "") {
+	if (isset($errorMsg) && $errorMsg != "") {
 	    $body['errorMsg'] = $errorMsg;
 	}
+
 	$body['LBL_USERNAME'] = $lang['LBL_USERNAME'];
     $body['LBL_PASSWORD'] = $lang['LBL_PASSWORD'];
     $body['BTN_LOGIN'] = $lang['BTN_LOGIN'];
@@ -94,7 +98,7 @@ global $globalSqlLink, $globalUsers, $lang;
         $body['MSG_REGISTER_LOST'] = "";
     }
 	if ($options->getrequireLogin() != 1) {
-        $body['GUEST'] = "	<p><A HREF=\"" . FILE_LIST ."\">". $lang[GUEST]."</A></p>";
+        $body['GUEST'] = "	<p><A HREF=\"" . FILE_LIST ."\">". $lang['GUEST']."</A></p>";
 	}
 	else{
         $body['GUEST'] = "";
@@ -103,6 +107,3 @@ global $globalSqlLink, $globalUsers, $lang;
    $output .= indexBodyStart($body);
 
 	Display($output);
-
-?>
-

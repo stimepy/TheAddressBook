@@ -185,7 +185,8 @@ class Mysql_Connect_I
         $this->SetRowCount($this->mySQLresults->num_rows);
         if($this->GetRowCount() > 0) {
             if($this->GetRowCount() == 1) {
-                $results[0] = $this->mySQLresults->fetch_array();
+                $tempresults[] = $this->mySQLresults->fetch_array();
+                $results= $tempresults[0];
             }
             else{
                 while( $row = $this->mySQLresults->fetch_array()){

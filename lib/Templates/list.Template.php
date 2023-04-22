@@ -114,14 +114,14 @@ function listbodystart($body, $list)
     else{
         foreach ($body['contacts'] as $tbl_contact) {
 
-            $tbl_contact['fullname'] = stripslashes($tbl_contact['fullname']);
-            $tbl_contact['line1'] = stripslashes($tbl_contact['line1']);
-            $tbl_contact['line2'] = stripslashes($tbl_contact['line2']);
-            $tbl_contact['city'] = stripslashes($tbl_contact['city']);
-            $tbl_contact['state'] = stripslashes($tbl_contact['state']);
-            $tbl_contact['zip'] = stripslashes($tbl_contact['zip']);
-            $tbl_contact['phone1'] = stripslashes($tbl_contact['phone1']);
-            $tbl_contact['phone2'] = stripslashes($tbl_contact['phone2']);
+            $tbl_contact['fullname'] = removeSlashes($tbl_contact['fullname']);
+            $tbl_contact['line1'] = removeSlashes($tbl_contact['line1']);
+            $tbl_contact['line2'] = removeSlashes($tbl_contact['line2']);
+            $tbl_contact['city'] = removeSlashes($tbl_contact['city']);
+            $tbl_contact['state'] = removeSlashes($tbl_contact['state']);
+            $tbl_contact['zip'] = removeSlashes($tbl_contact['zip']);
+            $tbl_contact['phone1'] = removeSlashes($tbl_contact['phone1']);
+            $tbl_contact['phone2'] = removeSlashes($tbl_contact['phone2']);
 
             $list_NewLetter =  strtoupper(substr($tbl_contact['fullname'], 0, 1));
             if ($list_NewLetter != $list_LastLetter) {
@@ -163,10 +163,13 @@ function listbodystart($body, $list)
             $output .= "<TD WIDTH=150 CLASS=\"listEntry\">";
 
             $tbl_email = $list->getEmailsByContactId($tbl_contact['id']);
-            if (is_array($tbl_email)) {
-               foreach ($tbl_email as $rbl_email) {
-                   $output .= $list->createEmail($body['useMailScript'], $rbl_email['email']);
+            if (is_array($tbl_email) && is_array($tbl_email[0])) {
+                foreach ($tbl_email as $rbl_email) {
+                    $output .= $list->createEmail($body['useMailScript'], $rbl_email['email']);
                 }
+            }
+           else if (isset($tbl_email['email'])) {
+                $output .= $list->createEmail($body['useMailScript'], $tbl_email['email']);
             }
             $output .="&nbsp;</TD>\n </TR>\n";
 

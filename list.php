@@ -28,10 +28,10 @@ $list = new ContactList($options);
 
 // THIS PAGE TAKES SEVERAL GET VARIABLES
 // ie. list.php?group_id=6&page=2&letter=c&limit=20
-if ($_GET['groupid']) {
+if (isset($_GET['groupid']) && $_GET['groupid']) {
     $list->setgroup_id($_GET['groupid']);
 }
-if ($_GET['page']) {
+if (isset($_GET['page']) && $_GET['page']) {
     $list->setcurrent_page($_GET['page']);
 }
 if (isset($_GET['letter'])){
@@ -60,6 +60,7 @@ if (isset($_GET['limit'])) {
 	// if($options->global_options[language] != $options->user_options[language] AND isset($options->user_options[language]))	echo "<br>".$lang[WELCOME_UR_LANG].": ".$options->user_options[language];
 	// PRINT LOGGED IN USER
 	if (($_SESSION['username'] == "@auth_off") || ($_SESSION['usertype'] == "guest")) {
+        /* todo: Make it so if your a guest the information shown is scrambled OR not available.*/
 			$body['Login'] ="<br />". $lang['MSG_LOGIN_NOT'] ." <a href=\" ".FILE_INDEX."?mode=login\"> ".$lang['WELCOME_LOGIN']."</a>";
 	}
 	else {

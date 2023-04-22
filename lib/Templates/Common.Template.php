@@ -121,3 +121,10 @@ function createGroupOptions($body, $lang){
     return $output;
 }
 
+function removeSlashes($item){
+    if(isset($item)) {
+        return stripslashes($item);
+    }
+    return "";
+}
+
