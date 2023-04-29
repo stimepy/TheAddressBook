@@ -24,6 +24,9 @@ class ContactList {
     private $title;
     private $nav_menu;
 	private $myRowCount;
+    private $select;
+    private $tables;
+    private $where;
 
 
 	function __construct($options) {
@@ -334,7 +337,7 @@ class ContactList {
             $output .= " ".$tbl_contact['zip'];
         }
         if ($tbl_contact['country']) {
-            $output .= "\n<br />" . $country[$tbl_contact['country']];
+            $output .= "\n<br />" . $country[strtolower($tbl_contact['country'])];
         }
         return $output;
 
@@ -343,4 +346,3 @@ class ContactList {
 
 }
 // END ContactList
-?>

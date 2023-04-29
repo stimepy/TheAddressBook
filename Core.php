@@ -23,7 +23,7 @@ require_once(FILE_CLASS_OPTIONS);
 require_once(FILE_CLASS_CONTACTLIST);
 require_once(FILE_CLASSES);
 require_once(FILE_CONFIG);
-require_once (FILE_FUNCTIONS);
+require_once(FILE_FUNCTIONS);
 
 // require_once(FILE_LIB_MAIL);
 require_once('./lib/Templates/Common.Template.php');
@@ -33,7 +33,7 @@ require_once('./lib/Templates/address.Template.php');
 require_once('./lib/Templates/index.Template.php');
 
 require_once('./lib/Database_Mysql_Connect_I.php');
-require_once('./lib/class.users.php');
+require_once('./lib/class-users.php');
 
 global $db_prefix,$db_hostname, $db_name, $db_username, $db_password;
 
@@ -55,12 +55,11 @@ define('TABLE_WEBSITES', $db_prefix . 'websites');
 session_start();
 
 // Open Database Connection
-if(is_null($upgrade) == true) {
-    global $globalSqlLink;
+global $globalSqlLink;
 
-    $globalSqlLink = new Mysql_Connect_I($db_hostname, $db_name, $db_username, $db_password);
-    $globalUsers = new users();
-}
+$globalSqlLink = new Mysql_Connect_I($db_hostname, $db_name, $db_username, $db_password);
+$globalUsers = new users();
+
 
 //clear these, they are no longer needed.
 $db_hostname = $db_name = $db_username = $db_password = NULL;

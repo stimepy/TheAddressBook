@@ -27,7 +27,7 @@ function indexBodyStart($body)
     if($body['msgLogin']){
         $output .= "<p>". $body['msgLogin'] ."</p>";
     }
-    if($body['errorMsg']){
+    if(isset($body['errorMsg'])){
         $output .= "<p><FONT COLOR=\"#FF0000\"> <b>". $body['errorMsg'] ."</b> </FONT></p>";
     }
 

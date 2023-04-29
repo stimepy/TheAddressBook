@@ -20,6 +20,7 @@ class Mysql_Connect_I
   private $myHost;
   private $myPassword;
   private $myInsertID;
+  private $MySQLLastInsertID;
 
 
 
@@ -111,6 +112,8 @@ class Mysql_Connect_I
         if($query == -1){
             die('Badly Formed Query in Database_Mysql_Connect_I.');
         }
+        // debug
+        // echo $query;
         $this->mySQLresults = $this->mySQLConnection->query($query);
         if($this->mySQLresults == false){
             die('query error:' . $query);
@@ -128,7 +131,7 @@ class Mysql_Connect_I
         }
         $this->SetRowCount($this->mySQLConnection->affected_rows);
         //Clear Results;
-        $this->mySQLConnection->free();
+        //$this->mySQLConnection->free();
     }
 
     /**
@@ -157,7 +160,7 @@ class Mysql_Connect_I
         $this->SetRowCount($this->mySQLConnection->affected_rows);
 
         //Clear Results;
-        $this->mySQLConnection->free();
+        //$this->mySQLConnection->free();
     }
 
 
@@ -169,7 +172,7 @@ class Mysql_Connect_I
         }
         $this->SetRowCount($this->mySQLConnection->affected_rows);
         //Clear Results;
-        $this->mySQLConnection->free();
+        //$this->mySQLConnection->free();
     }
 
 
@@ -185,7 +188,8 @@ class Mysql_Connect_I
         $this->SetRowCount($this->mySQLresults->num_rows);
         if($this->GetRowCount() > 0) {
             if($this->GetRowCount() == 1) {
-                $results[0] = $this->mySQLresults->fetch_array();
+                $tempresults[] = $this->mySQLresults->fetch_array();
+                $results= $tempresults[0];
             }
             else{
                 while( $row = $this->mySQLresults->fetch_array()){
@@ -197,7 +201,7 @@ class Mysql_Connect_I
             return $results;
         }
         //free results
-        $this->mySQLresults->free();
+        //$this->mySQLresults->free();
         return -1;  // Something went horribly wrong.
     }
 
@@ -229,12 +233,12 @@ class Mysql_Connect_I
                 if(!is_array($wants) || count($wants) == 0 || $wants == NULL || $table == '' || $table == NULL){
                     return -1;
                 }
-                return $this->buildDelete($wants, $table);
+                return $this->buildInsert($wants, $table);
             case 'DELETE':
                 if($wants == "" || $wants == NULL || $table == '' || $table == NULL){
                     return -1;
                 }
-                return $this->buildInsert($wants, $table);
+                return $this->buildDelete($wants, $table);
             default:
                 return -1;
                 break;
@@ -294,7 +298,9 @@ class Mysql_Connect_I
                 $insertvalue .=",";
             }
         }
-        $Query = "Insert into". $table ." (".$insertkey.") Values(".$insertvalue.")";
+        // debug
+        // echo "Insert into ". $table ." (".$insertkey.") Values(".$insertvalue.")";
+        $Query = "Insert into ". $table ." (".$insertkey.") Values(".$insertvalue.")";
 
         return $Query;
     }
@@ -302,7 +308,8 @@ class Mysql_Connect_I
 
 
     private function buildDelete($where, $table){
-        $query = 'Delete From'.$table.' where '.$where;
+        echo 'Delete From '.$table.' where '.$where;
+        $query = 'Delete From '.$table.' where '.$where;
         return $query;
     }
 

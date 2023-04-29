@@ -18,7 +18,7 @@ $globalUsers->checkForLogin("admin");
 $options = new Options();
 $optionsTemplate = new optionTemplate();
 // CHECK TO SEE IF A FORM HAS BEEN SUBMITTED, AND SAVE THE OPTIONS.
-if ($_POST['saveOpt'] == "YES") {
+if (hasValueOrBlank($_POST, 'saveOpt') == "YES") {
     $options->save_global();
 }
 $options->set_global(); // This page does not yet have separate areas for admin and user settings, so we must reset all options to admin only.

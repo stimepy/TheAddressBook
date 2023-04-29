@@ -45,9 +45,13 @@ function addressBodyStart($body, $lang)
     " . $body['HIDDENENTRY'] . "
                             " . $body['spacer'] . "";
     if ($body['r_groups'] != -1){
-        foreach ($body['r_groups'] as $tbl_groups) {
-
-            $output .= "                            , <A HREF=\"" . FILE_LIST . "?groupid=" . $tbl_groups['groupid'] . "\" CLASS=\"group\">" . stripslashes($tbl_groups['groupname']) . "</A>";
+        if(is_array($body['r_groups'][0])) {
+            foreach ($body['r_groups'] as $tbl_groups) {
+                $output .= "                            , <A HREF=\"" . FILE_LIST . "?groupid=" . $tbl_groups['groupid'] . "\" CLASS=\"group\">" . stripslashes($tbl_groups['groupname']) . "</A>";
+            }
+        }
+        else{
+            $output .= "                            , <A HREF=\"" . FILE_LIST . "?groupid=" . $body['r_groups']['groupid'] . "\" CLASS=\"group\">" . stripslashes($body['r_groups']['groupname']) . "</A>";
         }
     }
     $output .= "                        </TD>
@@ -62,24 +66,23 @@ function addressBodyStart($body, $lang)
     $output .= $body['tableColumnAmt'];
     $output .= "	                    <TD WIDTH=". $body['tableColumnWidth'] ." CLASS=\"data\">";
     //$output .= outputloop($body['address']);
-    $output .=$body['address'];
-
-
-    $output .="</p>
-`              </TD>
+    $output .=outputloop($body['address']);
+    $output .="
+              </TD>
                <td WIDTH=". $body['tableColumnWidth'] ." CLASS=\"data\">
                 <P>\n<B>". $lang['LBL_EMAIL']."</B>\n";
-    $output .=outputloop($body['addreemailsses']);
-    $output .=outputloop($body["otherphonecnt"]);
+
+    $output .=outputloop($body["emails"]);
+    $output .=outputloop($body["otherphone"]);
     $output .=outputloop($body['message']);
-    $output .="		  </TD>
+    $output .="		 </TD>
 		</TR>
 		<TR>
 		    <TD COLSPAN=". $body['tableColumnAmt2'] ."  CLASS=\"data\">
                  <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=540>
                    ". $body["birthday"];
      $output .= outputloop($body['additional']);
-     $output .= outputloop( $body['Websites']);
+     $output .= outputloop( $body['Websites']) ;
 
 	 $output .="		   </TABLE>
 			 </TD>

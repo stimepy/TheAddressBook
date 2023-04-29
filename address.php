@@ -1,9 +1,9 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2
+ *  THE ADDRESS BOOK  :  version 1.2.01
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-17-2022
+ * Last Modified: 4-27-2023
  ****************************************************************
  *  address.php
  *  Displays address book entries.
@@ -25,9 +25,9 @@ $contact = new ContactInformation(check_id());
 
 
 // CALCULATE 'NEXT' AND 'PREVIOUS' ADDRESS ENTRIES
-
-
-    $body['next'] = $contact->determinePreviousAddress();
+    $contact->determinePrevNextAddress();
+    $body['next'] = $contact->getPreviousId();
+    $body['prev'] = $contact->getNextID();
 
 
 
@@ -75,7 +75,7 @@ $contact = new ContactInformation(check_id());
         $body['$contact']['name'] .= " ".$contact->getMiddleName();
     }
     if ($contact->getnickname()) {
-        $body['$contact']['name'] .= " \"$contact->getnickname()\"";
+        $body['$contact']['name'] .= " \"". $contact->getnickname() ."\"";
     }
     if ($contact->gethidden() == 1) {
         $body['HIDDENENTRY'] = "[HIDDEN ENTRY] ";
@@ -114,11 +114,17 @@ $contact = new ContactInformation(check_id());
 
 	$body['tableColumnWidth'] = $body['tableColumnAmt'];
 
-
-    $forcnt=0;
-    foreach( $contact->getAlladdress() as $tbl_address){
-        $body['address'] = $list->buildcontact($tbl_address);
-	}
+    $allAddresses= $contact->getAlladdress() ;
+    $addresscnt = 0;
+    if(is_array($allAddresses[0])) {
+        foreach ($contact->getAlladdress() as $tbl_address) {
+            $body['address'][$addresscnt] = $list->buildcontact($tbl_address);
+            $addresscnt++;
+        }
+    }
+    else{
+        $body['address'][$addresscnt] =$list->buildcontact($allAddresses) ;
+    }
 
 
 
@@ -128,34 +134,48 @@ $contact = new ContactInformation(check_id());
 	// Then start pulling data out of the result set and displaying them.
     $r_email = $list->getEmailsByContactId($contact->getid());
     $emlcnt = 0;
+    $body["emails"] = null;
 	if ($r_email != -1) {
-
-        $body["emails"][$emlcnt] ="";
-		foreach( $r_email as $tbl_email){
-            $body["emails"][$emlcnt] .= $list->createEmail($options->getuseMailScript(), hasValueOrBlank($tbl_email['email'] ));
-			if ($tbl_email['type']) {
-                $body["emails"][$emlcnt] .=" (".hasValueOrBlank( $tbl_email['type']).")";
-			}
+        if(is_array($r_email[0])) {
+            foreach ($r_email as $tbl_email) {
+                $body["emails"][$emlcnt] = $list->createEmail($options->getuseMailScript(), hasValueOrBlank($tbl_email['email']));
+                if ($tbl_email['type']) {
+                    $body["emails"][$emlcnt] .= " (" . hasValueOrBlank($tbl_email['type']) . ")";
+                }
+                $body["emails"][$emlcnt] .= "</p>";
+                $emlcnt++;
+            }
+        }
+        else{
+            $body["emails"][$emlcnt] = $list->createEmail($options->getuseMailScript(), hasValueOrBlank($r_email['email']));
+            if ($r_email['type']) {
+                $body["emails"][$emlcnt] = " (" . hasValueOrBlank($r_email['type']) . ")";
+            }
             $body["emails"][$emlcnt] .= "</p>";
             $emlcnt++;
-		}
+        }
 	}
 
 
 // ** OTHER PHONE NUMBERS **
     $globalSqlLink->SelectQuery('*', TABLE_OTHERPHONE, "id=".$contact->getid(), NULL);
     $r_otherPhone = $globalSqlLink->FetchQueryResult();
-
+    $body["otherphone"]=null;
 	if ($globalSqlLink->GetRowCount() > 0) {
-
         $otherphonecnt = 0;
-		foreach ($r_otherPhone as $tbl_otherPhone){
-	    //while ($tbl_otherPhone = mysql_fetch_array($r_otherPhone)) {
-			$otherphone_phone = stripslashes( $tbl_otherPhone['phone'] );
+        if(is_array($r_otherPhone[0])) {
 
-            $body["otherphone"][$otherphonecnt] .="<br />". stripslashes( $tbl_otherPhone['type'] ) .": ".stripslashes( $tbl_otherPhone['phone'] );
-            $otherphonecnt++;
-		}
+            foreach ($r_otherPhone as $tbl_otherPhone) {
+                $otherphone_phone = stripslashes($tbl_otherPhone['phone']);
+
+                $body["otherphone"][$otherphonecnt] .= "<br />" . stripslashes($tbl_otherPhone['type']) . ": " . stripslashes($tbl_otherPhone['phone']);
+                $otherphonecnt++;
+            }
+        }
+        else{
+            $otherphone_phone = stripslashes($r_otherPhone['phone']);
+            $body["otherphone"][$otherphonecnt] ="<br />" . stripslashes($r_otherPhone['type']) .": ". stripslashes($r_otherPhone['phone']);
+        }
 	}
 
 	// ** MESSAGING **
@@ -170,18 +190,28 @@ $contact = new ContactInformation(check_id());
     $message = $globalSqlLink->GetRowCount();
 	if ($message) {
         $otherphonecnt = 0;
-	    foreach($r_messaging as $tbl_messaging){
-		//while ($tbl_messaging = mysql_fetch_array($r_messaging)) {
-		   	$messaging_handle = stripslashes( $tbl_messaging['handle'] );
-		   	$messaging_type = stripslashes( $tbl_messaging['type'] );
-            $body["message"][$otherphonecnt] = "<br />".stripslashes( $tbl_messaging['type'] ) .": ". stripslashes( $tbl_messaging['handle'] );
-		   	$otherphonecnt++;
-		}
+        if(is_array($r_messaging[0])) {
+            foreach ($r_messaging as $tbl_messaging) {
+                //while ($tbl_messaging = mysql_fetch_array($r_messaging)) {
+                $messaging_handle = stripslashes($tbl_messaging['handle']);
+                $messaging_type = stripslashes($tbl_messaging['type']);
+                $body["message"][$otherphonecnt] = "<br />" . removeSlashes($tbl_messaging['type']) . ": " . removeSlashes($tbl_messaging['handle']);
+                $otherphonecnt++;
+            }
+        }
+        else{
+            $messaging_handle = stripslashes($r_messaging['handle']);
+            $messaging_type = stripslashes($r_messaging['type']);
+            $body["message"][$otherphonecnt] = "<br />" . removeSlashes($r_messaging['type']) . ": " . removeSlashes($r_messaging['handle']);
+        }
 	}
+    else{
+        $body["message"] = "";
+    }
 
 	// ** BIRTHDAY **
 	if ($contact->getBirthday()) {
-        $body["birthday"] ="                 <tr VALIGN=\"top\">\
+        $body["birthday"] ="                 <tr VALIGN=\"top\">
                    <td WIDTH=120 CLASS=\"data\">
                         <b>". $lang['LBL_BIRTHDATE'] ."</b>
                     </td>
@@ -197,9 +227,10 @@ $contact = new ContactInformation(check_id());
     $r_additionalData =$globalSqlLink->FetchQueryResult();
     $additioncnt =0;
     if($r_additionalData != -1) {
-        foreach ($r_additionalData as $tbl_additionalData) {
-            //while ( $tbl_additionalData = mysql_fetch_array($r_additionalData) ) {
-            $body["additional"][$additioncnt] = "                 <tr VALIGN=\"top\">
+        if(is_array($r_additionalData[0])) {
+            foreach ($r_additionalData as $tbl_additionalData) {
+                //while ( $tbl_additionalData = mysql_fetch_array($r_additionalData) ) {
+                $body["additional"][$additioncnt] = "                 <tr VALIGN=\"top\">
                    <td WIDTH=120 CLASS=\"data\">
                         <b>" . stripslashes($tbl_additionalData['type']) . "</b>
                    </td>
@@ -207,7 +238,22 @@ $contact = new ContactInformation(check_id());
                         " . stripslashes($tbl_additionalData['value']) . "
                     </td>
                  </tr>";
+                $additioncnt++;
+            }
         }
+        else{
+            $body["additional"][$additioncnt] = "                 <tr VALIGN=\"top\">
+                   <td WIDTH=120 CLASS=\"data\">
+                        <b>" . stripslashes($r_additionalData['type']) . "</b>
+                   </td>
+                   <td WIDTH=440 CLASS=\"data\">
+                        " . stripslashes($r_additionalData['value']) . "
+                    </td>
+                 </tr>";
+        }
+    }
+    else{
+        $body["additional"] = "";
     }
 
 	// ** WEBSITES **
@@ -217,25 +263,38 @@ $contact = new ContactInformation(check_id());
 	//$tbl_websites = mysql_fetch_array($r_websites);
 	//$websiteURL = stripslashes( $tbl_websites['webpageURL'] );
 	//$websiteName = stripslashes( $tbl_websites['webpageName'] );
-	if ($globalSqlLink->GetRowCount() > 0) {
+
+if ($globalSqlLink->GetRowCount() > 0) {
         $x = 0;
 		$body['Websites'][$x] ="                 <TR VALIGN=\"top\">
 		                   <td WIDTH=120 CLASS=\"data\">
-		                        <b>". $lang[LBL_WEBSITES] ."</b>
+		                        <b>". $lang['LBL_WEBSITES'] .":</b>
 		                   </td>
 		                   <TD WIDTH=440 CLASS=\"data\">\n";
+        $x++;
+        if(is_array($r_websites[0])) {
+            foreach ($r_websites as $r_website) {
+                $websiteURL = stripslashes($r_website['webpageURL']);
+                $websiteName = stripslashes($r_website['webpageName']);
+                $body['Websites'][$x] = "                      </br><a href=\"$websiteURL\" TARGET=\"out\">
+				" . getsiteNorU($websiteName, $websiteURL) . "</a>";
+                $x++;
+            }
+        }
+        else{
+            $websiteURL = stripslashes($r_websites['webpageURL']);
+            $websiteName = stripslashes($r_websites['webpageName']);
+            $body['Websites'][$x] = "                      </br><a href=\"$websiteURL\" TARGET=\"out\">
+				" . getsiteNorU($websiteName, $websiteURL) . "</a>";
 
-
-        foreach($r_websites as $r_websites){
-		// while ($tbl_websites = mysql_fetch_array($r_websites)) {
-			$websiteURL = stripslashes( $tbl_websites['webpageURL'] );
-			$websiteName = stripslashes( $tbl_websites['webpageName'] );
-            $body['Websites'][$x] .="                      <BR><A HREF=\"$websiteURL\" TARGET=\"out\">
-				". ($websiteName)? websiteName : $websiteURL ."</A>";
-		}
-        $body['Websites'][$x] .="                   </TD>
+        }
+        $body['Websites'][$x-1] .="                   </TD>
 		                 </TR>";
 	}
+    else{
+        $body['Websites'] = "";
+    }
+
 
 
 
@@ -244,6 +303,10 @@ $contact = new ContactInformation(check_id());
         $body['note'] = $contact->getnotes();
         $body['LBL_NOTES'] = $lang['LBL_NOTES'];
 	}
+    else{
+        $body['note'] = "";
+    }
+
 
     $body['lastUpdatetxt'] = $lang['LAST_UPDATE'];
     $body['lastupdate'] = $contact->getlast_update();
@@ -253,3 +316,10 @@ $contact = new ContactInformation(check_id());
 
 
 
+function getsiteNorU(string $websiteName, string $websiteURL)
+{
+    if(isset($websiteName) && $websiteName !=""){
+       return $websiteName;
+    }
+    return $websiteURL;
+}

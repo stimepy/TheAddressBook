@@ -164,6 +164,7 @@ function isAlphaNumeric($string) {
 // If an error is encountered, report it to the user and halt further execution of script.
 //
 function reportScriptError($msg) {
+    global $lang;
 ?>
 <html>
 <head>
