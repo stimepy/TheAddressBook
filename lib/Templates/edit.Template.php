@@ -24,7 +24,7 @@ class editTemplate{
         $row6 = 6;
 
         $output = "        <BODY>
-    <FORM NAME=\"EditEntry\" ACTION=\"" . $body["file_save"] . "?mode=" . $body['mode'] . " method=\"post\">
+    <FORM NAME=\"EditEntry\" ACTION=\"" . $body["file_Save"] . "?mode=" . $body['mode'] . "\" method=\"post\" autocomplete=\"on\">
     <INPUT TYPE=\"hidden\" NAME=\"id\" VALUE=\"" . $body['id'] . "\">
     <CENTER>
     <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
@@ -62,15 +62,15 @@ class editTemplate{
 		   <TR VALIGN=\"bottom\">
 			  <TD WIDTH=185 CLASS=\"data\">
 				   <B>" . $lang['LBL_LASTNAME_COMPANY'] . "</B>" . $lang['LBL_REQUIRED'] . "
-				   <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"lastname\" VALUE=\" ". hasValueOrBlank($body['contact_lastname']) ."\">
+				   <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"lastname\" VALUE=\" ". hasValueOrBlank($body, 'contact_lastname') ."\">
 			  </TD>
 			  <TD WIDTH=190 CLASS=\"data\">
 				   <B>" . $lang['LBL_FIRSTNAME'] . "</B>
-				   <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"firstname\" VALUE=\"". hasValueOrBlank($body['contact_firstname']) ."\">
+				   <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"firstname\" VALUE=\"". hasValueOrBlank($body, 'contact_firstname') ."\">
 			  </TD>
 			  <TD WIDTH=185 CLASS=\"data\">
 				   <B>" . $lang['LBL_MIDDLENAME'] . "</B>
-				   <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"middlename\" VALUE=\"". hasValueOrBlank($body['contact_middlename']) ."\">
+				   <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"middlename\" VALUE=\"". hasValueOrBlank($body, 'contact_middlename') ."\">
 			  </TD>
 		   </TR>
 		   <TR VALIGN=\"top\">
@@ -106,7 +106,7 @@ class editTemplate{
          </TR>
         <TR VALIGN=\"top\">
             <TD WIDTH=190 CLASS=\"data\">";
-       $output.="			    ".createTextArea(150, $row6, $body['TABLE_EMAIL'], $body['r_email']);
+       $output.="			    ".createTextArea(150, $row6, $body['TABLE_EMAIL'], hasValueOrBlank($body,'r_email'));
        $output .= "			  </TD>
 			  <TD WIDTH=370 CLASS=\"data\" COLSPAN=2>
 			  ".$lang['EDIT_HELP_EMAIL']."
@@ -117,7 +117,7 @@ class editTemplate{
 		   </TR>
 		   <TR VALIGN=\"top\">
 			  <TD WIDTH=190 CLASS=\"data\">";
-       $output.="			    ".createTextArea(150, $row6, $body['TABLE_OTHERPHONE'], $body['r_otherPhone']);
+       $output.="			    ".createTextArea(150, $row6, hasValueOrBlank($body,'TABLE_OTHERPHONE'), hasValueOrBlank($body,'r_otherPhone'));
        $output .="			  </TD>
 			  <TD WIDTH=370 CLASS=\"data\" COLSPAN=2>
 					".$lang['EDIT_HELP_OTHERPHONE']."
@@ -128,7 +128,7 @@ class editTemplate{
 		   </TR>
 		   <TR VALIGN=\"top\">
 			  <TD WIDTH=190 CLASS=\"data\">";
-       $output.="			    ".createTextArea(150, $row6, $body['TABLE_MESSAGING'], $body['r_messaging']);
+       $output.="			    ".createTextArea(150, $row6, $body['TABLE_MESSAGING'], hasValueOrBlank($body,'r_messaging'));
        $output.="			  </TD>
 			  <TD WIDTH=370 CLASS=\"data\" COLSPAN=2>
 					".$lang['EDIT_HELP_MESSAGING']."
@@ -139,7 +139,7 @@ class editTemplate{
 		   </TR>
 		   <TR VALIGN=\"top\">
 			  <TD WIDTH=375 CLASS=\"data\" COLSPAN=2>";
-       $output.="			    ".createTextArea(340,$row6, $body['TABLE_WEBSITES'], $body['r_websites']);
+       $output.="			    ".createTextArea(340,$row6, $body['TABLE_WEBSITES'], hasValueOrBlank($body,'r_websites'));
        $output.="       			  </TD>
 			  <TD WIDTH=185 CLASS=\"data\">
 					 ".$lang['EDIT_HELP_WEBSITES']."
@@ -151,23 +151,23 @@ class editTemplate{
 			<TR VALIGN=\"top\">
 				<TD WIDTH=190 CLASS=\"data\">
 					<B>".$lang['LBL_BIRTHDATE']."(yyyy-mm-dd)</B>
-					<BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"birthday\" VALUE=\"".hasValueOrBlank($body['contact_birthday'])."\">
+					<BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"birthday\" VALUE=\"".hasValueOrBlank($body, 'contact_birthday')."\">
 				</TD>
 				<TD WIDTH=185 CLASS=\"data\">
 					<B>".$lang['LBL_PICTURE_URL']."</B>
-					<BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"pictureURL\" VALUE=\"".hasValueOrBlank($body['contact_pictureURL'])."\">";
-        if($body['allowPicUpload']!=0) {
-            $output .="<BR><A HREF=\"#\" onClick=\"window.open('" . $body['FILE_UPLOAD'] . "','uploadWindow','width=450,height=250'); return false;\">" . $lang['LBL_UPLOAD_PICTURE'] . "</A>\n";
+					<BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"pictureURL\" VALUE=\"".hasValueOrBlank($body,'contact_pictureURL')."\">";
+        if(hasValueOrBlank($body,'allowPicUpload')!=0) {
+            $output .="<BR><A HREF=\"#\" onClick=\"window.open('" . hasValueOrBlank($body,'allowPicUpload') . "','uploadWindow','width=450,height=250'); return false;\">" . $lang['LBL_UPLOAD_PICTURE'] . "</A>\n";
         }
         $output .="        </TD>
 				<TD WIDTH=185 CLASS=\"data\">
 					<B>". $lang['LBL_NICKNAME'] ."</B>
-                    <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"nickname\" VALUE=\" ". hasValueOrBlank($body['contact_nickname']) ."\">
+                    <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"nickname\" VALUE=\" ". hasValueOrBlank($body,'contact_nickname') ."\">
                 </TD>
         </TR>
         <TR VALIGN=\"top\">
             <TD WIDTH=375 CLASS=\"data\" COLSPAN=2>";
-        $output.="			    ".createTextArea(340,$row6+3 , $body['TABLE_ADDITIONALDATA'], $body['r_additionalData']);
+        $output.="			    ".createTextArea(340,$row6+3 , $body['TABLE_ADDITIONALDATA'], hasValueOrBlank($body,'r_additionalData'));
         $output.="            </TD>
 			  <TD WIDTH=185 CLASS=\"data\">
 			        ". $lang['EDIT_HELP_OTHERINFO'] ."
@@ -180,7 +180,7 @@ class editTemplate{
 		   <TR VALIGN=\"top\">
 			  <TD WIDTH=560 CLASS=\"data\" COLSPAN=3>
                 ". $lang['EDIT_HELP_NOTES'] ."</br>";
-        $output.="			    ".createTextArea(530,$row6 , $lang['LBL_NOTES'] , $body['$contact_notes'], 'virtual' );
+        $output.="			    ".createTextArea(530,$row6 , $lang['LBL_NOTES'] , hasValueOrBlank($body,'$contact_notes'), 'virtual' );
         $output.="			  </TD>
 		   </TR>
 
@@ -190,7 +190,7 @@ class editTemplate{
             </TR>
             <TR VALIGN=\"top\">
                 <TD WIDTH=190 CLASS=\"data\">";
-        $output .=  $this->CreateGroupCheckBoxes($body['r_grouplist'], $body['id'], $body['numGroups']);
+        $output .=  $this->CreateGroupCheckBoxes(hasValueOrBlank($body,'r_grouplist'), hasValueOrBlank($body,'id'), hasValueOrBlank($body,'numGroups'));
  $output .= "        </TD>
 			  <TD WIDTH=185 CLASS=\"data\">
 				   <INPUT TYPE=\"checkbox\" NAME=\"groupAddNew\" VALUE=\"addNew\"><B>". $lang['EDIT_ADD_NEW_GROUP']."</B>
@@ -202,7 +202,7 @@ class editTemplate{
             </TR>
             <TR VALIGN=\"top\">
             <TD WIDTH=560 CLASS=\"data\" COLSPAN=3>
-            <INPUT TYPE=\"checkbox\" NAME=\"hidden\" VALUE=\"1\" ". hasValueOrBlank($body['contact_hidden']) ."><b>".$lang['EDIT_HIDE_ENTRY']."</b>
+            <INPUT TYPE=\"checkbox\" NAME=\"hidden\" VALUE=\"1\" ". hasValueOrBlank($body,'contact_hidden') ."><b>".$lang['EDIT_HIDE_ENTRY']."</b>
              </TD>
 		   </TR>
 		   <TR VALIGN=\"top\">
@@ -235,7 +235,7 @@ class editTemplate{
     private function CreateGroupCheckBoxes($r_grouplist, $colSplitat, $selectedgroups){
         $output ="";
         $isSplit = 0;
-        if(isset($r_grouplist)) {
+        if(isset($r_grouplist) && $r_grouplist != "") {
             foreach ($r_grouplist as $tbl_grouplist) {
                 $groupCheck = "";
                 if ($tbl_grouplist['id'] == $selectedgroups) {
@@ -257,29 +257,30 @@ class editTemplate{
 
     private function createAddress($address, $lang, $primaryAddress, $addidnum = 0 ){
 
-        $checkedPrimary =($primaryAddress == hasValueOrBlank($address['address_refid']))? " checked" : '';
+        $checkedPrimary =($primaryAddress == hasValueOrBlank($address, 'address_refid'))? " checked" : '';
 
         $output = "                <TR VALIGN=\"top\">
                     <TD WIDTH=190 CLASS=\"data\">
                         <B>". $lang['LBL_TYPE'] ."</B>
-                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_type_".$addidnum."\" VALUE=\"". hasValueOrBlank($address['type']) ."\">
+                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_type_".$addidnum."\" VALUE=\"". hasValueOrBlank($address, 'type') ."\">
                     </TD>
                     <TD WIDTH=185 CLASS=\"data\">
                         <INPUT TYPE=\"radio\" NAME=\"address_primary_select\" VALUE=\"address_primary_".$addidnum."\" ". $checkedPrimary ."> <b>".$lang['LBL_SET_AS_PRIMARY']."</b>
                     </TD>
                     <TD WIDTH=185 CLASS=\"data\">
                         <a href=\"#\" onClick=\"deleteAddress(". $addidnum ."); return false;\">". $lang['EDIT_DEL_ADD'] ."</a>
-                        <input type=\"hidden\" name=\"address_refid_". $addidnum ."\" value=\"". hasValueOrBlank($address['refid']) ."\">
+                        <input type=\"hidden\" name=\"address_refid_". $addidnum ."\" value=\"". hasValueOrBlank($address,'refid') ."\">
+                        <input type=\"hidden\" name=\"address_remove_". $addidnum ."\" value=\"0\">
                     </TD>
                 </TR>
                 <TR VALIGN=\"top\">
                     <TD WIDTH=190 CLASS=\"data\">
                         <b>". $lang['LBL_ADDRESS_LINE1'] ."</b>
-                        <br/><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_line1_".$addidnum."\" VALUE=\"". hasValueOrBlank($address['line1']) ."\">
+                        <br/><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_line1_".$addidnum."\" VALUE=\"". hasValueOrBlank($address,'line1') ."\">
                     </TD>
                     <TD WIDTH=185 CLASS=\"data\">
                         <B>". $lang['LBL_ADDRESS_LINE2'] ."</B>
-                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_line2_".$addidnum."\" VALUE=\"". hasValueOrBlank($address['line2']) ."\">
+                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_line2_".$addidnum."\" VALUE=\"". hasValueOrBlank($address,'line2') ."\">
                     </TD>
                     <TD WIDTH=185 CLASS=\"data\">
                         &nbsp;
@@ -288,25 +289,25 @@ class editTemplate{
                 <TR VALIGN=\"top\">
                     <TD WIDTH=190 CLASS=\"data\">
                         <B>". $lang['LBL_CITY'] ."</B>
-                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_city_".$addidnum."\" VALUE=\"". hasValueOrBlank($address['city']) ."\">
+                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_city_".$addidnum."\" VALUE=\"". hasValueOrBlank($address, 'city') ."\">
                     </TD>
                     <TD WIDTH=185 CLASS=\"data\">
                         <B>". $lang['LBL_STATE'] ."</B>
-                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_state_".$addidnum."\" VALUE=\"". hasValueOrBlank($address['state']) ."\">
+                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_state_".$addidnum."\" VALUE=\"". hasValueOrBlank($address,'state') ."\">
                     </TD>
                     <TD WIDTH=185 CLASS=\"data\">
                         <B>". $lang['LBL_ZIPCODE'] ."</B>
-                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_zip_".$addidnum."\" VALUE=\"". hasValueOrBlank($address['zip']) ."\">
+                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_zip_".$addidnum."\" VALUE=\"". hasValueOrBlank($address,'zip') ."\">
                     </TD>
                 </TR>
                 <TR VALIGN=\"top\">
                     <TD WIDTH=190 CLASS=\"data\">
                         <B>". $lang['LBL_PHONE1'] ."</B>
-                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_phone1_".$addidnum."\" VALUE=\"". hasValueOrBlank($address['phone1']) ."\">
+                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_phone1_".$addidnum."\" VALUE=\"". hasValueOrBlank($address,'phone1') ."\">
                     </TD>
                     <TD WIDTH=185 CLASS=\"data\">
                         <B>". $lang['LBL_PHONE2'] ."</B>
-                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_phone2_".$addidnum."\" VALUE=\"". hasValueOrBlank($address['phone2']) ."\">
+                        <BR><INPUT TYPE=\"text\" SIZE=20 CLASS=\"formTextbox\" NAME=\"address_phone2_".$addidnum."\" VALUE=\"". hasValueOrBlank($address,'phone2') ."\">
                     </TD>
                     <TD WIDTH=185 CLASS=\"data\">
                         <B>". $lang['LBL_COUNTRY'] ."</B>
@@ -315,7 +316,7 @@ class editTemplate{
         // -- GENERATE COUNTRY SELECTION LIST --
         // This sort routine can handle country names with special characters
         $addressOK=0;
-        $address_country = hasValueOrBlank($address['country']);
+        $address_country = hasValueOrBlank($address,'country');
         $option = '';
         foreach(array_keys($this->countrySorted) as $country_id) {
             $sel ='';
@@ -334,7 +335,7 @@ class editTemplate{
             $option .= "            <option value=". $country_id." ".$sel.">". $this->countrySorted[$country_id] ."</option>\n";
 
         }
-        $output = $option ."
+        $output .= $option ."
                         </SELECT>";
        if($primaryAddress != -1) {
            $output .="</TD>
@@ -351,6 +352,7 @@ class editTemplate{
 			  </TD>
 		   </TR>";
        }
+       return $output;
     }
 
 }

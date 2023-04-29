@@ -27,6 +27,7 @@ switch($post){
     case 2:
        $installtemplate->checkDB();
        $installtemplate->installData();
+
        $output .=$installtemplate->Step2($lang);
        break;
     default:

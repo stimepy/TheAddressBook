@@ -26,7 +26,7 @@ $globalUsers->checkForLogin('admin', 'user');
 
 $body['mode'] = $_GET['mode'];
 
-$body['fileSave'] = FILE_SAVE;
+$body['file_Save'] = FILE_SAVE;
 $body['BTN_SAVE'] = $lang['BTN_SAVE'];
 $body['TABLE_EMAIL'] = TABLE_EMAIL;
 $body['TABLE_OTHERPHONE'] =TABLE_OTHERPHONE;
@@ -158,6 +158,6 @@ else {
 $output = webheader($lang['TITLE_TAB'], $lang['CHARSET'], "edit.script.js");
 $output .= $myAddressDetailsTemplate->editbody($body, $lang, $country,$options->getcountryDefault());
 
-Display(($output));
+Display($output);
 
 

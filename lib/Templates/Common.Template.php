@@ -61,7 +61,7 @@ function outputloop($item){
     $maxx = count($item);
     $x = 0;
     $text = '';
-    while($maxx < $x ){
+    while($maxx > $x ){
         $text .=$item[$x];
         $x++;
     }
@@ -85,10 +85,15 @@ function createTextArea($width, $rows, $title, $data, $wrap = 'off'){
     return $output;
 }
 
-function hasValueOrBlank($value){
-    return ((!empty($value)) ? stripslashes($value) : '');
+function hasValueOrBlank($value, $identifier = NULL){
+    if(isset($identifier)) {
+        $returner =  ((isset($value[$identifier])) ? stripslashes($value[$identifier]) : '');
+    }
+    else {
+        $returner = ((isset($value)) ? stripslashes($value) : '');
+    }
+    return $returner;
 }
-
 
 function sortandSetCountry($country){
     foreach ($country as $country_id=>$val) {

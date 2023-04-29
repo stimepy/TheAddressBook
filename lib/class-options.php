@@ -350,25 +350,31 @@ class Options {
     function setupAllGroups(&$body,$list){
         GLOBAL $globalSqlLink, $lang;
 
-        $body['G_0'] = array( 'groupid' => 0, 'groupname' => $lang['GROUP_ALL_SELECT'] );
-        $body['G_1'] = array( 'groupid' => 1, 'groupname' => $lang['GROUP_UNGROUPED_SELECT'] );
+        $body['G_0'] = array( 'groupid' => 1, 'groupname' => $lang['GROUP_ALL_SELECT'] );
+        $body['G_1'] = array( 'groupid' => 2, 'groupname' => $lang['GROUP_UNGROUPED_SELECT'] );
 
         if ($_SESSION['usertype'] == "admin") {
-            $body['G_2'] = array( 'groupid' => 2, 'groupname' => $lang['GROUP_HIDDEN_SELECT'] );
+            $body['G_2'] = array( 'groupid' => 3, 'groupname' => $lang['GROUP_HIDDEN_SELECT'] );
             $x=3;
         }
         else {
             $x=2;
         }
-        $where = "groupid >= 3";
+        $where = "groupid > 3";
         $body['G_selected'] = $list->getgroup_id();
 
         $globalSqlLink->SelectQuery( 'groupid, groupname',  TABLE_GROUPLIST ,  $where,  'order by groupname', NULL);
         $r_grouplist = $globalSqlLink->FetchQueryResult();
         if($r_grouplist != -1) {
-            foreach ($r_grouplist as $rbl_grouplist) {
-                $body['G_' . $x] = array('groupid' => $rbl_grouplist['groupid'], 'groupname' => $rbl_grouplist['groupname']);
-                $x++;
+            if(is_array($r_grouplist[0])) {
+                foreach ($r_grouplist as $rbl_grouplist) {
+                    $body['G_' . $x] = array('groupid' => $rbl_grouplist['groupid'], 'groupname' => $rbl_grouplist['groupname']);
+                    $x++;
+
+                }
+            }
+            else{
+                $body['G_' . $x] = array('groupid' => $r_grouplist['groupid'], 'groupname' => $r_grouplist['groupname']);
             }
         }
         $body['G_count'] = $x;

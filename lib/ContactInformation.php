@@ -51,7 +51,7 @@ class ContactInformation {
         $this->birthday         = $contact['birthday'];
         $this->nickname         = hasValueOrBlank( $contact['nickname'] );
         $this->picture_url      = hasValueOrBlank( $contact['pictureURL'] );
-        $this->notes            = hasValueOrBlank( nl2br( $contact['notes'] ));
+        $this->notes            = nl2br( hasValueOrBlank( $contact['notes'] ));
         $this->last_update      = new DateTime( $contact['lastUpdate']);   //  );
         $this->hidden           = $contact['hidden'];
         $this->who_added        = hasValueOrBlank( $contact['whoAdded'] );
