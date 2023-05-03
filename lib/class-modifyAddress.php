@@ -1,5 +1,13 @@
 <?php
-
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2.1
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 5-02-2022
+ ****************************************************************
+ * Address saving...
+ *
+ *****************************************************************/
 class modifyAddress
 {
 
@@ -8,7 +16,6 @@ class modifyAddress
     public $cleanedValues;
     public $lastUpdated;
     private $address_primary;
-
 
 
     public function __construct($mode)
@@ -263,13 +270,21 @@ class modifyAddress
             return 1;
         }
         // Not new how do we move foward
-        if ($this->cleanedValues['groups']) {
-            while (list ($x_key, $x_gid) = each ($_POST['groups'])) {
-                $insert['id'] = $id;
-                $insert['groupid'] = $x_gid;
-                $globalSqlLink->InsertQuery($insert, TABLE_GROUPS);
-                //$groupsql = "INSERT INTO " . TABLE_GROUPS . " VALUES ($id,$x_gid)";
-                //runQuery($groupsql);
+        if (is_array($this->cleanedValues['groups'])) {
+            $results = $this->getGroup();
+            if($results != -1) {
+                foreach ($this->cleanedValues['groups'] as $group) {
+                    $found = false;
+                    for ($x = 0; $x < sizeof($results); $x++) {
+                        if ($results[$x]['groupname'] == $this->cleanedValues['groupAddName']) {
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if(!$found){
+                        $this->insertGroup();
+                    }
+                }
             }
         }
     }
@@ -280,6 +295,13 @@ class modifyAddress
         $globalSqlLink->InsertQuery(array('groupname' => "'" . $this->cleanedValues['groupAddName'] . "'"), TABLE_GROUPLIST);
         // Insert New Group entry for this person into the Groups list.
         $globalSqlLink->InsertQuery(array('id' => $this->cleanedValues['id'], 'groupid' => $globalSqlLink->GetLastInsertId()), TABLE_GROUPS);
+    }
+
+    private function getGroup()
+    {
+        global $globalSqlLink;
+        $globalSqlLink->SelectQuery(TABLE_GROUPLIST.".groupname", TABLE_GROUPLIST ." left join ". TABLE_GROUPS ." using(groupid)", TABLE_GROUPS.".'id' = ". $this->cleanedValues['id'] );
+        return $globalSqlLink->FetchQueryResult();
     }
 
 }

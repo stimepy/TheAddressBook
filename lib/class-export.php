@@ -1,9 +1,9 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2
+ *  THE ADDRESS BOOK  :  version 1.2.1
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-14-2022
+ * Last Modified: 5-02-2022
  ****************************************************************
  *  lib/class-export.php
  *  All things to do with exporting address book data.
@@ -177,6 +177,7 @@ class export{
         $xml->startElement("AddressBook");
         $xml->writeElement("Version", 1.2);
 
+
         $globalSqlLink->SelectQuery('*',TABLE_CONTACT, NULL, NULL );
         $r_contact = $globalSqlLink->FetchQueryResult();
         foreach($r_contact as $tbl_contact ){
@@ -186,6 +187,7 @@ class export{
             $xml->writeAttribute("LastUpdate", $tbl_contact['lastUpdate']);
             $xml->endElement();//CONTACT
 
+
             # personal data from TABLE_CONTACT
             $xml->startElement("PERSONALDATA");
             $xml->writeElement("firstname", $tbl_contact['firstname']);
@@ -194,7 +196,9 @@ class export{
             $xml->writeElement("birthday", $tbl_contact['birthday']);
             $xml->writeElement("nickname", $tbl_contact['nickname']);
             $xml->startElement("notes");
-            $xml->writeCdata($tbl_contact['notes']);
+            if(hasValueOrBlank($tbl_contact,'notes')!="") {
+                $xml->writeCdata($tbl_contact['notes']);
+            }
             $xml->endElement();// Notes
             $xml->endElement();// PERSONALDATA
 
@@ -211,10 +215,10 @@ class export{
             }
             $xml->endElement();//email
 
+
             # ********************
             # TABLE_ADDRESS
             # ********************
-            echo "<ADDRESS>\n";
 
             //$xmlAddr = "SELECT * FROM ". TABLE_ADDRESS . " WHERE id=$XID";
             $globalSqlLink->SelectQuery('*',TABLE_ADDRESS, "id=".$tbl_contact['id'], NULL );
@@ -222,7 +226,6 @@ class export{
             $xml->startElement("ADDRESS");
             if($r_addr != -1) {
                 foreach ($r_addr as $tbl_addr) {
-                    $r_addr = $globalSqlLink->FetchQueryResult();
                     $xml->startElement("address");
                     $xml->writeAttribute("type",$tbl_addr['type'] );
                     $xml->writeElement("line1", $tbl_addr['line1']);
@@ -230,7 +233,7 @@ class export{
                     $xml->writeElement("city", $tbl_addr['city']);
                     $xml->writeElement("state", $tbl_addr['state']);
                     $xml->writeElement("zip", $tbl_addr['zip']);
-                    $xml->writeElement("country", $country[$tbl_addr['country']]);
+                    $xml->writeElement("country", $country[strtolower($tbl_addr['country'])]);
                     $xml->writeElement("phone1", $tbl_addr['phone1']);
                     $xml->writeElement("phone2", $tbl_addr['phone2']);
                     $xml->endElement();
@@ -276,9 +279,10 @@ class export{
             $globalSqlLink->SelectQuery('*',TABLE_ADDITIONALDATA, "id=".$tbl_contact['id'], NULL );
             $r_data = $globalSqlLink->FetchQueryResult();
             $xml->startElement("ADDITIONAL-DATA");
+
             if($r_data != -1) {
                 foreach ($r_data as $tbl_data) {
-                    $this->WriteElementWithAttribute($xml, "data", "type", $r_data['type'], $r_data['value']);
+                    $this->WriteElementWithAttribute($xml, "data", "type", $tbl_data['type'], $tbl_data['value']);
                 }
             }
 
@@ -291,20 +295,15 @@ class export{
             $globalSqlLink->SelectQuery('*',TABLE_GROUPS ." as g inner join ". TABLE_GROUPLIST ." as l ON(g.groupid = l.groupid)"  , "id=".$tbl_contact['id'], NULL );
             $r_groups = $globalSqlLink->FetchQueryResult();
             $xml->startElement("GROUPS");
-            if($r_groups) {
+            if($r_groups !=-1) {
                 foreach ($r_groups as $tbl_groups) {
                     $this->WriteElementWithAttribute($xml, "group", "id", $tbl_groups['groupid'], $tbl_groups['groupname']);
                 }
             }
 
             $xml->endElement();// Groups
-
-            #### do not move ########
-            $xml->endElement();
         }
         ### close xmlQuery ######
-
-
         $xml->endElement();
 
         return $xml->outputMemory();
@@ -342,8 +341,6 @@ class export{
             die("Something went wrong with your CSV export!");
         }
 
-
-
         $output = "firstname,middlename,lastname,birthday,address1,address2,city,state,zip,phone1,phone2,notes\n";
         foreach ($r_contact as $tbl_contact){
             //while ($tbl_contact = mysql_fetch_array($r_contact)) {
@@ -364,10 +361,8 @@ class export{
                 // str_replace(",","",$tbl_contact['phone']) . "," .
                 // str_replace(",","",$tbl_contact['webpageURL']) . "," .
                 str_replace(",","",$tbl_contact['notes']) . "\n";
-
         }
         return $output;
-
     }
 
     function MySQLExport(){
@@ -382,7 +377,6 @@ class export{
         $output .= " *\n";
         $output .=$output .= " * " . $lang['EXP_MYSQL_5'] . " \n";
         $output .= " *\n";
-        $output .= " * " . $lang['EXP_MYSQL_6'] . " \n";
         $output .= " * " . $lang['EXP_MYSQL_7'] . " \n";
         $output .= " * " . $lang['EXP_MYSQL_8'] . " \n";
         $output .= " * " . $lang['EXP_MYSQL_9'] . " " . date("l F j Y, H:i:s\n");
@@ -394,28 +388,28 @@ class export{
         $tables = $globalSqlLink->CommandQuery('Show Tables');
 
         for($i=0; $i<count($tables); $i++){
-            $output .= $this->BuildTablesExports($tables[i][0]);
-            $columns = $globalSqlLink->CommandQuery('Show Column From '.$tables[i][0]);
-            $output .= $this->createInsertQuery($tables[i][0], $columns);
+            $columns = $globalSqlLink->CommandQuery('Show Columns From '.$tables[$i][0]);
+            $output .= $this->BuildTablesExports($tables[$i][0], $columns);
+
+            $output .= $this->createInsertQuery($tables[$i][0], $columns);
         }
         return $output;
     }
 
     function FileDownloadImmediate($filename, $contentType){
         header("Content-type: ". $contentType);
-        header("Content-disposition: attachment; filename=".$filename);
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
-        header("Expires: 0");
-
+        header("Content-disposition: attachment; filename=\"".$filename."\"");
+         header("Cache-Control: no-store, no-cache, must-revalidate");
+         header("Cache-Control: post-check=0, pre-check=0", false);
+         header("Pragma: no-cache");
+         header("Expires: 0");
     }
 
     private function BuildTablesExports($table, $columns){
         global $globalSqlLink;
         $tableCol = $this->buildColumns($columns);
         $output = "DROP TABLE IF EXISTS " . $table . ";\n";
-        $output .= "CREATE TABLE " . $table . " (". $tableCol .") TYPE=MyISAM;\n";
+        $output .= "CREATE TABLE " . $table . " (\n". $tableCol .") TYPE=MyISAM;\n";
         return $output;
     }
     private function buildColumns($columns){
@@ -450,6 +444,7 @@ class export{
 
         // Create the Insert Query
         $statement = '';
+
         foreach($result as $resultrow){
             //while ($resultrow = mysql_fetch_row($result)) {
             $statement .= "INSERT INTO " . $table . " VALUES(";
@@ -462,7 +457,8 @@ class export{
 
     private function buildSQLData($result, $column){
         $output = "";
-        for($col = 0; $col<count($result); $col++){
+
+        for($col = 0; $col<sizeof($result)/2; $col++){
             if($col != 0){
                 $output .= ',';
             }
@@ -484,7 +480,7 @@ class export{
                     $output .= $result[$col];
             }
         }
-
+        return $output;
     }
 
 

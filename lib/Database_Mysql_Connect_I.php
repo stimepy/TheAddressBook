@@ -1,9 +1,9 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2
+ *  THE ADDRESS BOOK  :  version 1.2.1
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-13-2022
+ * Last Modified: 5-02-2022
  ****************************************************************
  *  Database_Mysql_Connect_I.php
  *  Mysql connection and manipulation.
@@ -23,23 +23,47 @@ class Mysql_Connect_I
   private $MySQLLastInsertID;
 
 
-
+    /**
+     * @param $username
+     * @return void
+     * Sets Database Username
+     */
     private function SetUsername($username){
         $this->myUsername = $username;
     }
 
+    /**
+     * @param $password
+     * @return void
+     * Sets Database Password
+     */
     private function SetPassword($password){
         $this->myPassword = $password;
     }
 
+    /**
+     * @param $databaseName
+     * @return void
+     * Sets Database name
+     */
     private function SetDatabaseName($databaseName){
         $this->myDatabase = $databaseName;
     }
 
+    /**
+     * @param $hostName
+     * @return void
+     * Sets Database Hostname
+     */
     private function SetHost($hostName){
         $this->myHost = $hostName;
     }
 
+    /**
+     * @param $rowCount
+     * @return void
+     * Is passed in the last row count and saves it.
+     */
     private function SetRowCount($rowCount){
         if($rowCount == null){
             $this->mySQLRowCount = 0;
@@ -48,11 +72,24 @@ class Mysql_Connect_I
         $this->mySQLRowCount = $rowCount;
     }
 
+    /**
+     * @param $insertID
+     * @return void
+     * Sets last insert id.
+     */
     private function SetLastInsertID($insertID){
         $this->myInsertID = $insertID;
     }
 
     // Main connection
+
+    /**
+     * @param $hostName
+     * @param $databaseName
+     * @param $username
+     * @param $password
+     * Saves the database information and starts a request to start a new db connection
+     */
     public function __construct($hostName, $databaseName, $username, $password)
     {
         $this->SetUsername($username);
@@ -64,10 +101,18 @@ class Mysql_Connect_I
     }
 
 
+    /**
+     * @return integer
+     * returns last row count
+     */
     public function GetRowCount(){
         return $this->mySQLRowCount;
     }
 
+    /**
+     * @return integer
+     * returns last Insert ID
+     */
     public function GetLastInsertId(){
         return $this->myInsertID;
     }
@@ -77,6 +122,11 @@ class Mysql_Connect_I
 // OPEN DATABASE - openDatabase();
 // Connects to the MySQL server and retrieves the database.
 //
+    /**
+     * @return void
+     * Creates the actual database connection.  Upon failure dies.
+     * TODO: Make better error handling
+     */
     private function openDatabase() {
 
         // Default to local host if a hostname is not provided
@@ -95,6 +145,11 @@ class Mysql_Connect_I
 
     }
 
+    /**
+     * @param $databasename
+     * @return void
+     * Using the existing databse connection changes the database we are currently connected to.
+     */
     public function ChangeDatabase($databasename){
         if($databasename != $this->myDatabase){
             $this->SetDatabaseName($databasename);
@@ -106,6 +161,15 @@ class Mysql_Connect_I
     }
 
 
+    /**
+     * @param $select
+     * @param $table
+     * @param $where
+     * @param $orderby
+     * @return void
+     * Takes in select query information asks to build the query, dies if query is bad
+     * TODO: Better error handling
+     */
     public Function SelectQuery($select, $table, $where, $orderby = null)
     {
         $query = $this->buildquery($select, $table, $where, $orderby, 'SELECT');
@@ -120,27 +184,34 @@ class Mysql_Connect_I
         }
     }
 
+    /**
+     * @param $toUpdate
+     * @param $table
+     * @param $where
+     * @return void
+     * * Takes in an update query information asks to build the query, dies if query is bad
+     * TODO: Better error handling
+     */
     public function UpdateQuery($toUpdate, $table, $where){
         $query = $this->buildquery($toUpdate, $table, $where, '', 'UPDATE');
         if($query == -1){
             die('Badly Formed Query in Database_Mysql_Connect_I.');
         }
+        //echo $query;
         $this->mySQLresults=$this->mySQLConnection->query($query);
         if($this->mySQLresults == false){
             die('query error.');
         }
         $this->SetRowCount($this->mySQLConnection->affected_rows);
-        //Clear Results;
-        //$this->mySQLConnection->free();
     }
 
     /**
+     * @return array
      * CommandQuery
      * Query takes ANY sql command.  and immidiately returns results.
      * User SPARINGLY as this CAN CAUSE EXPLOSIONS!!!!!
      * DOES NOT PROVIDE A ROW COUNT ONLY AN ARRAY!
-     *
-     * @return array
+     * TODO: better error handling
      */
     public function CommandQuery($query){
         $this->mySQLresults=$this->mySQLConnection->query($query);
@@ -149,6 +220,13 @@ class Mysql_Connect_I
         return $this->FetchQueryResult();
     }
 
+    /**
+     * @param $insert
+     * @param $table
+     * @return void
+     * Takes in an inserty query information asks to build the query, sets last insert id upon completion, dies if query is bad
+     * TODO: Better error handling
+     */
     public function InsertQuery($insert, $table){
         $query = $this->buildquery($insert, $table, '','', 'INSERT');
         $this->mySQLresults=$this->mySQLConnection->query($query);
@@ -158,12 +236,16 @@ class Mysql_Connect_I
         $this->MySQLLastInsertID =
             $this->SetLastInsertID($this->mySQLConnection->insert_id);
         $this->SetRowCount($this->mySQLConnection->affected_rows);
-
-        //Clear Results;
-        //$this->mySQLConnection->free();
     }
 
 
+    /**
+     * @param $where
+     * @param $table
+     * @return void
+     * Takes in a delete query information asks to build the query. Sets last row count. Dies if query is bad
+     * TODO: Better error handling
+     */
     public function DeleteQuery($where, $table){
         $query = $this->buildquery($where, $table, '','', 'DELETE');
         $this->mySQLresults=$this->mySQLConnection->query($query);
@@ -176,6 +258,13 @@ class Mysql_Connect_I
     }
 
 
+    /**
+     * @param $query
+     * @param $permissions
+     * @return void
+     * Takes any premade query and runs in.  No error handling, checking or anything else
+     * TODO Better error handling
+     */
     public function FreeFormQueryNoErrorchecking($query, $permissions){
         if($permissions == 1091){
             $this->mySQLresults=$this->mySQLConnection->query($query);
@@ -183,13 +272,19 @@ class Mysql_Connect_I
     }
 
 
+    /**
+     * @return array|integer
+     * Fetches the results and returns them if the exists else -1.
+     */
     public Function FetchQueryResult(){
         $results = array();
         $this->SetRowCount($this->mySQLresults->num_rows);
         if($this->GetRowCount() > 0) {
             if($this->GetRowCount() == 1) {
                 $tempresults[] = $this->mySQLresults->fetch_array();
-                $results= $tempresults[0];
+                // Sometimes items are expected as multiple rows but due to low data, only 1 row is available.
+                //  Adding that one row into array to keep things from breaking and to limit if statements
+                $results[0]= $tempresults[0];
             }
             else{
                 while( $row = $this->mySQLresults->fetch_array()){
@@ -205,6 +300,12 @@ class Mysql_Connect_I
         return -1;  // Something went horribly wrong.
     }
 
+    /**
+     * @param $table
+     * @param $where
+     * @return int
+     * gets a count of rows given a where/table setup..
+     */
     public function SelectCount($table, $where){
         $this->SelectQuery("1 as 'cnt'", $table, $where, NULL);
         $count=$this->FetchQueryResult();
@@ -215,7 +316,15 @@ class Mysql_Connect_I
     }
 
 
-
+    /**
+     * @param $wants
+     * @param $table
+     * @param $where
+     * @param $other
+     * @param $type
+     * @return int|string
+     * Determines what the query type is, and calls appropriate handler to build the query.  Returns -1 if minimal requirements are not met.
+     */
     private function buildquery($wants, $table, $where, $other, $type){
         switch($type){
             case 'SELECT':
@@ -246,6 +355,14 @@ class Mysql_Connect_I
         }
     }
 
+    /**
+     * @param $select
+     * @param $table
+     * @param $where
+     * @param $orderby
+     * @return string
+     * literally builds the select query
+     */
     private function buildSelect($select, $table, $where, $orderby){
          $query = 'Select '.$select.' from '.$table;
 
@@ -261,9 +378,13 @@ class Mysql_Connect_I
     }
 
 
-
-
-
+    /**
+     * @param $toUpdate
+     * @param $table
+     * @param $where
+     * @return string
+     * literally builds the update query.
+     */
     private function  buildUpdate($toUpdate, $table, $where){
         $Select = '';
         $countOfSelects = 0;
@@ -282,9 +403,12 @@ class Mysql_Connect_I
     }
 
 
-
-
-
+    /**
+     * @param $Toinsert
+     * @param $table
+     * @return string
+     * literally builds the insert query
+     */
     private function buildInsert($Toinsert, $table){
         $insertkey = '';
         $insertvalue = '';
@@ -306,11 +430,24 @@ class Mysql_Connect_I
     }
 
 
-
+    /**
+     * @param $where
+     * @param $table
+     * @return string
+     * Literally builds the delete query.
+     */
     private function buildDelete($where, $table){
         echo 'Delete From '.$table.' where '.$where;
         $query = 'Delete From '.$table.' where '.$where;
         return $query;
     }
 
+    /**
+     * @param $item
+     * @return string
+     * takes a string/int and makes it so that the databse can use it as a string.
+     */
+    public function readyVarSting($item){
+        return "'".$item."'";
+    }
 }

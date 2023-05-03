@@ -1,10 +1,16 @@
 <?php
-/*This file was generated from information stored in babelkit
-*  babelkit is the database in which our translator's actually do the translation
-*  The link to the babelkit database is: http://sallyanddavid.com/cgi-bin/BabelKit/php/bk_admin.php
-***************************************
-*  THE ADDRESS BOOK  :  version 1.04  or higher 
-*/
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2.1
+ *
+ * Author: stimepy@aodhome.com
+ * Original Authors: Lou Huang, David Howe
+ * Last Modified: 5-02-2023
+ ****************************************************************
+ *  Note: Original file was generated from information stored in babelkit.  This
+ *  no longer exists
+ *
+ ****************************************************************/
+
 define('LANGUAGE_NAME', "English"); 	
 define('LANGUAGE_CODE', "en"); 	
 define('LANGUAGE_TRANSLATOR_NAME', "Lou Huang, David Howe "); 
@@ -258,7 +264,7 @@ $lang= array(
 'OPT_LIMIT_ENTRIES_HELP' =>"<BR>This option allows you to limit the number of entries shown per page. This can be used together with the show by letter option or separately. 
 <BR>To show all entries on a single page again, enter \"0\".",
 'OPT_LIMIT_ENTRIES_LBL' =>"Limit entries per page",
-'OPT_MSG_ALLOWED_HTML' =>"<b>Allowed HTML tags:</b> <a><b><i><u><p><br>",
+'OPT_MSG_ALLOWED_HTML' =>"<b>Allowed HTML tags:</b> &lt;a&gt;&lt;b&gt;&lt;i&gt;&lt;u&gt;&lt;p&gt;&lt;br&gt;",
 'OPT_MSG_LOGIN_HELP' =>"Sets the introductory message displayed on the login screen.",
 'OPT_MSG_LOGIN_LBL' =>"Login Screen Message",
 'OPT_MSG_WELCOME_HELP' =>"Sets the welcome message displayed on the contact list page.",

@@ -1,9 +1,9 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2
+ *  THE ADDRESS BOOK  :  version 1.2.1
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-17-2022
+ * Last Modified: 5-02-2022
  ****************************************************************
  *  class.user.php
  *  Stuff to do with users
@@ -31,8 +31,9 @@ class users
             die(reportScriptError("Unable to retrieve options in authorization check."));
         }
 
+
         //No login required I guess
-        if ($requireLogin['requireLogin'] != 1) {
+        if ($requireLogin[0]['requireLogin'] != 1) {
             // If there is no current user logged in, set the user to @auth_off.
             // If there is a user logged in, it will proceed normally.
             if (!isset($_SESSION['username'])) {

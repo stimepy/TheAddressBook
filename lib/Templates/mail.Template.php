@@ -1,9 +1,9 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2
+ *  THE ADDRESS BOOK  :  version 1.2.1
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-13-2022
+ * Last Modified: 5-02-2023
  ****************************************************************
  *  mail.template.php
  *  mail html
@@ -145,9 +145,15 @@ class mailTemplate{
 
             $r_email = $list->getEmailsByContactId($tbl_contact['id']);
             if($r_email != -1) {
-                foreach ($r_email as $tbl_email) {
-                    $output .= "<br><INPUT TYPE=\"checkbox\" NAME=\"mail_to[]\" VALUE=\"" . $tbl_email['email'] . "\" checked>
+                if(is_array($r_email[0])) {
+                    foreach ($r_email as $tbl_email) {
+                        $output .= "<br><INPUT TYPE=\"checkbox\" NAME=\"mail_to[]\" VALUE=\"" . $tbl_email['email'] . "\" checked>
                     " . $list->createEmail($body['useMailScript'], stripslashes($tbl_email['email']));
+                    }
+                }
+                else{
+                    $output .= "<br><INPUT TYPE=\"checkbox\" NAME=\"mail_to[]\" VALUE=\"" . $r_email['email'] . "\" checked>
+                    " . $list->createEmail($body['useMailScript'], stripslashes($r_email['email']));
                 }
             }
             $output .="&nbsp;</TD>\n                 </TR>\n";

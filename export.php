@@ -1,9 +1,9 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2
+ *  THE ADDRESS BOOK  :  version 1.2.1
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-14-2022
+ * Last Modified: 5-02-2022
  ****************************************************************
  *  class-export.php
  *  Exports entries to a variety of other formats.
@@ -18,15 +18,19 @@ global $globalSqlLink, $lang, $globalUsers;
 
 $globalUsers->checkForLogin();
 
+
 $options = new Options();
 $filename = "AddressbookBackup_".date("l F j Y, H:i:s");
 
 
 // ** EXPORT FORMATS **
+if(!isset($_GET['format'])){
+    $_GET['format'] = -1;
+}
 	switch($_GET['format']) {
 
 		case "mysql":
-			$myExport->FileDownloadImmediate($filename.'.sql', "text/plain");
+            $myExport->FileDownloadImmediate($filename.'.sql', "text/plain");
 			display($myExport->MySQLExport());
 			break;
 

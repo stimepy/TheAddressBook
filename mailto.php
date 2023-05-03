@@ -1,9 +1,9 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2
+ *  THE ADDRESS BOOK  :  version 1.2.1
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-13-2022
+ * Last Modified: 5-02-2022
  ****************************************************************
  *  mailto.php
  *  Sends e-mail to one or more addresses
@@ -32,16 +32,18 @@ $list = new ContactList($options);
 // ** GET DESTINATION EMAIL ADDRESS **
 // If there is an e-mail address either via POST or GET we will e-mail to that single address.
 // If not, then we will default to a mailing list setup.
-if ($_REQUEST['to']) {				// Look for a target e-mail in POST/GET first, which has priority.
+if (isset($_REQUEST) && !empty(hasValueOrBlank($_REQUEST,'to'))) {				// Look for a target e-mail in POST/GET first, which has priority.
     $body['mail_to'] = $_POST['to'];
     $body['MailToTitle'] =$lang['TITLE_OPT'];
 }
 else {							// If there is no target e-mail in either, then we go to default mailing list mode.
     // THIS PAGE TAKES SEVERAL GET VARIABLES
-    if ($_GET['groupid'])  $list->setgroup_id($_GET['groupid']);
-    if ($_GET['page'])     $list->setcurrent_page($_GET['page']);
-    if ($_GET['letter'])   $list->setcurrent_letter($_GET['letter']);
-    if ($_GET['limit'])    $list->setmax_entries($_GET['limit']);
+    if(isset($_GET)) {
+        if ($_GET['groupid']) $list->setgroup_id($_GET['groupid']);
+        if (isset($_GET['page'])) $list->setcurrent_page($_GET['page']);
+        if (isset($_GET['letter'])) $list->setcurrent_letter($_GET['letter']);
+        if (isset($_GET['limit'])) $list->setmax_entries($_GET['limit']);
+    }
 
     // Set group name (group_id defaults to 0 if not provided)
     $list->group_name();
@@ -49,7 +51,7 @@ else {							// If there is no target e-mail in either, then we go to default ma
     // ** RETRIEVE CONTACT LIST BY GROUP **
     $body['r_contact'] = $list->retrieve();
     $body['MailToTitle'] = $lang['TOOLBOX_MAILINGLIST'];
-    $body['isPopup'] = $options->getdisplayAsPopup();
+    $body['isPopUp'] = $options->getdisplayAsPopup();
     $body['FILE_ADDRESS'] = FILE_ADDRESS;
     $body['useMailScript'] = $options->getuseMailScript();
 

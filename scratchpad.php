@@ -1,15 +1,18 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.04
- *  
- *  scratchpad.php
+ *  THE ADDRESS BOOK  :  version 1.2.1
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 5-02-2023
+ ****************************************************************
+ *  scratchpad.template.php
  *  Temporary placeholder for notes and such.
  *
  *************************************************************/
 
-
 // ** GET CONFIGURATION DATA **
 require_once('.\Core.php');
+require_once('.\lib\Templates\scratchpad.template.php');
 
 global $globalSqlLink, $globalUsers, $lang;
 
@@ -17,162 +20,30 @@ $globalUsers->checkForLogin();
 
 // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
 $options = new Options();
+$myTemplate = new Scratchpad();
+
+$output = $myTemplate->webheader("$lang[TITLE_TAB] - $lang[TITLE_SCRATCH]", $lang['CHARSET'], 'scratch.script.js', true);
 
 
-?>
-<HTML>
-<HEAD>
-  <TITLE><?php echo "$lang[TITLE_TAB] - $lang[TITLE_SCRATCH]"?></TITLE>
-  <LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
-  <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['CHARSET']?>">
-  <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
-  <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
-  <META HTTP-EQUIV="EXPIRES" CONTENT="-1">
-</HEAD>
-
-<BODY>
-
-<?php
 // CHECK TO SEE IF A FORM HAS BEEN SUBMITTED, AND SAVE THE SCRATCHPAD.
-    if ($_POST['saveNotes'] == "YES") {
+if ($_POST['saveNotes'] == "YES") {
 
-	    $notes = addslashes( trim($_POST['notes']) );
-	    
-        // UPDATES THE SCRATCHPAD TABLE
-        //$sql = "UPDATE ". TABLE_SCRATCHPAD ." SET notes='$notes'";
-        $globalSqlLink->UpdateQuery(array('notes'=> "'".$notes."'" ), TABLE_SCRATCHPAD, NULL);
-       //$update = mysql_query($sql, $db_link)
-		//	or die(reportSQLError($sql));
+    $notes = addslashes( trim($_POST['notes']) );
 
-        echo($lang[SCRATCH_SAVED]."\n");
-/*
-        echo("<P><A HREF=\"" . FILE_LIST . "\"><B>Return to List</B></A>\n");
-        echo("</BODY>");
-        echo("</HTML>");
-        exit();
-*/
-    }
-    
-    
-?>
-
-
-<SCRIPT LANGUAGE="JavaScript">
-<!--
-
-function saveEntry() {
-  //CONFIRMATION DISABLED.
-  //if (confirm('Are you sure you want to save?\nChanges cannot be undone.')) {
-    document.Scratchpad.submit();
-  //}
+    $globalSqlLink->UpdateQuery(array('notes'=> "'".$notes."'" ), TABLE_SCRATCHPAD, NULL);
+    $myTemplate->Display($lang['SCRATCH_SAVED']."\n");
 }
 
-// -->
-</SCRIPT>
+$body['FILE_SCRATCHPAD'] = FILE_SCRATCHPAD;
+$body['FILE_LIST'] = FILE_LIST;
 
-
-<FORM NAME="Scratchpad" ACTION="<?php echo(FILE_SCRATCHPAD); ?>" METHOD="post">
-<INPUT TYPE="hidden" NAME="saveNotes" VALUE="YES">
-
-<CENTER>
-<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
-  <TR>
-    <TD CLASS="navMenu">
-      <A HREF="#edit"><?php echo $lang['BTN_EDIT']?></A>
-      <A HREF= "<?php echo FILE_LIST?>"><?php echo $lang['BTN_LIST']?></A>
-    </TD>
-  </TR>
-  <TR>
-    <TD CLASS="headTitle">
-       <?php echo $lang['TITLE_SCRATCH']?>
-    </TD>
-  </TR>
-  <TR>
-    <TD CLASS="infoBox">
-
-        <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=5 WIDTH=560>
-           <TR VALIGN="top">
-              <TD CLASS="data">
-                 <?php echo $lang['SCRATCH_HELP']?>
-              </TD>
-           </TR>
-           <TR VALIGN="top">
-              <TD WIDTH=550 CLASS="listDivide">&nbsp;</TD>
-           </TR>
-           <TR VALIGN="top">
-              <TD WIDTH=550 CLASS="data">
-<?php
 // DISPLAY CONTENTS OF SCRATCHPAD.
 
-    // Retrieve data
-    $globalSqlLink->SelectQuery('notes',TABLE_SCRATCHPAD, NULL, "limit 1" );
-    $notes = $globalSqlLink->fetchQueryResult();
-    //$notes = mysql_query("SELECT notes FROM " . TABLE_SCRATCHPAD . " LIMIT 1", $db_link);
-    //$notes = mysql_fetch_array($notes);
-    $notes = stripslashes( $notes["notes"] );
+// Retrieve data
+$globalSqlLink->SelectQuery('notes',TABLE_SCRATCHPAD, NULL, "limit 1" );
+$notes = stripslashes($globalSqlLink->fetchQueryResult()[0]);
 
-    // Split $notes into an array by newline character
-    $displayArray = explode("\n",$notes);
+if($notes != -1){
+    $body['notes']= $notes;
+}
 
-    // Determine the number of lines in the array
-    //$z = 0;
-    //while (each($displayArray)) {
-    $z=sizeof($displayArray);
-    //}
-    reset($displayArray);
-
-    // Grab each line of the array and display it
-    for ($a = 0; $a < $z; $a++) {
-        echo("<BR>$displayArray[$a]");
-    }
-
-?>
-              </TD>
-           </TR>
-           <TR VALIGN="top">
-              <TD WIDTH=550 CLASS="listDivide">&nbsp;</TD>
-           </TR>
-                      
-           <TR VALIGN="top">
-              <TD WIDTH=550 CLASS="listHeader"><A NAME="edit"></A><?php echo ucfirst($lang['BTN_EDIT'])?></TD>
-           </TR>
-           <TR VALIGN="top">
-              <TD WIDTH=550 CLASS="data">
-<TEXTAREA STYLE="width:530px;" ROWS=30 CLASS="formTextarea" NAME="notes" WRAP=off>
-<?php
-  echo("$notes");
-?>
-</TEXTAREA>           
-              </TD>
-           </TR>
-
-           <TR VALIGN="top">
-              <TD WIDTH=550 CLASS="listDivide">&nbsp;</TD>
-           </TR>
-
-           <TR VALIGN="top">
-              <TD WIDTH=550 CLASS="navmenu">
-      <NOSCRIPT>
-        <!-- Will display Form Submit buttons for browsers without Javascript -->
-        <INPUT TYPE="submit" VALUE="Save">
-        <!-- There is no delete button -->
-        <!-- later make it so link versions don't appear -->
-      </NOSCRIPT>
-      <A HREF="#" onClick="saveEntry(); return false;"><?php echo $lang['BTN_SAVE']?></A>
-      <A HREF="<?php echo(FILE_LIST); ?>"><?php echo $lang['BTN_RETURN']?></A>
-              </TD>
-           </TR>
-
-
-        </TABLE>
-
-    </TD>
-  </TR>
-</TABLE>
-</CENTER>
-
-</FORM>
-
-
-</BODY>
-</HTML>

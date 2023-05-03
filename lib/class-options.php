@@ -1,9 +1,9 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2
+ *  THE ADDRESS BOOK  :  version 1.2.1
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-13-2022
+ * Last Modified: 5-02-2022
  ****************************************************************
  *  lib/class-options.php
  *  Object: retrieve and set global or user options
@@ -65,7 +65,7 @@ class Options {
 		global $globalSqlLink;
 
 		$globalSqlLink->SelectQuery('*',TABLE_OPTIONS, '',   " LIMIT 1" );
-		$this->global_options = $globalSqlLink->FetchQueryResult();
+		$this->global_options = $globalSqlLink->FetchQueryResult()[0];
 		 // =mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
 		 //		or die(reportScriptError("Unable to retrieve global options."));
 
@@ -99,7 +99,7 @@ class Options {
 		global $globalSqlLink;
 
 		$globalSqlLink->SelectQuery('*', TABLE_USERS, "username='" . $_SESSION['username'] . "' LIMIT 1", '');
-		$this->user_options =$globalSqlLink->FetchQueryResult();
+		$this->user_options =$globalSqlLink->FetchQueryResult()[0];
 		//$this->user_options = mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_USERS . " WHERE username='" . $_SESSION['username'] . "' LIMIT 1", $db_link))
 			//	or die(reportScriptError("Unable to retrieve user options."));
 
@@ -164,14 +164,14 @@ class Options {
 		$updates['picDupeMode']       = $this->picDupeMode;
 		$updates['picAllowUpload']    = $this->picAllowUpload;
 		$updates['modifyTime']        = $this->modifyTime;
-		$updates['msgLogin']          = '$this->msgLogin';
-		$updates['msgWelcome']        = '$this->msgWelcome';
-		$updates['countryDefault']    = '$this->countryDefault';
+		$updates['msgLogin']          = $globalSqlLink->readyVarSting($this->msgLogin);
+		$updates['msgWelcome']        = $globalSqlLink->readyVarSting($this->msgWelcome);
+		$updates['countryDefault']    = $globalSqlLink->readyVarSting($this->countryDefault);
 		$updates['allowUserReg']     = $this->allowUserReg;
 		$updates['requireLogin']      = $this->requireLogin;
 		$updates['eMailAdmin']        = $this->eMailAdmin;
-		$updates['language']          = '$this->language';
-		$updates['defaultLetter']     = '$this->defaultLetter';
+		$updates['language']          = $globalSqlLink->readyVarSting($this->language);
+		$updates['defaultLetter']     = $globalSqlLink->readyVarSting($this->defaultLetter);
 		$updates['limitEntries']      = $this->limitEntries;
 
 		$globalSqlLink->UpdateQuery( $updates , TABLE_OPTIONS, '');
@@ -212,8 +212,8 @@ class Options {
 		$updates['bdayDisplay']       = $this->bdayDisplay;
 		$updates['displayAsPopup']    = $this->displayAsPopup;
 		$updates['useMailScript']     = $this->useMailScript;
-		$updates['language']          = $this->language;
-		$updates['defaultLetter']     = $this->defaultLetter;
+		$updates['language']          = $globalSqlLink->readyVarSting($this->language);
+		$updates['defaultLetter']     = $globalSqlLink->readyVarSting($this->defaultLetter);
 		$updates['limitEntries']      = $this->limitEntries;
 
 		$globalSqlLink->UpdateQuery($updates, TABLE_USERS,  "username='" . $_SESSION['username']."'");
@@ -238,14 +238,8 @@ class Options {
 
 		// QUERY
 		//$sql = "UPDATE " . TABLE_USERS . " SET
-		$updates['bdayInterval']      = 'NULL';
-		$updates['bdayDisplay']       = 'NULL';
-		$updates['displayAsPopup']    = 'NULL';
-		$updates['useMailScript']     = 'NULL';
-		$updates['language']          = 'NULL';
-		$updates['defaultLetter']     = 'NULL';
-		$updates['limitEntries']      = 'NULL';
-		//		WHERE username='" . $_SESSION['username'] . "'";
+        $updates['limitEntries'] = $updates['defaultLetter'] = $updates['language'] = $updates['useMailScript'] = $updates['displayAsPopup'] = $updates['bdayDisplay'] = $updates['bdayInterval'] = 'NULL';
+
 		$globalSqlLink->UpdateQuery($updates, TABLE_USERS,  "username='" . $_SESSION['username']."'");
 		if($globalSqlLink->GetRowCount() == 0){
 			die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));

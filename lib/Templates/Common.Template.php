@@ -1,12 +1,14 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2
+ *  THE ADDRESS BOOK  :  version 1.2.1
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-23-2022
+ * Last Modified: 5-02-2023
  ****************************************************************
  *  Common.Template.php
  *  Common use HTML template
+ *
+ * starting to DEPRECATE.  Expand using Templates.php
  *
  *************************************************************/
 
@@ -16,7 +18,8 @@ function webheader($title, $language, $javascriptfile = -1){
         <head>
             <title> $title </title>
             <link rel=\"stylesheet\" href=\"./lib/Stylesheet/styles.css\">            
-            <meta http-equiv=\"content-type\" content=\"text/html; charset=$language\">";
+            <meta http-equiv=\"content-type\" content=\"text/html; charset=$language\">
+            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
     if($javascriptfile != -1){
         $output .="            <script src=\"./lib/Javascript/".$javascriptfile."\"></script>";
     }

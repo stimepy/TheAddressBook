@@ -1,9 +1,9 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2
+ *  THE ADDRESS BOOK  :  version 1.2.1
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-13-2022
+ * Last Modified: 5-02-2023
  ****************************************************************
  *  option.Template.php
  *  option html
@@ -43,7 +43,7 @@ class optionTemplate
 			        <TR VALIGN=\"top\">
 				        <TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_MSG_LOGIN_LBL']."</b></TD>
 		   		        <TD WIDTH=360 CLASS=\"data\" COLSPAN=2>";
-		$output .= "            ".createTextArea(300,$row, 'msgLogin', $body['optionWelcomeMessage']);
+		$output .= "            ".createTextArea(300,$row, 'msgLogin', hasValueOrBlank($body,'optionWelcomeMessage'));
         $output .="                 <br>".$lang['OPT_MSG_LOGIN_HELP']."
 					<br><b>".$lang['OPT_MSG_ALLOWED_HTML']."</b>
 				</TD>
@@ -82,7 +82,7 @@ class optionTemplate
 			<TR VALIGN=\"top\">
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_MUG_DISPLAY_LBL']."</b></TD>
 				<TD WIDTH=60 CLASS=\"data\">
-				    <INPUT TYPE=\"checkbox\" NAME=\"picAlwaysDisplay\" VALUE=\"1\" ".hasValueOrBlank($body['optionsPicAlwaysOn']).">
+				    <INPUT TYPE=\"checkbox\" NAME=\"picAlwaysDisplay\" VALUE=\"1\" ".hasValueOrBlank($body,'optionsPicAlwaysOn').">
 				</TD>
 				<TD WIDTH=300 CLASS=\"data\">
 					".$lang['OPT_MUG_DISPLAY_HELP']."
@@ -108,9 +108,9 @@ class optionTemplate
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_MUG_DUPLICATE_LBL']."</b></TD>
 				<TD WIDTH=360 CLASS=\"data\" COLSPAN=2>
 					".$lang['OPT_MUG_DUPLICATE_HELP']."
-					<BR><INPUT TYPE=\"radio\" NAME=\"picDupeMode\" VALUE=\"1\" ".hasValueOrBlank($body['picDupeModeChecked1'])."> ".$lang['OPT_MUG_DUPE_CHOICE_OVERWRITE']."
-					<BR><INPUT TYPE=\"radio\" NAME=\"picDupeMode\" VALUE=\"2\" ".hasValueOrBlank($body['picDupeModeChecked2'])."> ".$lang['OPT_MUG_DUPE_CHOICE_UPLOAD']."
-					<BR><INPUT TYPE=\"radio\" NAME=\"picDupeMode\" VALUE=\"3\" ".hasValueOrBlank($body['picDupeModeChecked3'])."> ".$lang['OPT_MUG_DUPE_CHOICE_NO']."
+					<BR><INPUT TYPE=\"radio\" NAME=\"picDupeMode\" VALUE=\"1\" ".hasValueOrBlank($body,'picDupeModeChecked1')."> ".$lang['OPT_MUG_DUPE_CHOICE_OVERWRITE']."
+					<BR><INPUT TYPE=\"radio\" NAME=\"picDupeMode\" VALUE=\"2\" ".hasValueOrBlank($body,'picDupeModeChecked2')."> ".$lang['OPT_MUG_DUPE_CHOICE_UPLOAD']."
+					<BR><INPUT TYPE=\"radio\" NAME=\"picDupeMode\" VALUE=\"3\" ".hasValueOrBlank($body,'picDupeModeChecked3')."> ".$lang['OPT_MUG_DUPE_CHOICE_NO']."
 				</TD>
 			</TR>
 			<TR VALIGN=\"top\">
@@ -150,11 +150,11 @@ class optionTemplate
 					<SELECT NAME=\"countryDefault\" CLASS=\"formSelect\" STYLE=\"width:160px;\">
 					";
         foreach(array_keys($this->sortedCountry) as $country_id) {
+            $checked="";
             if ($country_id == $option->getcountryDefault()) {
                 $checked = "selected";
             }
             $output .= "					    <option value=\"$country_id\" ". $checked .">" . $country[$country_id] . "</option>\n";
-            $checked ="";
         }
         $output .="					</SELECT>
 					<br>".$lang['OPT_DEFAULT_COUNTRY_HELP']."
@@ -164,7 +164,7 @@ class optionTemplate
 			<TR VALIGN=\"top\">
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_ALLOW_REGISTER_LBL']."</b></TD>
 				<TD WIDTH=60 CLASS=\"data\">
-				    <INPUT TYPE=\"checkbox\" NAME=\"allowUserReg\" VALUE=\"1\" ".hasValueOrBlank($body['allowUserReg']).">
+				    <INPUT TYPE=\"checkbox\" NAME=\"allowUserReg\" VALUE=\"1\" ".hasValueOrBlank($body,'allowUserReg').">
 				</TD>
 				<TD WIDTH=300 CLASS=\"data\">
 					".$lang['OPT_ALLOW_REGISTER_HELP']."
@@ -173,7 +173,7 @@ class optionTemplate
 			<TR VALIGN=\"top\">
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_EMAIL_ADMIN']."</b></TD>
 				<TD WIDTH=60 CLASS=\"data\">
-				    <INPUT TYPE=\"checkbox\" NAME=\"eMailAdmin\" VALUE=\"1\" ".hasValueOrBlank($body['eMailAdmin']).">
+				    <INPUT TYPE=\"checkbox\" NAME=\"eMailAdmin\" VALUE=\"1\" ".hasValueOrBlank($body,'eMailAdmin').">
 				    </TD>
 				<TD WIDTH=300 CLASS=\"data\">
 					".$lang['OPT_EMAIL_ADMIN_HELP']."
