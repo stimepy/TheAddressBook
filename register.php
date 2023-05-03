@@ -3,7 +3,7 @@
  *  THE ADDRESS BOOK  :  version 1.2.1
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 4-18-2022
+ * Last Modified: 5-02-2023
  *****************************************************************
  *  register.php
  *  Registers new users
@@ -52,7 +52,7 @@ global $globalUsers, $lang, $globalSqlLink;
 		$password2 = $_POST['password2'];
 		$email = $_POST['email'];
 		//all vars present and passwords match?
-		if ($username && $password1 && $password1==$password2 && $email && validate_email($email)) {
+		if ($username && $password1 && $password1==$password2 && $email) {
 			//password and name are valid?
 			if (account_namevalid($username) && account_pwvalid($password1)) {
 				$username=strtolower($username);

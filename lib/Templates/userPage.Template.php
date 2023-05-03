@@ -1,11 +1,17 @@
 <?php
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2.1
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 5-02-2023
+ ****************************************************************
+ *  Scratchpad template
+ *
+ *****************************************************************/
 
-class UserPage
+require_once ('./lib/Templates/Templates.php');
+class UserPage extends Templates
 {
-
-    public function __construct()
-    {
-    }
 
     function createUserPage($body, $lang,$option){
         $output ="        <BODY>
@@ -60,8 +66,8 @@ class UserPage
            </TR>
            <TR VALIGN=\"top\">
               <TD CLASS=\"data\">";
-        if ($body[0]['r_user']['email']) {
-            $output .= $lang['USR_HELP_EMAIL_NEW']."<B> $body[0]['r_user']['email'] </B>. ".$lang['USR_HELP_EMAIL_NEW2'];
+        if ($body['r_user']!=-1 && $body['r_user'][0]['email']) {
+            $output .= $lang['USR_HELP_EMAIL_NEW']."<B>". $body['r_user'][0]['email'] ."</B>. ".$lang['USR_HELP_EMAIL_NEW2'];
         }
         else {
             $output .=$lang['USR_HELP_EMAIL_NONE'];

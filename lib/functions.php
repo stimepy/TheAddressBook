@@ -108,9 +108,10 @@ function account_namevalid($name) {
 	return true;
 }
 
-function validate_email ($address) {
+//Deprecated. 5-2-2023 Email validation in general is SUPER hard. This looks super general so....
+/*function validate_email ($address) {
 	return (preg_match('/^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$/', $address));
-}
+}*/
 ## end registration/mail functions
 
 

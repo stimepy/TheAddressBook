@@ -10,8 +10,8 @@
  *
  *************************************************************/
 
-require_once('.\Core.php');
-require_once (".\lib\Templates\userPage.Template.php");
+require_once('./Core.php');
+require_once ("./lib/Templates/userPage.Template.php");
 
 
 global $globalSqlLink, $globalUsers, $lang;
@@ -35,7 +35,7 @@ $body['getuseMailScript'] = $options->getuseMailScript();
 
 // ** PERFORM USER UPDATE TASKS **
 
-switch($_GET['action']) {
+switch($UserPageTemplate->hasValueOrBlank($_GET, 'action')) {
     // ADD A NEW USER (admin only)
     case "adduser":
         $globalUsers->checkForLogin("admin");
@@ -79,20 +79,7 @@ switch($_GET['action']) {
         $body['actionMsg'] = $globalUsers->changeEmail();
     break;
 }
-// GET THE USER'S EMAIL ADDRESS
 
-
-//
-
-	/*<SCRIPT LANGUAGE="JavaScript">
-	<!--
-
-	function changeUserOptions() {
-		document.PersonalOptions.submit();
-	}
-
-	// -->
-	</SCRIPT>*/
 $globalSqlLink->SelectQuery('*', TABLE_LANGUAGE, NULL, NULL);
 $r_language = $globalSqlLink->FetchQueryResult();
 
@@ -102,7 +89,4 @@ if($r_language != -1) {
 $output = webheader($lang['TITLE_TAB']." - ".$lang['LBL_USR_ACCT_SET'], $lang['CHARSET']);
 $output .= $UserPageTemplate->createUserPage($body,$lang,$options);
 display($output);
-
-?>
-
 
