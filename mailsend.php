@@ -15,7 +15,7 @@
 
 require_once('.\lib\Core.php');
 
-global $globalUsers;
+global $globalUsers, $lang;
 
 
 

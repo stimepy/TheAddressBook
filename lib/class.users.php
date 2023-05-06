@@ -10,6 +10,7 @@
  *
  *************************************************************/
 
+//require_once "./lib/plugins/autoload.php";
 class users
 {
 //
@@ -20,14 +21,12 @@ class users
 // Security code currently does not work and has been commented out.
     public function checkForLogin() {
         global $lang, $globalSqlLink;
-        // session_start();
 
 
         // IF AUTHENTICATION IS TURNED OFF (requires database connection)
 
         $globalSqlLink->SelectQuery( 'requireLogin', TABLE_OPTIONS, NULL, 'LIMIT 1');
         $requireLogin = $globalSqlLink->FetchQueryResult()[0];
-        print_r($requireLogin);
         if($requireLogin == -1) {
             die(reportScriptError("Unable to retrieve options in authorization check."));
         }
@@ -132,12 +131,12 @@ class users
         global $globalSqlLink, $lang;
         $newuserName = "";
         if ((!empty($_POST['newuserName'])) && (isAlphaNumeric($_POST['newuserName']))) {
-            $insert[username] = $_POST['newuserName'];
+            $insert['username'] = $_POST['newuserName'];
             if ($_POST['newuserPass'] == $_POST['newuserConfirmPass']) {
-                $insert[password] = MD5($_POST['newuserPass']);
-                $insert[usertype] = $_POST['newuserType'];
-                $insert[email] = $_POST['newuserEmail'];   // NOT VALIDATED
-                $insert[is_confirmed] = 1;
+                $insert['password'] = MD5($_POST['newuserPass']);
+                $insert['usertype'] = $_POST['newuserType'];
+                $insert['email'] = $_POST['newuserEmail'];   // NOT VALIDATED
+                $insert['is_confirmed'] = 1;
                 $globalSqlLink->InsertQuery(TABLE_USERS, $insert);
                 // $sql = "INSERT INTO ". TABLE_USERS ." (username, usertype, password, email, is_confirmed) VALUES ('$newuserName', '$newuserType', MD5('$newuserPass'), '$newuserEmail', 1)";
 
@@ -219,7 +218,8 @@ class users
         $feedback= "";
         $username = $_SESSION['username'];
         $new_email = $_POST['emailNew'];
-        if (validate_email($new_email)) {
+        if (true){ // (validate_email($new_email)) { // Temp I HATE true in IF statements....  TO DO FIX!
+
             $hash = md5($new_email."WTFISTHIS");
             //change the confirm hash in the db but not the email -
             //send out a new confirm email with a new hash to complete the process
@@ -228,6 +228,7 @@ class users
             $globalSqlLink->UpdateQuery($update, TABLE_USERS, "username='".$username."'" );
             //$sql = "UPDATE " .TABLE_USERS. " SET confirm_hash='$hash' , is_confirmed = 0 WHERE username='$username' LIMIT 1";
             // $result = mysql_query($sql, $db_link);
+            print $globalSqlLink->GetRowCount();
             if ($globalSqlLink->GetRowCount()<1) {
                 //if (!$result || mysql_affected_rows($result) < 1) {
                 $feedback .= ' There was a problem updating your e-mail address. ';
@@ -236,7 +237,7 @@ class users
                 // However, entering the same e-mail address as before will also cause
                 // mysql_affected_rows to equal 0, so the error message has changed.
             } else {
-                $mail = new PHPMailer();
+                /*$mail = new PHPMailer();
                 $mail->SetLanguage(LANGUAGE_CODE, "lib/phpmailer/language/");
                 $mail->From = 'noreply@'.$_SERVER['SERVER_NAME'];
                 $mail->FromName = 'noreply@'.$_SERVER['SERVER_NAME'];
@@ -250,7 +251,9 @@ class users
                     reportScriptError($lang['ERR_MAIL_NOT_SENT'] . $mail->ErrorInfo);
                 }else{
                     $feedback = $lang['MSG_EMAIL_CHANGED'];
-                }
+                }*/
+                // TODO figure out why composer is not working
+                $feedback = $lang['MSG_EMAIL_CHANGED'];
             }
         } else {
             $feedback.= $lang['ERR_USER_EMAIL_INVALID'];

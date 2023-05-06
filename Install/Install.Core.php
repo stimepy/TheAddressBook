@@ -16,7 +16,7 @@ error_reporting (E_ALL);
 // ** GET CONFIGURATION DATA **
 require_once('./lib/Templates/Common.Template.php');
 require_once('./lib/Database_Mysql_Connect_I.php');
-require_once('./lib/class-users.php');
+require_once('./lib/class.users.php');
 
 global $db_prefix,$db_hostname, $db_name, $db_username, $db_password;
 

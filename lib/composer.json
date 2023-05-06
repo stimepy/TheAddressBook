@@ -1,8 +1,8 @@
 {
-  "config": {
-    "vendor-dir": ".\plugins"
+    "config": {
+    "vendor-dir": "./plugins"
   },
   "require": {
-    "phpmailer/phpmailer": "^6.5"
+    "bcosca/fatfree-core": "^3.8"
   }
 }
