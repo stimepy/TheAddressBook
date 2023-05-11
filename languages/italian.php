@@ -1,21 +1,21 @@
 <?php
-/*This file was generated from information stored in babelkit
-*  babelkit is the database in which our translator's actually do the translation
-*  The link to the babelkit database is: http://sallyanddavid.com/cgi-bin/BabelKit/php/bk_admin.php
-***************************************
-*  THE ADDRESS BOOK  :  version 1.04  or higher 
-*/
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2.2
+ *
+ * Author: stimepy@aodhome.com
+ * Original Authors: See LANGUAGE_TRANSLATOR_NAME below
+ * Last Modified: 5-10-2023
+ ****************************************************************
+ *  Note: Original file was generated from information stored in babelkit.  This
+ *  no longer exists
+ *
+ ****************************************************************/
 define('LANGUAGE_NAME', "Italian"); 	
 define('LANGUAGE_CODE', "it"); 	
 define('LANGUAGE_TRANSLATOR_NAME', "Matteo Battistini "); 
 define('LANGUAGE_TRANSLATOR_EMAIL', "mbattistini@riminilug.it "); 
 define('LANGUAGE_LAST_UPDATE', "July 31, 2005, 5:56 pm Hong Kong time ");
 $lang= array(							
-    'Author' =>"Matteo Battistini",
-    'AuthorEmail' =>"mbattistini@riminilug.it",
-    'BIRTHDAY_UPCOMING1' =>"Prossimi Compleanni (Prossimi",
-    'BIRTHDAY_UPCOMING2' =>"giorni)",
-    'BIRTHDAY_YEAR_UNIT' =>"anni",
     'BTN_ADD' =>"aggiungi nuovo utente",
     'BTN_CANCEL' =>"annulla",
     'BTN_CHANGE_OPT' =>"cambia opzioni",
@@ -38,13 +38,13 @@ $lang= array(
     'BTN_UP_FILE' =>"Upload File",
     'BTN_CLOSE' =>"Close",
     'CHARSET' =>"iso-8859-1",
-    'DAY_FRI' =>"Friday",
+    /*'DAY_FRI' =>"Friday",
     'DAY_MON' =>"Monday",
     'DAY_SAT' =>"Saturday",
     'DAY_SUN' =>"Sunday",
     'DAY_THU' =>"Thursday",
     'DAY_TUE' =>"Tuesday",
-    'DAY_WED' =>"Wednesday",
+    'DAY_WED' =>"Wednesday",*/
     'DELETE_CONFIRM' =>"Eliminare questo contatto? Il contatto verra' rimosso dal database e non potra' essere ripristinato.",
     'EDIT_ADD_NEW_GROUP' =>"Aggiungere nuovo gruppo",
     'EDIT_DEL_ADD' =>"delete this address",

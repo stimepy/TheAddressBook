@@ -43,7 +43,7 @@ $contact = new ContactInformation(check_id());
 	}
 
 	$TitleHeader = $lang['TAB'].' - '.$lang['TITLE_ADDRESS']. ' '.$contact->getfullname();
-    $output = webheader($TitleHeader, $lang['CHARSET']);
+
 
 
     if (($_SESSION['usertype'] == "admin") || ($_SESSION['username'] == $contact->getwho_added())) {
@@ -310,7 +310,7 @@ if ($globalSqlLink->GetRowCount() > 0) {
 
     $body['lastUpdatetxt'] = $lang['LAST_UPDATE'];
     $body['lastupdate'] = $contact->getlast_update();
-
+    $output = webheader($TitleHeader, $lang['CHARSET']);
     $output .=  addressBodyStart($body, $lang);
     display($output);
 

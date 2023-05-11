@@ -1,21 +1,21 @@
 <?php
-/*This file was generated from information stored in babelkit
-*  babelkit is the database in which our translator's actually do the translation
-*  The link to the babelkit database is: http://sallyanddavid.com/cgi-bin/BabelKit/php/bk_admin.php
-***************************************
-*  THE ADDRESS BOOK  :  version 1.04  or higher 
-*/
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2.2
+ *
+ * Author: stimepy@aodhome.com
+ * Original Authors: See LANGUAGE_TRANSLATOR_NAME below
+ * Last Modified: 5-10-2023
+ ****************************************************************
+ *  Note: Original file was generated from information stored in babelkit.  This
+ *  no longer exists
+ *
+ ****************************************************************/
 define('LANGUAGE_NAME', "Magyar"); 	
 define('LANGUAGE_CODE', "hu"); 	
 define('LANGUAGE_TRANSLATOR_NAME', "Csipak Attila "); 
 define('LANGUAGE_TRANSLATOR_EMAIL', "corphicks@fmail.co.uk "); 
 define('LANGUAGE_LAST_UPDATE', "July 31, 2005, 5:56 pm Hong Kong time ");
 $lang= array(							
-    'Author' =>"Csipak Attila",
-    'AuthorEmail' =>"corphicks@fmail.co.uk",
-    'BIRTHDAY_UPCOMING1' =>"K�zelg� Sz�let�snapok (K�vetkez�",
-    'BIRTHDAY_UPCOMING2' =>"Nap)",
-    'BIRTHDAY_YEAR_UNIT' =>"�v",
     'BTN_ADD' =>"�j felhaszn�l� hozz�ad�sa",
     'BTN_CANCEL' =>"m�gsem",
     'BTN_CHANGE_OPT' =>"Be�ll�t�sok Megv�ltoztat�sa",
@@ -38,13 +38,13 @@ $lang= array(
     'BTN_UP_FILE' =>"F�jl Felt�lt�s",
     'BTN_CLOSE' =>"Close",
     'CHARSET' =>"iso-8859-1",
-    'DAY_FRI' =>"P�ntek",
+    /*'DAY_FRI' =>"P�ntek",
     'DAY_MON' =>"H�tf�",
     'DAY_SAT' =>"Szombat",
     'DAY_SUN' =>"Vas�rnap",
     'DAY_THU' =>"Cs�t�rt�k",
     'DAY_TUE' =>"Kedd",
-    'DAY_WED' =>"Szerda",
+    'DAY_WED' =>"Szerda",*/
     'DELETE_CONFIRM' =>"Biztosan t�r�lni akarod ezt a bejegyz�st?  A rekord helyre�ll�thatatlanul t�rl�sre ker�l az adatb�zisb�l.",
     'EDIT_ADD_NEW_GROUP' =>"�j Csoport Hozz�ad�sa",
     'EDIT_DEL_ADD' =>"c�m t�rl�se",

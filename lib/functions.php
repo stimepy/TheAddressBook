@@ -216,43 +216,6 @@ If necessary, please press the BACK button on your browser to return to the prev
 //
 function reportSQLError() {
 
-?>
-<html>
-<head>
-	<title>Address Book - Error</title>
-	<link rel="stylesheet" href="Stylesheet/styles.css" type="text/css">
-	<meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
-	<meta http-equiv="PRAGMA" content="NO-CACHE">
-	<meta http-equiv="EXPIRES" content="-1">
-</head>
-<body>
-
-<p>
-<b><font style="color:#FF0000;">The Address Book has encountered a problem.</font></b> 
-
-<p>MySQL returned the following error message:
-
-<div class="error"><?php echo("MySQL error number " . mysql_errno() . ": " . mysql_error()); ?></div>
-
-<p>
-If necessary, please press the BACK button on your browser to return to the previous screen and correct any possible mistakes.
-<br>If you still need help, or you believe this to be a bug, please consult the <a href="http://www.corvalis.net/phpBB2/" target="_blank">Tech Support forums</a>.
-
-<P>
-
-<table border=0 cellpadding=0 cellspacing=0 width=570>
-<tbody>
-<?php
-	printFooter();
-?>
-</tbody>
-</table>
-
-</body>
-</html>
-<?php
-	// and then exit the script
-	exit();
 }
 // end
 

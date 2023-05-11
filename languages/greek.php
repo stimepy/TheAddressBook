@@ -1,21 +1,21 @@
 <?php
-/*This file was generated from information stored in babelkit
-*  babelkit is the database in which our translator's actually do the translation
-*  The link to the babelkit database is: http://sallyanddavid.com/cgi-bin/BabelKit/php/bk_admin.php
-***************************************
-*  THE ADDRESS BOOK  :  version 1.04  or higher 
-*/
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2.2
+ *
+ * Author: stimepy@aodhome.com
+ * Original Authors: See LANGUAGE_TRANSLATOR_NAME below
+ * Last Modified: 5-10-2023
+ ****************************************************************
+ *  Note: Original file was generated from information stored in babelkit.  This
+ *  no longer exists
+ *
+ ****************************************************************/
 define('LANGUAGE_NAME', "Greek"); 	
 define('LANGUAGE_CODE', "gr"); 	
 define('LANGUAGE_TRANSLATOR_NAME', "Michalis Pikounis "); 
 define('LANGUAGE_TRANSLATOR_EMAIL', "mpikounis@hydroex.gr "); 
 define('LANGUAGE_LAST_UPDATE', "July 31, 2005, 5:56 pm Hong Kong time ");
 $lang= array(							
-    'Author' =>"Michalis Pikounis",
-    'AuthorEmail' =>"mpikounis@hydroex.gr",
-    'BIRTHDAY_UPCOMING1' =>"������� �������� (�������",
-    'BIRTHDAY_UPCOMING2' =>"������)",
-    'BIRTHDAY_YEAR_UNIT' =>"���",
     'BTN_ADD' =>"�������� ���� ������",
     'BTN_CANCEL' =>"�������",
     'BTN_CHANGE_OPT' =>"������ ��������",
@@ -38,13 +38,13 @@ $lang= array(
     'BTN_UP_FILE' =>"�������� �������",
     'BTN_CLOSE' =>"Close",
     'CHARSET' =>"iso-8859-7",
-    'DAY_FRI' =>"���������",
+    /*'DAY_FRI' =>"���������",
     'DAY_MON' =>"�������",
     'DAY_SAT' =>"�������",
     'DAY_SUN' =>"�������",
     'DAY_THU' =>"������",
     'DAY_TUE' =>"�����",
-    'DAY_WED' =>"�������",
+    'DAY_WED' =>"�������",*/
     'DELETE_CONFIRM' =>"����� �������� ��� ������ �� ���������� ����� ��� ����������. � �������� ��� ������ �� ���������.",
     'EDIT_ADD_NEW_GROUP' =>"�������� ���� ������",
     'EDIT_DEL_ADD' =>"�������� ����� ��� ����������",

@@ -1,10 +1,16 @@
 <?php
-/*This file was generated from information stored in babelkit
-*  babelkit is the database in which our translator's actually do the translation
-*  The link to the babelkit database is: http://sallyanddavid.com/cgi-bin/BabelKit/php/bk_admin.php
-***************************************
-*  THE ADDRESS BOOK  :  version 1.04  or higher 
-*/
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2.2
+ *
+ * Author: stimepy@aodhome.com
+ * Original Authors: See LANGUAGE_TRANSLATOR_NAME below
+ * Last Modified: 5-10-2023
+ ****************************************************************
+ *  Note: Original file was generated from information stored in babelkit.  This
+ *  no longer exists
+ *
+ ****************************************************************/
+
 define('LANGUAGE_NAME', "Nederlands"); 	
 define('LANGUAGE_CODE', "nl"); 	
 define('LANGUAGE_TRANSLATOR_NAME', "Wilko Miletic, Kees Dommisse, Hannelore "); 
@@ -12,12 +18,6 @@ define('LANGUAGE_TRANSLATOR_EMAIL', "wilko@miletic.nl, dommisse@users.sourceforg
 , hannelore@gmail.com "); 
 define('LANGUAGE_LAST_UPDATE', "July 31, 2005, 5:56 pm Hong Kong time ");
 $lang= array(							
-'Author' =>"Wilko Miletic, Kees Dommisse, Hannelore",
-'AuthorEmail' =>"wilko@miletic.nl, dommisse@users.sourceforge.net 
-, hannelore@gmail.com",
-'BIRTHDAY_UPCOMING1' =>"Verjaardagen (in de komende",
-'BIRTHDAY_UPCOMING2' =>"dagen)",
-'BIRTHDAY_YEAR_UNIT' =>"jaar",
 'BTN_ADD' =>"Nieuwe gebruiker",
 'BTN_CANCEL' =>"Annuleer",
 'BTN_CHANGE_OPT' =>"Opties wijzigen",

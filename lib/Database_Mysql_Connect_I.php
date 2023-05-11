@@ -128,16 +128,22 @@ class Mysql_Connect_I
      * TODO: Make better error handling
      */
     private function openDatabase() {
-
+        global $lang;
         // Default to local host if a hostname is not provided
         if (!$this->myHost) {
             $this->SetHost("localhost") ;
         }
-
-        // Opens connection to MySQL server
-        $this->mySQLConnection = mysqli_connect($this->myHost, $this->myUsername, $this->myPassword);  //@mysqli_connect($this->myHost, $this->myUsername, $this->myPassword, $this->myDatabase);
-        if(mysqli_connect_errno ()){
-            die(reportScriptError("<B>An error occurred while trying to connect to the MySQL server.</B> MySQL returned the following error information: " .mysqli_connect_errno (). mysqli_connect_error() .")"));
+        try {
+            // Opens connection to MySQL server
+            $this->mySQLConnection = mysqli_connect($this->myHost, $this->myUsername, $this->myPassword);
+            if(mysqli_connect_errno ()){
+                throw new Errors(mysqli_connect_error(), mysqli_connect_errno());
+            }
+        }
+        catch(Errors $e){
+            // need more
+            $e->addAdditionalMessage($lang['ERR_DATABASE_CONNECT']);
+            $e->SqlError();
         }
 
         $this->ChangeDatabase($this->myDatabase);
@@ -151,12 +157,17 @@ class Mysql_Connect_I
      * Using the existing databse connection changes the database we are currently connected to.
      */
     public function ChangeDatabase($databasename){
+        global $lang;
         if($databasename != $this->myDatabase){
             $this->SetDatabaseName($databasename);
         }
-
-        if(!mysqli_select_db($this->mySQLConnection, $databasename)) {
-            die(reportScriptError("<B>Unable to locate the database.</B> Please double check <I>config.php</I> to make sure the <I>\$db_name</I> variable is set correctly."));
+        try {
+            if (!mysqli_select_db($this->mySQLConnection, $databasename)) {
+                throw new Errors($lang['ERR_DATABASE_NOT_FOUND'], 0);
+            }
+        }
+        catch(Errors $e){
+            $e->SqlError();
         }
     }
 
@@ -172,16 +183,25 @@ class Mysql_Connect_I
      */
     public Function SelectQuery($select, $table, $where, $orderby = null)
     {
-        $query = $this->buildquery($select, $table, $where, $orderby, 'SELECT');
-        if($query == -1){
-            die('Badly Formed Query in Database_Mysql_Connect_I.');
+        global $lang;
+        try {
+            $query = $this->buildquery($select, $table, $where, $orderby, 'SELECT');
+            if ($query == -1) {
+                throw new \Errors_Handler\Errors($lang['ERR_SQL_MALFORM'], 101);
+            }
+            $this->mySQLresults = $this->mySQLConnection->query($query);
+            if(!$this->mySQLresults){
+                throw new \Errors_Handler\Errors($lang['ERR_SQL_MALFORM'], 201);
+            }
         }
+        catch(Errors $e){
+            $e->setSqlQuery($query);
+            $e->SqlError();
+        }
+
         // debug
         // echo $query;
-        $this->mySQLresults = $this->mySQLConnection->query($query);
-        if($this->mySQLresults == false){
-            die('query error:' . $query);
-        }
+
     }
 
     /**

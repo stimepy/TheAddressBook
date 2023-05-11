@@ -100,6 +100,10 @@ A:hover{
 	color: #FFFFFF;
 	border-bottom: 1px solid #AAAAAA;
 }
+.divRedFont	{
+	color:#FF0000;
+}
+
 .formMailbox{
 	font-family: Tahoma, sans-serif;
 	font-size: 11px;

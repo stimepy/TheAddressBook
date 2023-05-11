@@ -1,10 +1,15 @@
 <?php
-/*This file was generated from information stored in babelkit
-*  babelkit is the database in which our translator's actually do the translation
-*  The link to the babelkit database is: http://sallyanddavid.com/cgi-bin/BabelKit/php/bk_admin.php
-***************************************
-*  THE ADDRESS BOOK  :  version 2.0  or higher
-*/
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2.2
+ *
+ * Author: stimepy@aodhome.com
+ * Original Authors: See LANGUAGE_TRANSLATOR_NAME below
+ * Last Modified: 5-10-2023
+ ****************************************************************
+ *  Note: Original file was generated from information stored in babelkit.  This
+ *  no longer exists
+ *
+ ****************************************************************/
 define('LANGUAGE_NAME', "English"); 	
 define('LANGUAGE_CODE', "en"); 	
 define('LANGUAGE_TRANSLATOR_NAME', "Lou Huang, David Howe "); 
@@ -12,11 +17,6 @@ define('LANGUAGE_TRANSLATOR_EMAIL', "lou@corvalis.net, folkart@berkshire.net ");
 define('LANGUAGE_LAST_UPDATE', "July 31, 2005, 5:56 pm Hong Kong time ");
 
 $lang= array(							
-    'Author' =>"Lou Huang, David Howe",
-    'AuthorEmail' =>"lou@corvalis.net, folkart@berkshire.net",
-    'BIRTHDAY_UPCOMING1' =>"Upcoming Birthdays (Next",
-    'BIRTHDAY_UPCOMING2' =>"Days)",
-    'BIRTHDAY_YEAR_UNIT' =>"yrs",
     'BTN_ADD' =>"add new user",
     'BTN_CANCEL' =>"cancel",
     'BTN_CHANGE_OPT' =>"change options",
@@ -39,13 +39,13 @@ $lang= array(
     'BTN_CLOSE' =>"Close",
     'BTN_UP_FILE' =>"Upload File",
     'CHARSET' =>"iso-8859-1",
-    'DAY_FRI' =>"Friday",
+    /*'DAY_FRI' =>"Friday",
     'DAY_MON' =>"Monday",
     'DAY_SAT' =>"Saturday",
     'DAY_SUN' =>"Sunday",
     'DAY_THU' =>"Thursday",
     'DAY_TUE' =>"Tuesday",
-    'DAY_WED' =>"Wednesday",
+    'DAY_WED' =>"Wednesday", */
     'DELETE_CONFIRM' =>"Are you sure you want to delete this entry?  This record will be removed from the database and this cannot be undone.",
     'EDIT_ADD_NEW_GROUP' =>"Add new group",
     'EDIT_DEL_ADD' =>"delete this address",

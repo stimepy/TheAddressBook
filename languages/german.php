@@ -1,21 +1,21 @@
 <?php
-/*This file was generated from information stored in babelkit
-*  babelkit is the database in which our translator's actually do the translation
-*  The link to the babelkit database is: http://sallyanddavid.com/cgi-bin/BabelKit/php/bk_admin.php
-***************************************
-*  THE ADDRESS BOOK  :  version 1.04  or higher 
-*/
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2.2
+ *
+ * Author: stimepy@aodhome.com
+ * Original Authors: See LANGUAGE_TRANSLATOR_NAME below
+ * Last Modified: 5-10-2023
+ ****************************************************************
+ *  Note: Original file was generated from information stored in babelkit.  This
+ *  no longer exists
+ *
+ ****************************************************************/
 define('LANGUAGE_NAME', "Deutsch"); 	
 define('LANGUAGE_CODE', "de"); 	
 define('LANGUAGE_TRANSLATOR_NAME', "Rainer Knappe, Mathias Landh�u�er "); 
 define('LANGUAGE_TRANSLATOR_EMAIL', "tearinyourhand@web.de, tab@landhaeusser.com "); 
 define('LANGUAGE_LAST_UPDATE', "July 31, 2005, 5:55 pm Hong Kong time ");
 $lang= array(							
-    'Author' =>"Rainer Knappe, Mathias Landh�u�er",
-    'AuthorEmail' =>"tearinyourhand@web.de, tab@landhaeusser.com",
-    'BIRTHDAY_UPCOMING1' =>"Bevorstehende Geburtstage (N�chste",
-    'BIRTHDAY_UPCOMING2' =>" Tage)",
-    'BIRTHDAY_YEAR_UNIT' =>"Jahre",
     'BTN_ADD' =>"Neuen Benutzer hinzuf�gen",
     'BTN_CANCEL' =>"Abbrechen",
     'BTN_CHANGE_OPT' =>"Einstellungen �ndern",
@@ -38,13 +38,13 @@ $lang= array(
     'BTN_UP_FILE' =>"Datei hochladen",
     'BTN_CLOSE' =>"Close",
     'CHARSET' =>"iso-8859-1",
-    'DAY_FRI' =>"Freitag",
+    /*'DAY_FRI' =>"Freitag",
     'DAY_MON' =>"Montag",
     'DAY_SAT' =>"Samstag",
     'DAY_SUN' =>"Sonntag",
     'DAY_THU' =>"Donnerstag",
     'DAY_TUE' =>"Dienstag",
-    'DAY_WED' =>"Mittwoch",
+    'DAY_WED' =>"Mittwoch",*/
     'DELETE_CONFIRM' =>"Sind Sie sicher, dass Sie diesen Eintrag l�schen wollen? Alle Felder werden aus der Datenbank entfernt. Dies kann nicht r�ckg�ngig gemacht werden.",
     'EDIT_ADD_NEW_GROUP' =>"Neue Gruppe hinzuf�gen",
     'EDIT_DEL_ADD' =>"diese Adresse l�schen",
