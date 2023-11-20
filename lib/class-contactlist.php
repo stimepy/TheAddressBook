@@ -1,9 +1,12 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.04
- *  
- *  lib/class-contactlist.php
- *  Object: Retrieves information relating to the contact list to be displayed.
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
+ *  class-contactlist.php
+ *  functions used along with contact.
  *
  *************************************************************/
 
@@ -11,27 +14,29 @@
  
 class ContactList {
 	
-	var $group_id;
-	var $group_name;
-	var $current_letter;
-	var $max_entries;
-	var $current_page;
-	var $total_pages;
-	var $sql; 
-	var $title;
-	var $nav_menu;
+	private $group_id;
+    private $group_name;
+    private $current_letter;
+    private $max_entries;
+    private $current_page;
+    private $total_pages;
+    // private $sql;
+    private $title;
+    private $nav_menu;
 	private $myRowCount;
+    private $select;
+    private $tables;
+    private $where;
 
 
-	function __construct() {
-		global $options;
-		
+	function __construct($options) {
+
 		// DEPENDENT VARIABLES -- Values for these variables are passed to the object after ContactList is created
 		// If no values are provided, then it uses some defaults
 		$this->group_id = 0;                       // defaults to 0 upon creation of object
 		$this->current_page = 1;                   // defaults to first page
-		$this->current_letter = $options->defaultLetter;	// defaults to value set in options
-		$this->max_entries = $options->limitEntries; 		// defaults to value set in options; 0=no maximum (display all on page 1)
+		$this->current_letter = $options->getdefaultLetter();	// defaults to value set in options
+		$this->max_entries = $options->getlimitEntries(); 		// defaults to value set in options; 0=no maximum (display all on page 1)
 
 		// RESULTANT VARIABLES -- Values for these variables start out blank and will be filled in by this object's methods
 		$this->group_name = "";                    // determined in $this->group_name()
@@ -152,11 +157,11 @@ class ContactList {
 		if ($this->max_entries > 0) { //if this option is set, limit the number of entries shown per page
 			// Count number of rows (this uses group and letter sql fragments, determined previously)
 
-			$globalSqlLink->SelectQuery->SelectQuery( 'COUNT(*)', TABLE_CONTACT, $this->tables, $this->where, NULL);
-            $count =$globalSqlLink->FetchQueryResults();
+			$globalSqlLink->SelectQuery( 'COUNT(*)', $this->tables,  $this->where, NULL);
+            $count = $globalSqlLink->FetchQueryResult();
 
                 //mysql_fetch_array(mysql_query("SELECT COUNT(*) FROM " . TABLE_CONTACT . " AS contact" . $sql_group . $sql_letter, $db_link));
-			$this->total_pages = intval(ceil($count[0]/$this->max_entries)); //divide the total entries by the limit per page. Round up to an integer
+			$this->total_pages = intval(ceil((float)$count[0]/$this->max_entries)); //divide the total entries by the limit per page. Round up to an integer
 		
 			// Users like to start counting from 1 in stead of 0
 			$lowerLimit = $this->current_page - 1; //deduct 1 from the result page number in the URL, use this to calculate the lower limit of the range
@@ -169,7 +174,8 @@ class ContactList {
 		
 		// EXECUTE THE SQL QUERY
         $globalSqlLink->SelectQuery($this->select, $this->tables, $this->where,  " ORDER BY fullname" . $sql_limit );
-		$r_contact = FetchQueryResults();
+		$r_contact = $globalSqlLink->FetchQueryResult();
+
 		$this->myRowCount = $globalSqlLink->GetRowCount();
            //  = mysql_query($this->sql, $db_link)
 			//or die(reportSQLError($this->sql));
@@ -271,6 +277,72 @@ class ContactList {
 	    return $this->myRowCount;
     }
 
+    function getEmailsByContactId( $contactId){
+        global $globalSqlLink;
+        $globalSqlLink->SelectQuery('id, email, type', TABLE_EMAIL, "id=" . $contactId, NULL);
+        $tbl_email = $globalSqlLink->FetchQueryResult();
+        return $tbl_email;
+    }
+    function getgroup_id(){return $this->group_id;}
+    function setgroup_id($value){ $this->group_id = $value;}
+
+    function getgroup_name(){return $this->group_name;}
+    function setgroup_name($value){ $this->group_name = $value;}
+
+    function getcurrent_letter(){return $this->currentletter;}
+    function setcurrent_letter($value){ $this->current_letter = $value;}
+
+    function getmax_entries(){return $this->max_entries;}
+    function setmax_entries($value){ $this->max_entries = $value;}
+
+    function getcurrent_page(){return $this->current_page;}
+    function setcurrent_page($value){ $this->current_page = $value;}
+
+    function gettotal_pages(){return $this->total_pages;}
+    function settotal_pages($value){ $this->total_pages = $value;}
+
+    function gettitle(){return $this->title;}
+    function settitle($value){ $this->title = $value;}
+
+    function getnav_menu(){return $this->nav_menu;}
+    function setnav_menu($value){ $this->nav_menu = $value;}
+
+    function createEmail($useMailScript, $email){
+        if ($useMailScript == 1) {
+            return "<br/><A HREF=\"" . FILE_MAILTO . "?to=" . $email . "\">" . $email . "</A>";
+        }
+        return "<br/><A HREF=\"mailto:" . $email . "\">" . $email . "</A>";;
+
+    }
+
+    //deprecated going to list.... ?
+    function buildcontact($tbl_contact){
+        global $country;
+        $output = $tbl_contact['line1']."<br />";
+        if ($tbl_contact['line2']) {
+            $output .= $tbl_contact['line2']."<br />";
+        }
+        if ($tbl_contact['city'] || $tbl_contact['state']) {
+            if($tbl_contact['city'] && $tbl_contact['state']) {
+                $output .= $tbl_contact['city'] . ", " . $tbl_contact['state'];
+            }
+            else if($tbl_contact['city']){
+                $output .=  $tbl_contact['city'];
+            }
+            else if($tbl_contact['state']){
+                $output .= $tbl_contact['state'];
+            }
+        }
+        if ($tbl_contact['zip']) {
+            $output .= " ".$tbl_contact['zip'];
+        }
+        if ($tbl_contact['country']) {
+            $output .= "\n<br />" . $country[strtolower($tbl_contact['country'])];
+        }
+        return $output;
+
+    }
+
+
 }
 // END ContactList
-?>

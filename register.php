@@ -1,7 +1,9 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.04e
- *    
+ *  THE ADDRESS BOOK  :  version 1.2.1
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-18-2022
  *****************************************************************
  *  register.php
  *  Registers new users
@@ -9,11 +11,9 @@
  *************************************************************/
 
 // ** GET CONFIGURATION DATA **
-require_once('.\lib\Core.php');
+require_once('.\Core.php');
 
-
-global wd;
-global $globalUsers;
+global $globalUsers, $lang, $globalSqlLink;
 
 
 
@@ -27,13 +27,13 @@ global $globalUsers;
 
 // ** DENY ACCESS IF REGISTRATION IS NOT ALLOWED
 // If mode is "confirm", permission must be granted so that e-mail changes can be confirmed.
-	if (($options->allowUserReg != 1) && ($_GET['mode'] != "confirm")) {
+	if (($options->getallowUserReg() != 1) && ($_GET['mode'] != "confirm")) {
 		reportScriptError("User registration has been turned off in this installation.");
 		exit();
 	}
-	if($options->eMailAdmin = 1){
+	if($options->geteMailAdmin() == 1){
         $globalSqlLink->SelectQuery('*',TABLE_USERS, "usertype=\'admin\'", NULL);
-        $admins = ws$globalSqlLink->FetchQueryResult();
+        $admins = $globalSqlLink->FetchQueryResult();
 		//$sql = "SELECT * FROM ". TABLE_USERS ." WHERE usertype='admin'";
 		//$admins = mysql_query($sql, $db_link);
         foreach($admins as $tbl_admins){
@@ -154,7 +154,7 @@ global $globalUsers;
 <HTML>
 <HEAD>
 	<TITLE><?php echo $lang[TITLE_REGISTER].$lang[TITLE_TAB]; ?></TITLE>
-	<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
+	<LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
 	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 	<META HTTP-EQUIV="EXPIRES" CONTENT="-1">

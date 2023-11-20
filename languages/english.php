@@ -1,10 +1,16 @@
 <?php
-/*This file was generated from information stored in babelkit
-*  babelkit is the database in which our translator's actually do the translation
-*  The link to the babelkit database is: http://sallyanddavid.com/cgi-bin/BabelKit/php/bk_admin.php
-***************************************
-*  THE ADDRESS BOOK  :  version 1.04  or higher 
-*/
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2.1
+ *
+ * Author: stimepy@aodhome.com
+ * Original Authors: Lou Huang, David Howe
+ * Last Modified: 5-02-2023
+ ****************************************************************
+ *  Note: Original file was generated from information stored in babelkit.  This
+ *  no longer exists
+ *
+ ****************************************************************/
+
 define('LANGUAGE_NAME', "English"); 	
 define('LANGUAGE_CODE', "en"); 	
 define('LANGUAGE_TRANSLATOR_NAME', "Lou Huang, David Howe "); 
@@ -35,6 +41,7 @@ $lang= array(
 'BTN_RETURN' =>"return",
 'BTN_SAVE' =>"save",
 'BTN_SEND' =>"send e-mail",
+'BTN_CLOSE' =>"Close",
 'BTN_UP_FILE' =>"Upload File",
 'CHARSET' =>"iso-8859-1",
 'DAY_FRI' =>"Friday",
@@ -76,7 +83,7 @@ $lang= array(
 'ERR_ALPHA' =>"There must be at least one alpha character.",
 'ERR_CHAR_ILLEGAL' =>"Illegal character in name.",
 'ERR_DATABASE_CONNECT' =>"<b>An error occurred while trying to connect to the MySQL server.</b> MySQL returned the following error information:  (error #)",
-'ERR_DATABASE_NOT_FOUND' =>"<b>Unable to locate the database.</b> Please double check <i>config.php</i> to make sure the <i>$db_name</i> variable is set correctly.",
+'ERR_DATABASE_NOT_FOUND' =>"<b>Unable to locate the database.</b> Please double check <i>config.php</i> to make sure the <i>db_name</i> variable is set correctly.",
 'ERR_ENTRY_ID_INVALID' =>"<b>Invalid entry ID.</b> ID must be a positive integer.",
 'ERR_ENTRY_ID_NOT_FOUND' =>"<b>No ID is provided.</b>",
 'ERR_ENTRY_NOT_EXIST' =>"<b>Invalid entry ID.</b> No entry exists with that ID number.",
@@ -117,25 +124,24 @@ $lang= array(
 'ERR_USER_REGISTER_SUCCESS' =>"You have successfully registered. You should have a confirmation e-mail waiting. Click the link in the mail to be confirmed",
 'ERR_USER_REQUIRED_NAME_OR_EMAIL' =>"ERROR: Username and e-mail address are required.",
 'EXP_CONVERT' =>"A good address book converter (although a little old):",
-'EXP_CSV' =>"CSV File</A>",
-'EXP_EUDORA' =>"Eudora Nicknames file </A> (copy the output to /Eudora/NNdbase.txt)",
+'EXP_CSV' =>"CSV File</A> Name, Address, Phonenumber,",
 'EXP_GMAIL' =>"Gmail</A> (Importable contact list)",
-'EXP_MYSQL' =>"mySQL Dump File</A> (backup purposes)",
-'EXP_MYSQL_1' =>"This is a batch dump file for MySQL. In the event of a complete database wipeout",
+'EXP_MYSQL' =>"mySQL Dump File</A> All data is retrieved",
+'EXP_MYSQL_1' =>"This is a batch dump file for MySQL.  Use at your own risk",
 'EXP_MYSQL_10' =>"Note: This backup format has not been tested; however, it should be easy to manually",
 'EXP_MYSQL_11' =>"modify this file to correct mistakes.",
-'EXP_MYSQL_2' =>"all the information contained herein can be automatically reinserted into the",
-'EXP_MYSQL_3' =>"database with one command.",
-'EXP_MYSQL_4' =>"Simply copy this file into a directory on the server. From the shell command line type:",
-'EXP_MYSQL_5' =>"mysql -h host -u user -p dbname < thisfile.txt",
-'EXP_MYSQL_7' =>"You will then be prompted for your password, and then the entire contents of this",
-'EXP_MYSQL_8' =>"file will be executed.",
+'EXP_MYSQL_2' =>"I recommend using your web providers backup as your primary back up, this as a ",
+'EXP_MYSQL_3' =>"secondary option.",
+'EXP_MYSQL_4' =>"",
+'EXP_MYSQL_5' =>"",
+'EXP_MYSQL_7' =>"",
+'EXP_MYSQL_8' =>"",
 'EXP_MYSQL_9' =>"This backup was generated on:",
 'EXP_TO_FILE' =>"This will export the address book database to a file. If a \"Save As\" dialog box does not appear, right click the link instead and choose \"Save Target As...\"",
 'EXP_TXT' =>"Plain text</A> (with separator) (broken)",
 'EXP_VCARD' =>"vCard</a> (warning: downloads to your computer and installs in your address book with no further prompting!)",
 'EXP_XML' =>"XML</A>",
-'FOOTER_COPYRIGHT' =>"© 2001-2005 Infinity Plus One Productions. All rights reserved.",
+'FOOTER_COPYRIGHT' =>"ï¿½ 2001-2005 Infinity Plus One Productions. 2022 Aodhome LLC. All rights reserved.",
 'FOOTER_HOMEPAGE_LINK' =>"homepage",
 'FOOTER_SOURCEFORGE_LINK' =>"sourceforge",
 'FOOTER_VERSION' =>"version:",
@@ -258,7 +264,7 @@ $lang= array(
 'OPT_LIMIT_ENTRIES_HELP' =>"<BR>This option allows you to limit the number of entries shown per page. This can be used together with the show by letter option or separately. 
 <BR>To show all entries on a single page again, enter \"0\".",
 'OPT_LIMIT_ENTRIES_LBL' =>"Limit entries per page",
-'OPT_MSG_ALLOWED_HTML' =>"<b>Allowed HTML tags:</b> <a><b><i><u><p><br>",
+'OPT_MSG_ALLOWED_HTML' =>"<b>Allowed HTML tags:</b> &lt;a&gt;&lt;b&gt;&lt;i&gt;&lt;u&gt;&lt;p&gt;&lt;br&gt;",
 'OPT_MSG_LOGIN_HELP' =>"Sets the introductory message displayed on the login screen.",
 'OPT_MSG_LOGIN_LBL' =>"Login Screen Message",
 'OPT_MSG_WELCOME_HELP' =>"Sets the welcome message displayed on the contact list page.",
@@ -537,7 +543,7 @@ $country= array(
 'pw' =>"Palau",
 'py' =>"Paraguay",
 'qa' =>"Qatar",
-'re' =>"Réunion",
+'re' =>"Rï¿½union",
 'ro' =>"Romania",
 'ru' =>"Russian Federation",
 'rw' =>"Rwanda",

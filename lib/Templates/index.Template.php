@@ -1,5 +1,14 @@
 <?php
-
+/*************************************************************
+ *  THE ADDRESS BOOK  :  version 1.2
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-13-2022
+ ****************************************************************
+ *  index.Template.php
+ *  index HTML template
+ *
+ *************************************************************/
 
 function indexBodyStart($body)
 {
@@ -18,7 +27,7 @@ function indexBodyStart($body)
     if($body['msgLogin']){
         $output .= "<p>". $body['msgLogin'] ."</p>";
     }
-    if($body['errorMsg']){
+    if(isset($body['errorMsg'])){
         $output .= "<p><FONT COLOR=\"#FF0000\"> <b>". $body['errorMsg'] ."</b> </FONT></p>";
     }
 

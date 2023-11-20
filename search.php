@@ -87,7 +87,7 @@ $globalUsers->checkForLogin();
 <HEAD>
 	<TITLE> <?php  echo "$lang[TITLE_TAB] - $lang[SEARCH_LBL]" ?></TITLE>
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['CHARSET']?>">
-	<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
+	<LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
 	<SCRIPT LANGUAGE="JavaScript">
 	<!--
 	window.open('<?php echo($theAddress); ?>',null,'width=600,height=450,scrollbars,resizable,menubar,status'); history.back();
@@ -128,7 +128,7 @@ One entry found. It will appear in a new window. If no window appears, <A HREF="
 <HTML>
 <HEAD>
 	<TITLE> <?php  echo "$lang[TITLE_TAB] - $lang[SEARCH_LBL]" ?></TITLE>
-	<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
+	<LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['CHARSET']?>">
 </HEAD>
 <BODY>

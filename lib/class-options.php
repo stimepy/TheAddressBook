@@ -1,7 +1,10 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.04
- *  
+ *  THE ADDRESS BOOK  :  version 1.2.1
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 5-02-2022
+ ****************************************************************
  *  lib/class-options.php
  *  Object: retrieve and set global or user options
  *
@@ -9,32 +12,32 @@
 
  
 class Options {
-	
+
 	// DECLARE OPTION VARIABLES
-	var $bdayInterval;
-	var $bdayDisplay;
-	var $displayAsPopup;
-	var $useMailScript;
-	var $picAlwaysDisplay;
-	var $picWidth;
-	var $picHeight;
-	var $picDupeMode;
-	var $picAllowUpload;
-	var $modifyTime; // not currently in use; reserved for future use
-	var $msgLogin;
-	var $msgWelcome;
-	var $countryDefault;
-	var $allowUserReg;
-	var $eMailAdmin;
-	var $requireLogin;
-	var $language;
-	var $defaultLetter; // test
-	var $limitEntries; // test
+	private $bdayInterval;
+	private $bdayDisplay;
+	private $displayAsPopup;
+	private $useMailScript;
+	private $picAlwaysDisplay;
+	private $picWidth;
+	private $picHeight;
+	private $picDupeMode;
+	private $picAllowUpload;
+	private $modifyTime; // not currently in use; reserved for future use
+	private $msgLogin;
+	private $msgWelcome;
+	private $countryDefault;
+	private $allowUserReg;
+	private $eMailAdmin;
+	private $requireLogin;
+	private $language;
+	private $defaultLetter; // test
+	private $limitEntries; // test
 	
 	// DECLARE OTHER VARIABLES
-	var $global_options;
-	var $user_options;
-	var $message;
+	private $global_options;
+	private $user_options;
+	private $message;
 
 	
 	// CONSTRUCTOR FUNCTION
@@ -50,6 +53,9 @@ class Options {
 			$this->set_user();
 		}
 	}
+
+
+
 	
 	function set_global() {
 		// This function restores all options to the administrator-specified global settings.
@@ -59,7 +65,7 @@ class Options {
 		global $globalSqlLink;
 
 		$globalSqlLink->SelectQuery('*',TABLE_OPTIONS, '',   " LIMIT 1" );
-		$this->global_options = $globalSqlLink->FetchQueryResult();
+		$this->global_options = $globalSqlLink->FetchQueryResult()[0];
 		 // =mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_OPTIONS . " LIMIT 1", $db_link))
 		 //		or die(reportScriptError("Unable to retrieve global options."));
 
@@ -93,7 +99,7 @@ class Options {
 		global $globalSqlLink;
 
 		$globalSqlLink->SelectQuery('*', TABLE_USERS, "username='" . $_SESSION['username'] . "' LIMIT 1", '');
-		$this->user_options =$globalSqlLink->FetchQueryResult();
+		$this->user_options =$globalSqlLink->FetchQueryResult()[0];
 		//$this->user_options = mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_USERS . " WHERE username='" . $_SESSION['username'] . "' LIMIT 1", $db_link))
 			//	or die(reportScriptError("Unable to retrieve user options."));
 
@@ -158,14 +164,14 @@ class Options {
 		$updates['picDupeMode']       = $this->picDupeMode;
 		$updates['picAllowUpload']    = $this->picAllowUpload;
 		$updates['modifyTime']        = $this->modifyTime;
-		$updates['msgLogin']          = '$this->msgLogin';
-		$updates['msgWelcome']        = '$this->msgWelcome';
-		$updates['countryDefault']    = '$this->countryDefault';
+		$updates['msgLogin']          = $globalSqlLink->readyVarSting($this->msgLogin);
+		$updates['msgWelcome']        = $globalSqlLink->readyVarSting($this->msgWelcome);
+		$updates['countryDefault']    = $globalSqlLink->readyVarSting($this->countryDefault);
 		$updates['allowUserReg']     = $this->allowUserReg;
 		$updates['requireLogin']      = $this->requireLogin;
 		$updates['eMailAdmin']        = $this->eMailAdmin;
-		$updates['language']          = '$this->language';
-		$updates['defaultLetter']     = '$this->defaultLetter';
+		$updates['language']          = $globalSqlLink->readyVarSting($this->language);
+		$updates['defaultLetter']     = $globalSqlLink->readyVarSting($this->defaultLetter);
 		$updates['limitEntries']      = $this->limitEntries;
 
 		$globalSqlLink->UpdateQuery( $updates , TABLE_OPTIONS, '');
@@ -206,8 +212,8 @@ class Options {
 		$updates['bdayDisplay']       = $this->bdayDisplay;
 		$updates['displayAsPopup']    = $this->displayAsPopup;
 		$updates['useMailScript']     = $this->useMailScript;
-		$updates['language']          = $this->language;
-		$updates['defaultLetter']     = $this->defaultLetter;
+		$updates['language']          = $globalSqlLink->readyVarSting($this->language);
+		$updates['defaultLetter']     = $globalSqlLink->readyVarSting($this->defaultLetter);
 		$updates['limitEntries']      = $this->limitEntries;
 
 		$globalSqlLink->UpdateQuery($updates, TABLE_USERS,  "username='" . $_SESSION['username']."'");
@@ -232,14 +238,8 @@ class Options {
 
 		// QUERY
 		//$sql = "UPDATE " . TABLE_USERS . " SET
-		$updates['bdayInterval']      = 'NULL';
-		$updates['bdayDisplay']       = 'NULL';
-		$updates['displayAsPopup']    = 'NULL';
-		$updates['useMailScript']     = 'NULL';
-		$updates['language']          = 'NULL';
-		$updates['defaultLetter']     = 'NULL';
-		$updates['limitEntries']      = 'NULL';
-		//		WHERE username='" . $_SESSION['username'] . "'";
+        $updates['limitEntries'] = $updates['defaultLetter'] = $updates['language'] = $updates['useMailScript'] = $updates['displayAsPopup'] = $updates['bdayDisplay'] = $updates['bdayInterval'] = 'NULL';
+
 		$globalSqlLink->UpdateQuery($updates, TABLE_USERS,  "username='" . $_SESSION['username']."'");
 		if($globalSqlLink->GetRowCount() == 0){
 			die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
@@ -271,11 +271,137 @@ class Options {
 			require_once(dirname($_SERVER['SCRIPT_FILENAME']) . '/' . PATH_LANGUAGES . 'english.' . $php_ext);
 			$this->message = $lang['OPT_LANGUAGE_MISSING'];
 			return 'english';
-		} 
+		}
 	}
-	
-// END Options
+
+	function getMessage(){
+		return $this->message;
+	}
+	function getWelcomeMessage(){
+		return $this->msgWelcome;
+	}
+	function bdayInterval(){
+		return $this->bdayInterval;
+	}
+	function getdisplayAsPopup(){
+		return $this->displayAsPopup;
+	}
+	function getuseMailScript(){
+		return $this->useMailScript;
+	}
+	function getpicAlwaysDisplay(){
+		return $this->picAlwaysDisplay;
+	}
+	function getpicWidth(){
+		return $this->picWidth;
+	}
+	function getpicHeight(){
+		return $this->picHeight;
+	}
+	function getpicDupeMode(){
+		return $this->picDupeMode;
+	}
+	function getpicAllowUpload(){
+		return $this->picAllowUpload;
+	}
+	function getmodifyTime(){
+		return $this->modifyTime;
+	}
+	function getmsgLogin(){
+		return $this->msgLogin;
+	}
+	function getcountryDefault(){
+		return $this->countryDefault;
+	}
+	function getallowUserReg(){
+		return $this->allowUserReg;
+	}
+	function geteMailAdmin(){
+		return $this->eMailAdmin;
+	}
+	function getrequireLogin(){
+		return $this->requireLogin;
+	}
+	function getlanguage(){
+		return $this->language;
+	}
+	function getdefaultLetter(){
+		return $this->defaultLetter;
+	}
+	function getlimitEntries(){
+		return $this->limitEntries;
+	}
+	function getglobal_options(){
+		return $this->global_options;
+	}
+	function getuser_options(){
+		return $this->user_options;
+	}
+	function getbdayDisplay(){
+		return $this->bdayDisplay;
+	}
+
+    function setupAllGroups(&$body,$list){
+        GLOBAL $globalSqlLink, $lang;
+
+        $body['G_0'] = array( 'groupid' => 1, 'groupname' => $lang['GROUP_ALL_SELECT'] );
+        $body['G_1'] = array( 'groupid' => 2, 'groupname' => $lang['GROUP_UNGROUPED_SELECT'] );
+
+        if ($_SESSION['usertype'] == "admin") {
+            $body['G_2'] = array( 'groupid' => 3, 'groupname' => $lang['GROUP_HIDDEN_SELECT'] );
+            $x=3;
+        }
+        else {
+            $x=2;
+        }
+        $where = "groupid > 3";
+        $body['G_selected'] = $list->getgroup_id();
+
+        $globalSqlLink->SelectQuery( 'groupid, groupname',  TABLE_GROUPLIST ,  $where,  'order by groupname', NULL);
+        $r_grouplist = $globalSqlLink->FetchQueryResult();
+        if($r_grouplist != -1) {
+            if(is_array($r_grouplist[0])) {
+                foreach ($r_grouplist as $rbl_grouplist) {
+                    $body['G_' . $x] = array('groupid' => $rbl_grouplist['groupid'], 'groupname' => $rbl_grouplist['groupname']);
+                    $x++;
+
+                }
+            }
+            else{
+                $body['G_' . $x] = array('groupid' => $r_grouplist['groupid'], 'groupname' => $r_grouplist['groupname']);
+            }
+        }
+        $body['G_count'] = $x;
+    }
+
+    private function AlhpabetArray(){
+        Return array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z");
+    }
+
+    function createLanguage($language){
+        $output ="";
+        foreach ($language as $langpick){
+            $output .="<option value=\"" . $langpick['filename'] . "\"". (($langpick['defaultLang'] == 1 ) ? " selected" : "") .">". $langpick['fileLanguage'] ."</option>\n";
+        }
+        return $output;
+    }
+
+    function alphabetSoup($defaultLetter){
+        $abc=$this->AlhpabetArray();
+        $checked = "";
+        if(!isset($defaultLetter)){
+            $checked = "selected";
+        }
+        $output = "<OPTION VALUE=\"0\" ". $checked .">(off)</OPTION>";
+        foreach ($abc as $letter){
+            $checked = "";
+            if ($letter == $defaultLetter) {
+                $checked = "SELECTED";
+            }
+            $output .= "<OPTION VALUE=\"$letter\" ".$checked.">$letter</OPTION>\n";
+        }
+        return $output;
+    }
+
 }
 
-
-?>

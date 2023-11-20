@@ -11,7 +11,7 @@
  *************************************************************/
 
 
-require_once('.\lib\Core.php');
+require_once('.\Core.php');
 
 // ** OPEN CONNECTION TO THE DATABASE **
 //	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
@@ -27,9 +27,10 @@ $globalUsers->checkForLogin('admin', 'user');
    //             FROM
    //             WHERE contact.id=otherphone.id
    //             ORDER BY fullname";
-    $select = "DISTINCT contact.id, otherphone.id, CONCAT(lastname,', ',firstname) AS fullname";
+// concat(CONCAT(lastname,', '),firstname)
+    $select = "DISTINCT contact.id, otherphone.id, firstname AS fullname";
     $table = TABLE_CONTACT." as contact, ".TABLE_OTHERPHONE." as otherphone";
-    $where = "WHERE contact.id=otherphone.id";
+    $where = "contact.id=otherphone.id";
     $globalSqlLink->SelectQuery($select, $table, $where, "ORDER BY fullname");
     $r_contact = $globalSqlLink->FetchQueryResult();
         //= mysql_query($sql, $db_link)
@@ -39,7 +40,7 @@ $globalUsers->checkForLogin('admin', 'user');
 <HTML>
 <HEAD>
 	<TITLE>Address Book - Other Phone Numbers</TITLE>
-	<LINK REL="stylesheet" HREF="styles.css" TYPE="text/css">
+	<LINK REL="stylesheet" HREF="lib/Stylesheet/styles.css" TYPE="text/css">
 </HEAD>
 
 <BODY>
@@ -71,7 +72,7 @@ $globalUsers->checkForLogin('admin', 'user');
         echo("                   <TD WIDTH=150 CLASS=\"listEntry\"><B><A HREF=\"" . FILE_ADDRESS . "?id=$contact_id\"$popupLink>$contact_fullname</A></B></TD>\n");
         echo("                   <TD WIDTH=150 CLASS=\"listEntry\">");
         $globalSqlLink->SelectQuery('*', TABLE_OTHERPHONE, "id=".$contact_id, NULL);
-        $tbl_otherPhone = $globalSqlLink->FetchQueryResult();
+        $r_otherPhone = $globalSqlLink->FetchQueryResult();
         //$r_otherPhone = $r_otherPhone = mysql_query("SELECT * FROM ".TABLE_OTHERPHONE." AS otherphone WHERE id=$contact_id", $db_link);
             //$tbl_otherPhone = mysql_fetch_array($r_otherPhone);
            //     $phone_number = $tbl_otherPhone['phone'];

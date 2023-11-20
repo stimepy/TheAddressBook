@@ -12,20 +12,14 @@
 
 
 // ** GET CONFIGURATION DATA **
-
-require_once('.\lib\Core.php');
-
-
-global $globalSqlLink;
-global $globalUsers;
-
-$globalUsers->checkForLogin('admin');
+    require_once('constants.inc');
+    require_once(FILE_FUNCTIONS);
 
 // ** OPEN CONNECTION TO THE DATABASE **
     $db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
 
 // ** CHECK FOR LOGIN **
-	// checkForLogin("admin");  // How in the....
+	checkForLogin("admin");
 
 
 // ** PERFORM USER UPDATE TASKS **
@@ -52,10 +46,8 @@ $globalUsers->checkForLogin('admin');
 		        $group_name = "Ungrouped Entries";
 		    }
 		    else {
-		        $globalSqlLink->SelectQuery('*', TABLE_GROUPLIST, "groupid=".$group_id, NULL);
-                $r_grouplist = $globalSqlLink->FetchQueryResult();
-		        //$r_grouplist = mysql_query("SELECT * FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid=$group_id", $db_link);
-		        //$tbl_grouplist = mysql_fetch_array($r_grouplist);
+		        $r_grouplist = mysql_query("SELECT * FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid=$group_id", $db_link);
+		        $tbl_grouplist = mysql_fetch_array($r_grouplist); 
 		        $group_name = $tbl_grouplist["groupname"];
 		        // Reassign to "All Entries" if given a groupid that doesn't exist
 		        if ($group_name == "") {
@@ -67,38 +59,28 @@ $globalUsers->checkForLogin('admin');
 			// RETRIEVE LIST OF CONTACTS, DEPENDING ON GROUP
 		    // The following query displays all entries.
 		    if (($group_id <= 1) || (!$group_id)) {
-				//$listsql = "SELECT DISTINCT contact.id, CONCAT(lastname,', ',firstname) AS fullname, lastname, firstname
-				//			FROM ". TABLE_CONTACT ." AS contact
-				//			ORDER BY fullname";
-				$table = TABLE_CONTACT ." AS contact";
-				$where = NULL;
+				$listsql = "SELECT DISTINCT contact.id, CONCAT(lastname,', ',firstname) AS fullname, lastname, firstname
+							FROM ". TABLE_CONTACT ." AS contact
+							ORDER BY fullname";
 		    }
 			// the following displays all ungrouped entries.
 		    elseif (($group_id == 2)) {
-				//$listsql = "SELECT DISTINCT contact.id, CONCAT(lastname,', ',firstname) AS fullname, lastname, firstname
-				//			FROM ". TABLE_CONTACT ." AS contact
-				//			LEFT JOIN ". TABLE_GROUPS ." AS groups ON groups.id=contact.id
-				//			WHERE groups.id IS NULL
-				//			ORDER BY fullname";
-                $table = TABLE_CONTACT ." AS contact LEFT JOIN ". TABLE_GROUPS ." AS groups ON groups.id=contact.id";
-                $where = "groups.id IS NULL";
+				$listsql = "SELECT DISTINCT contact.id, CONCAT(lastname,', ',firstname) AS fullname, lastname, firstname
+							FROM ". TABLE_CONTACT ." AS contact
+							LEFT JOIN ". TABLE_GROUPS ." AS groups ON groups.id=contact.id
+							WHERE groups.id IS NULL
+							ORDER BY fullname";
 		    }
 		    // The following query will display all entries in a given group.
 		    else { 
-				//$listsql = "SELECT DISTINCT contact.id, CONCAT(lastname,', ',firstname) AS fullname, lastname, firstname
-				//			FROM ". TABLE_CONTACT ." AS contact, ". TABLE_GROUPS ." AS groups
-				//			WHERE contact.id=groups.id AND groups.groupid=$group_id
-				//			ORDER BY fullname";
-                $table = TABLE_CONTACT ." AS contact, ". TABLE_GROUPS ." AS groups";
-                $where = "contact.id=groups.id AND groups.groupid=".$group_id;
+				$listsql = "SELECT DISTINCT contact.id, CONCAT(lastname,', ',firstname) AS fullname, lastname, firstname
+							FROM ". TABLE_CONTACT ." AS contact, ". TABLE_GROUPS ." AS groups
+							WHERE contact.id=groups.id AND groups.groupid=$group_id
+							ORDER BY fullname";
 		    }
 			// Execute the specified query
-            $select = "DISTINCT contact.id, CONCAT(lastname,', ',firstname) AS fullname, lastname, firstname";
-		    $orderby = "ORDER BY fullname";
-		    $globalSqlLink->SelectQuery($select, $table, $where, $orderby);
-            $r_contact = $globalSqlLink->FetchQueryResult();  // WTF is this for.
-		    //$r_contact = mysql_query($listsql, $db_link)
-			//	or die(reportSQLError($listsql));
+		    $r_contact = mysql_query($listsql, $db_link)
+				or die(reportSQLError($listsql));
 
 			// HTML OUTPUT
 ?>
@@ -128,11 +110,8 @@ $globalUsers->checkForLogin('admin');
 				select group <SELECT NAME="id" CLASS="formSelect" onChange="document.selectGroup.submit();">
 <?php
 // -- GENERATE GROUP SELECTION LIST --
-    $globalSqlLink->SelectQuery("groupid, groupname", TABLE_GROUPLIST, "groupid > 0", "ORDER BY groupname");
-    $r_contact = $globalSqlLink->FetchQueryResult();
-    //$r_grouplist = mysql_query("SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid > 0 ORDER BY groupname", $db_link);
-    foreach($r_grouplist as $tbl_grouplist){
-    //while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
+    $r_grouplist = mysql_query("SELECT groupid, groupname FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid > 0 ORDER BY groupname", $db_link);
+    while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
         $selectGroupID = $tbl_grouplist['groupid'];
         $selectGroupName = $tbl_grouplist['groupname'];
         echo("<OPTION VALUE=$selectGroupID");
@@ -169,42 +148,47 @@ $globalUsers->checkForLogin('admin');
 <?php
 
 	// Display Group Checkboxes.
-	//$groupsql = "SELECT grouplist.groupid, groupname, id
-	//			 FROM " . TABLE_GROUPLIST . " AS grouplist
-	//			 LEFT JOIN " . TABLE_GROUPS . " AS groups
-	//			 ON grouplist.groupid=groups.groupid AND id=$id
-	//			 WHERE grouplist.groupid >= 3
-	//			 ORDER BY groupname";
-    $select = "grouplist.groupid, groupname, id";
-    $table = TABLE_GROUPLIST . " AS grouplist LEFT JOIN " . TABLE_GROUPS . " AS groups  ON grouplist.groupid=groups.groupid AND id=".$id;
-    $where = "grouplist.groupid >= 3";
-    $orderby = "ORDER BY groupname";
-    $globalSqlLink->SelectQuery($select, $table, $where, $orderby);
-    $r_grouplist = $globalSqlLink->FetchQueryResult();
-	//$r_grouplist = mysql_query($groupsql, $db_link);
-	//$numGroups = mysql_num_rows($r_grouplist);
-	$numGroups = round($globalSqlLink->GetRowCount()/2);  // assigns to $numGroups the number of Groups to display in the first column.
+	$groupsql = "SELECT grouplist.groupid, groupname, id 
+				 FROM " . TABLE_GROUPLIST . " AS grouplist
+				 LEFT JOIN " . TABLE_GROUPS . " AS groups
+				 ON grouplist.groupid=groups.groupid AND id=$id
+				 WHERE grouplist.groupid >= 3
+				 ORDER BY groupname";
+	$r_grouplist = mysql_query($groupsql, $db_link);
+	$numGroups = mysql_num_rows($r_grouplist);
+	$numGroups = round($numGroups/2);  // assigns to $numGroups the number of Groups to display in the first column.
 	$x = 0;
 	$groupCheck = ""; 
 
-	// COLUMN x2
+	// COLUMN 1
 	// $x is checked FIRST because if that fails, $tbl_grouplist will have already been evaluated
-    foreach($r_grouplist as $tbl_grouplist){
-	//while ( ($x < $numGroups) && ($tbl_grouplist = mysql_fetch_array($r_grouplist)) ) {
+	while ( ($x < $numGroups) && ($tbl_grouplist = mysql_fetch_array($r_grouplist)) ) {
 		$group_id = $tbl_grouplist['groupid'];
 		$group_name = $tbl_grouplist['groupname'];
 		if ( $tbl_grouplist['id'] == $id ) {
 			$groupCheck = " CHECKED";
 		}
-		if($x = $numGroups){
-		    echo " </TD>  <TD WIDTH=185 CLASS=\"data\">";
-        }
 		echo("<INPUT TYPE=\"checkbox\" NAME=\"groups[]\" VALUE=\"$group_id\"$groupCheck><B>$group_name</B>\n<BR>");
 		//reset $groupCheck so that it doesn't stay set if the next ID does not equal $id.
 		$groupCheck = "";
 		$x++;
 	}
 
+?>
+			  </TD>
+			  <TD WIDTH=185 CLASS="data">
+<?php
+	// COLUMN 2
+	while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
+		$group_id = $tbl_grouplist['groupid'];
+		$group_name = $tbl_grouplist['groupname'];
+		if ( $tbl_grouplist['id'] == $id ) {
+			$groupCheck = " CHECKED";
+		}
+		echo("<INPUT TYPE=\"checkbox\" NAME=\"groups[]\" VALUE=\"$group_id\"$groupCheck><B>$group_name</B>\n<BR>");
+		//reset $groupCheck so that it doesn't stay set if the next ID does not equal $id.
+		$groupCheck = "";
+	}
 ?>
 			  </TD>
 			  <TD WIDTH=185 CLASS="data">
@@ -237,15 +221,13 @@ $globalUsers->checkForLogin('admin');
 <?php
 
 	// Display Group Checkboxes.
-	//$groupsql = "SELECT grouplist.groupid, groupname
-	//			 FROM " . TABLE_GROUPLIST . " AS grouplist
-	//			 WHERE grouplist.groupid >= 3
-	//			 ORDER BY groupname";
-    $globalSqlLink->SelectQuery("grouplist.groupid, groupname", TABLE_GROUPLIST . " AS grouplist", "grouplist.groupid >= 3",  "ORDER BY groupname");
-    $r_grouplist = $globalSqlLink->FetchQueryResult();
-	//$r_grouplist = mysql_query($groupsql, $db_link);
-    foreach ($r_grouplist as $tbl_grouplist){
-	// while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
+	$groupsql = "SELECT grouplist.groupid, groupname
+				 FROM " . TABLE_GROUPLIST . " AS grouplist
+				 WHERE grouplist.groupid >= 3
+				 ORDER BY groupname";
+	$r_grouplist = mysql_query($groupsql, $db_link);
+
+	while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
 		$group_id = $tbl_grouplist['groupid'];
 		$group_name = $tbl_grouplist['groupname'];
 		echo("<INPUT TYPE=\"checkbox\" NAME=\"groups[]\" VALUE=\"$group_id\"><B>$group_name</B>\n<BR>");
@@ -284,21 +266,16 @@ $globalUsers->checkForLogin('admin');
 
 		// Add a new user (admin only)
 		case "adduser":
-            $globalUsers->checkForLogin('admin');
+			checkForLogin("admin");
 			// Perform checks and then add if things are OK
 			$newuserName = $_POST['newuserName'];
 			if ((!empty($newuserName)) && (isAlphaNumeric($newuserName))) {
 				if ($_POST['newuserPass'] == $_POST['newuserConfirmPass']) {
 					$newuserPass = $_POST['newuserPass'];
 					$newuserType = $_POST['newuserType'];
-					//$sql = "INSERT INTO ". TABLE_USERS ." (username, usertype, password) VALUES ('$newuserName', '$newuserType', MD5('$newuserPass'))";
-					$insert['username'] ="'".$newuserName."'";
-                    $insert['usertype'] ="'".$newuserType."'";
-                    $insert['password'] = "'".$newuserPass."'";
-                    $globalSqlLink->InsertQuery($insert, $table);
-
-					//mysql_query($sql, $db_link)
-					//	or die(ReportSQLError($sql));
+					$sql = "INSERT INTO ". TABLE_USERS ." (username, usertype, password) VALUES ('$newuserName', '$newuserType', MD5('$newuserPass'))";
+					mysql_query($sql, $db_link)
+						or die(ReportSQLError($sql));
 					$actionMsg = "User '$newuserName' has been added.";
 				}
 				else {
@@ -312,26 +289,21 @@ $globalUsers->checkForLogin('admin');
 
 		// Delete a user (admin only)
 		case "deleteuser":
-			//checkForLogin("admin");
-            $globalUsers->checkForLogin('admin');
+			checkForLogin("admin");
 			if (empty($_GET['id'])) {
 				ReportScriptError("There is no user specified for deletion.");
 			}
-			$globalSqlLink->SelectQuery('username', TABLE_USERS, "id=". $_GET['id'], "Limit 1" );
-            $deluserName->FetchQueryResult();
-			//$sql = "SELECT username FROM ". TABLE_USERS ." WHERE id=". $_GET['id'] ." LIMIT 1";
-			//$deluserName = mysql_query($sql, $db_link)
-			//	or die(ReportSQLError($sql));
-			if ($globalSqlLink->GetRowCount()<1) {
+			$sql = "SELECT username FROM ". TABLE_USERS ." WHERE id=". $_GET['id'] ." LIMIT 1";
+			$deluserName = mysql_query($sql, $db_link)
+				or die(ReportSQLError($sql));
+			if (mysql_num_rows($deluserName)<1) {
 				ReportScriptError("The user you tried to delete does not exist.");
 			}
-
-            $globalSqlLink->DeleteQuery("id=". $_GET['id'], TABLE_USERS );
-			//$deluserName = mysql_fetch_array($deluserName);
-			//$deluserName = $deluserName['username'];
-			//$sql = "DELETE FROM ". TABLE_USERS ." WHERE id=". $_GET['id'] ." LIMIT 1";
-			//mysql_query($sql, $db_link)
-			//	or die(ReportSQLError($sql));
+			$deluserName = mysql_fetch_array($deluserName);
+			$deluserName = $deluserName['username'];
+			$sql = "DELETE FROM ". TABLE_USERS ." WHERE id=". $_GET['id'] ." LIMIT 1";		
+			mysql_query($sql, $db_link)
+				or die(ReportSQLError($sql));
 			$actionMsg = "User '$deluserName' has been deleted.";
 			break;
 
@@ -340,12 +312,10 @@ $globalUsers->checkForLogin('admin');
 			// Check to see if password and confirmation matches
 			if ($_POST['passwordNew'] == $_POST['passwordNewRetype']) {
 				// SQL query checks to make sure username and old password is corrrect.
-                $select[password] =
-                $globalSqlLink->UpdateQuery("MD5('". $_POST['passwordNew']."')", TABLE_USERS,  "username='". $_SESSION['username'] ."' AND password=MD5('". $_POST['passwordOld'] ."'");
-				//$sql = "UPDATE ". TABLE_USERS ." SET password=MD5('". $_POST['passwordNew'] ."') WHERE username='". $_SESSION['username'] ."' AND password=MD5('". $_POST['passwordOld'] ."') LIMIT 1";
-				//$updatePassword = mysql_query($sql, $db_link)
-				//	or die(ReportSQLError($sql));
-				if ($globalSqlLink->GetRowCount()<1) {
+				$sql = "UPDATE ". TABLE_USERS ." SET password=MD5('". $_POST['passwordNew'] ."') WHERE username='". $_SESSION['username'] ."' AND password=MD5('". $_POST['passwordOld'] ."') LIMIT 1";
+				$updatePassword = mysql_query($sql, $db_link)
+					or die(ReportSQLError($sql));
+				if (mysql_affected_rows()<1) {
 					$actionMsg = "Incorrect password.";
 				}
 				else {
@@ -403,15 +373,13 @@ $globalUsers->checkForLogin('admin');
 <?php
 
 	// Display Group Checkboxes.
-    $globalSqlLink->SelectQuery('grouplist.groupid, groupname', TABLE_GROUPLIST . " AS grouplist", "grouplist.groupid >= 3", "ORDER BY groupname");
-    $r_grouplist = $globalSqlLink->FetchQueryResult();
-	//$groupsql = "SELECT grouplist.groupid, groupname
-	//			 FROM " . TABLE_GROUPLIST . " AS grouplist
-	//			 WHERE grouplist.groupid >= 3
-	//			 ORDER BY groupname";
-	//$r_grouplist = mysql_query($groupsql, $db_link);
-    foreach($r_grouplist as $tbl_grouplist){
-	//while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
+	$groupsql = "SELECT grouplist.groupid, groupname
+				 FROM " . TABLE_GROUPLIST . " AS grouplist
+				 WHERE grouplist.groupid >= 3
+				 ORDER BY groupname";
+	$r_grouplist = mysql_query($groupsql, $db_link);
+
+	while ($tbl_grouplist = mysql_fetch_array($r_grouplist)) {
 		$group_id = $tbl_grouplist['groupid'];
 		$group_name = $tbl_grouplist['groupname'];
 		echo("<INPUT TYPE=\"checkbox\" NAME=\"groups[]\" VALUE=\"$group_id\"><B>$group_name</B>\n<BR>");

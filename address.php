@@ -1,116 +1,83 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.04d
- *  
+ *  THE ADDRESS BOOK  :  version 1.2.01
+ *
+ * Author: stimepy@aodhome.com
+ * Last Modified: 4-27-2023
+ ****************************************************************
  *  address.php
  *  Displays address book entries.
  *
  *************************************************************/
 
 
-    require_once('.\Core.php');
+require_once('.\Core.php');
+require_once(".\lib\ContactInformation.php");
 
-    // ** OPEN CONNECTION TO THE DATABASE **
-    //	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);
+global $globalSqlLink, $globalUsers, $lang;
 
-    global $globalSqlLink;
-    global $globalUsers;
+$globalUsers->checkForLogin();
 
-    $globalUsers->checkForLogin();
+// ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
+$options = new Options();
+$list = new ContactList($options);
+$contact = new ContactInformation(check_id());
 
-    // ** RETRIEVE OPTIONS THAT PERTAIN TO THIS PAGE **
-        $options = new Options();
-
-    // ** CHECK FOR ID **
-        $id = check_id();
-
-    // ** END INITIALIZATION *******************************************************
-
-    // ** RETRIEVE CONTACT INFORMATION **
-	$contact = new Contact($id);
-
-    //$r_additionalData = mysql_query("SELECT * FROM " . TABLE_ADDITIONALDATA . " AS additionaldata WHERE additionaldata.id=$id", $db_link);
-    //$r_address = mysql_query("SELECT * FROM " . TABLE_ADDRESS . " AS address WHERE address.id=$id", $db_link);
-    //$r_email = mysql_query("SELECT * FROM " . TABLE_EMAIL . " AS email WHERE email.id=$id", $db_link);
-    //$r_groups = mysql_query("SELECT grouplist.groupid, groupname FROM " . TABLE_GROUPS . " AS groups LEFT JOIN " . TABLE_GROUPLIST . " AS grouplist ON groups.groupid=grouplist.groupid WHERE id=$id", $db_link);
-    //$r_messaging = mysql_query("SELECT * FROM " . TABLE_MESSAGING . " AS messaging WHERE messaging.id=$id", $db_link);
-    //$r_otherPhone = mysql_query("SELECT * FROM " . TABLE_OTHERPHONE . " AS otherphone WHERE otherphone.id=$id", $db_link);
-    //$r_websites = mysql_query("SELECT * FROM " . TABLE_WEBSITES . " AS websites WHERE websites.id=$id", $db_link);
 
 // CALCULATE 'NEXT' AND 'PREVIOUS' ADDRESS ENTRIES
-    $globalSqlLink->SelectQuery("id, CONCAT(lastname,', ',firstname) AS fullname",TABLE_CONTACT,  "CONCAT(lastname, ', ', firstname) < \"" . $contact->fullname . "\" AND contact.hidden != 1", "ORDER BY fullname DESC LIMIT 1");
-    $r_prev =$globalSqlLink->FetchQueryResult();
-	// $r_prev = mysql_query("SELECT id, CONCAT(lastname,', ',firstname) AS fullname FROM " . TABLE_CONTACT . " AS contact WHERE CONCAT(lastname, ', ', firstname) < \"" . $contact->fullname . "\" AND contact.hidden != 1 ORDER BY fullname DESC LIMIT 1", $db_link)
-	//	or die(reportSQLError());
-	//$t_prev = mysql_fetch_array($r_prev);
+    $contact->determinePrevNextAddress();
+    $body['next'] = $contact->getPreviousId();
+    $body['prev'] = $contact->getNextID();
 
-	if ( $r_prev['id']<1) {
-        $body['prev'] = $id;
-    }
-	else{
-        $body['prev'] =$r_prev['id'];
-    }
 
-    $globalSqlLink->SelectQuery("id, CONCAT(lastname,', ',firstname) AS fullname",TABLE_CONTACT,  "CONCAT(lastname, ', ', firstname) > \"" . $contact->fullname . "\" AND contact.hidden != 1", "ORDER BY fullname DESC LIMIT 1");
-    $r_next =$globalSqlLink->FetchQueryResult();
-	//$r_next = mysql_query("SELECT id, CONCAT(lastname,', ',firstname) AS fullname FROM " . TABLE_CONTACT . " AS contact WHERE CONCAT(lastname, ', ', firstname) > \"" . $contact->fullname . "\" AND contact.hidden != 1 ORDER BY fullname ASC LIMIT 1", $db_link)
-	//	or die(reportSQLError());
-	//$t_next = mysql_fetch_array($r_next);
-
-	if ($r_next['id']<1) {
-        $body['next']=$id;
-    }
-	else{
-        $body['next'] = $r_next['id'];
-    }
 
 // PICTURE STUFF.
 	// do we have a picture?
-	if ($contact->picture_url || $options->picAlwaysDisplay == 1) {
+	if ($contact->getpicture_url() || $options->getpicAlwaysDisplay() == 1) {
         $body['tableColumnAmt'] = 3;
-        $body['tableColumnWidth'] = (540 - $options->picWidth) / 2;
-	} 
+        $body['tableColumnWidth'] = (540 - $options->getpicWidth()) / 2;
+	}
 	else {
         $body['tableColumnAmt'] = 2;
         $body['tableColumnWidth'] = (540 / 2);
 	}
 
-	$TitleHeader = $lang[TAB].' - '.$lang[TITLE_ADDRESS]. ' '.$contact->fullname;
-    $output = addressheader($TitleHeader, $lang['CHARSET']);
+	$TitleHeader = $lang['TAB'].' - '.$lang['TITLE_ADDRESS']. ' '.$contact->getfullname();
+    $output = webheader($TitleHeader, $lang['CHARSET']);
 
 
-    if (($_SESSION['usertype'] == "admin") || ($_SESSION['username'] == $contact->who_added)) {
-        $body['sessuser'] = 1;
-        $body['sessuser']['BTN_PRINT'] = $lang[BTN_PRINT];
+    if (($_SESSION['usertype'] == "admin") || ($_SESSION['username'] == $contact->getwho_added())) {
+        $body['sessuser']['is'] = 1;
+        $body['sessuser']['BTN_PRINT'] = $lang['BTN_PRINT'];
         $body['sessuser']['FILE_EDIT'] = FILE_EDIT;
-        $body['sessuser']['id'] = $id;
-        $body['sessuser']['BTN_EDIT'] = $lang[BTN_EDIT];
+        $body['sessuser']['id'] = $contact->getid();
+        $body['sessuser']['BTN_EDIT'] = $lang['BTN_EDIT'];
     }
     else{
         $body['sessuser'] = 0;
     }
     $body['FILE_ADDRESS'] = FILE_ADDRESS;
-    $body['BTN_PREVIOUS'] = $lang[BTN_PREVIOUS];
-    $body['BTN_NEXT'] = $lang[BTN_NEXT];
+    $body['BTN_PREVIOUS'] = $lang['BTN_PREVIOUS'];
+    $body['BTN_NEXT'] = $lang['BTN_NEXT'];
 
-    if ($options->displayAsPopup == 1) {
-        $body['displayAsPopup'] = "<A HREF=\"#\" onClick=\"window.close();\">". $lang[BTN_CLOSE] ."</A>";
+    if ($options->getdisplayAsPopup() == 1) {
+        $body['displayAsPopup'] = "<A HREF=\"#\" onClick=\"window.close();\">". $lang['BTN_CLOSE'] ."</A>";
     }
     else {
         $body['displayAsPopup'] = "<A HREF=\"".FILE_LIST."\">". $lang[BTN_LIST] ."</A>";
     }
 
-    $body['$contact']['name'] = $contact->lastname ;
-    if( $contact->firstname){
-        $body['$contact']['name'] .= ", ".$contact->firstname;
+    $body['$contact']['name'] = $contact->getlastname();
+    if( $contact->getFirstName()){
+        $body['$contact']['name'] .= ", ".$contact->getFirstName();
     }
-    if ($contact->middlename){
-        $body['$contact']['name'] .= " ".$contact->middlename;
+    if ($contact->getMiddleName()){
+        $body['$contact']['name'] .= " ".$contact->getMiddleName();
     }
-    if ($contact->nickname) {
-        $body['$contact']['name'] .= " \"$contact->nickname\"";
+    if ($contact->getnickname()) {
+        $body['$contact']['name'] .= " \"". $contact->getnickname() ."\"";
     }
-    if ($contact->hidden == 1) {
+    if ($contact->gethidden() == 1) {
         $body['HIDDENENTRY'] = "[HIDDEN ENTRY] ";
     }
     else{
@@ -122,100 +89,93 @@
 
 
 	// LIST GROUPS
-    $globalSqlLink->SelectQuery('grouplist.groupid, groupname', TABLE_GROUPS . " AS groups LEFT JOIN " . TABLE_GROUPLIST. " AS grouplist ON groups.groupid=grouplist.groupid", 'id='.$id, NULL );
+    $globalSqlLink->SelectQuery('grouplist.groupid, groupname', TABLE_GROUPS . " AS groups LEFT JOIN " . TABLE_GROUPLIST. " AS grouplist ON groups.groupid=grouplist.groupid", 'id='.$contact->getid(), NULL );
     $body['r_groups'] = $globalSqlLink->FetchQueryResult();
-    //$r_groups = mysql_query("SELECT grouplist.groupid, groupname FROM " . TABLE_GROUPS . " AS groups LEFT JOIN " . TABLE_GROUPLIST . " AS grouplist ON groups.groupid=grouplist.groupid WHERE id=$id", $db_link);
-	//$tbl_groups = mysql_fetch_array($r_groups);
 	 // check if no groups
 	if ( $globalSqlLink->GetRowCount() == 0 ) {
-        $body['spacer']  = "<IMG SRC=\"spacer.gif\" WIDTH=1 HEIGHT=1 BORDER=0 ALT=\"\">";  // leaves a spacer image if no groups is assigned to the person.
+        $body['spacer']  = "<IMG SRC=\"spacer.gif\" WIDTH=1 HEIGHT=1 BORDER=0 ALT=\"\">";
 	}
 	else{
         $body['spacer'] = '';
     }
 
 
-    $body['tableColumnAmt2'] =$tableColumnAmt;
+    $body['tableColumnAmt2'] =$body['tableColumnAmt'];
 	// ** PICTURE BOX **
-	if ($tableColumnAmt == 3) {
-        $picture = ($contact->picture_url)? PATH_MUGSHOTS . $contact->picture_url:"images/nopicture.gif";
-		$body['tableColumnAmt'] ="                    <TD WIDTH=". $options->picWidth .">
-		                    <IMG SRC=\"" . $picture ."\" WIDTH=". $options->picWidth ." HEIGHT=". $options->picHeight ." BORDER=1 ALT=\"\">
+	if ($body['tableColumnAmt'] == 3) {
+        $picture = ($contact->getpicture_url())? PATH_MUGSHOTS . $contact->getpicture_url():"images/nopicture.gif";
+		$body['tableColumnAmt'] ="                    <TD WIDTH=". $options->getpicWidth() .">
+		                    <IMG SRC=\"" . $picture ."\" WIDTH=". $options->getpicWidth() ." HEIGHT=". $options->getpicHeight() ." BORDER=1 ALT=\"\">
                     </TD>";
 	}
 	else{
 	    $body['tableColumnAmt'] ="";
 	}
 
-	$body['tableColumnWidth'] = $tableColumnWidth;
+	$body['tableColumnWidth'] = $body['tableColumnAmt'];
 
-	// ** ADDRESSES **
-    $globalSqlLink->SelectQuery('*', TABLE_ADDRESS, 'address.id='.$id, NULL);
-    $r_address = $globalSqlLink->FetchQueryResult();
-
-
-    $forcnt=0;
-    foreach( $r_address as $tbl_address){
-        $addRef = (($contact->primary_address == $tbl_address['refid']) ? $lang[LBL_PRIMARY_ADDRESS] : $lang[LBL_ADDRESS]);
-		$address_type = stripslashes( $tbl_address['type'] );
-		$address_line1 =($tbl_address['type'])?"<br />".stripslashes( $tbl_address['line1'] ) : '';
-		$address_line2 = ($tbl_address['line2'])? "<br />". stripslashes( $tbl_address['line2'] ): '';
-		$address_city = ($tbl_address['city']) ? stripslashes( $tbl_address['city'] ): '';
-		$address_state =( $address_city && $tbl_address['state'] )? ", ". stripslashes( $tbl_address['state'] )." ". stripslashes( $tbl_address['zip'] ): ($tbl_address['state'])?stripslashes( $tbl_address['state'] )." ". stripslashes( $tbl_address['zip'] ) : '' ;
-		//$address_zip = stripslashes( $tbl_address['zip'] );
-        $address_phone = "";
-		if($tbl_address['phone1'] || $tbl_address['phone2']) {
-            $address_phone .= "<br />". stripslashes($tbl_address['phone1']);
-		}
-		if($tbl_address['phone2']){
-            $address_phone .= "<br />". stripslashes($tbl_address['phone2']);
+    $allAddresses= $contact->getAlladdress() ;
+    $addresscnt = 0;
+    if(is_array($allAddresses[0])) {
+        foreach ($contact->getAlladdress() as $tbl_address) {
+            $body['address'][$addresscnt] = $list->buildcontact($tbl_address);
+            $addresscnt++;
         }
+    }
+    else{
+        $body['address'][$addresscnt] =$list->buildcontact($allAddresses) ;
+    }
 
-        $body['addresses'][$forcnt] ="<p>
-            <b>" . $addRef ." ". ($address_type)? $address_type:'' ." </b>
-           ". $address_line1 . $address_line2 ." <br /> ". $address_state . $address_phone ."<br /> ". $tbl_address['country'];
-        $forcnt++;
-	}
+
 
 
 	// ** E-MAIL **
 	// First check to see that the result set is filled. If so, create E-mail section header.
 	// Then start pulling data out of the result set and displaying them.
-    $globalSqlLink->SelectQuery('*',TABLE_EMAIL, 'email.id='.$id, NULL);
-    $r_email=$globalSqlLink->FetchQueryResult();
+    $r_email = $list->getEmailsByContactId($contact->getid());
     $emlcnt = 0;
-	if ($globalSqlLink->GetRowCount() > 0) {
-		echo("<P>\n<B>$lang[LBL_EMAIL]</B>\n");
-		foreach( $r_email as $tbl_email){
-			$email_type = stripslashes( $tbl_email['type'] );
-			if ($options->useMailScript == 1) {
-                $body["emails"][$emlcnt] .= "<br /><a href=\"" .FILE_MAILTO. "?to=".stripslashes( $tbl_email['email'] ) ."\">".stripslashes( $tbl_email['email'] )."</a>";
-			}
-			else {
-                $body["emails"][$emlcnt] .= "<br /><a HREF=\"mailto:". stripslashes( $tbl_email['email'] ) ."\">". stripslashes( $tbl_email['email'] ) ."</a>";
-			}
-			if ($email_type) {
-                $body["emails"][$emlcnt] .=" ($email_type)";
-			}
+    $body["emails"] = null;
+	if ($r_email != -1) {
+        if(is_array($r_email[0])) {
+            foreach ($r_email as $tbl_email) {
+                $body["emails"][$emlcnt] = $list->createEmail($options->getuseMailScript(), hasValueOrBlank($tbl_email['email']));
+                if ($tbl_email['type']) {
+                    $body["emails"][$emlcnt] .= " (" . hasValueOrBlank($tbl_email['type']) . ")";
+                }
+                $body["emails"][$emlcnt] .= "</p>";
+                $emlcnt++;
+            }
+        }
+        else{
+            $body["emails"][$emlcnt] = $list->createEmail($options->getuseMailScript(), hasValueOrBlank($r_email['email']));
+            if ($r_email['type']) {
+                $body["emails"][$emlcnt] = " (" . hasValueOrBlank($r_email['type']) . ")";
+            }
             $body["emails"][$emlcnt] .= "</p>";
             $emlcnt++;
-		}
+        }
 	}
 
-	// ** OTHER PHONE NUMBERS **
-    $globalSqlLink->SelectQuery('*', TABLE_OTHERPHONE, "otherphone.id=".$id, NULL);
+
+// ** OTHER PHONE NUMBERS **
+    $globalSqlLink->SelectQuery('*', TABLE_OTHERPHONE, "id=".$contact->getid(), NULL);
     $r_otherPhone = $globalSqlLink->FetchQueryResult();
-
+    $body["otherphone"]=null;
 	if ($globalSqlLink->GetRowCount() > 0) {
-
         $otherphonecnt = 0;
-		foreach ($r_otherPhone as $tbl_otherPhone){
-	    //while ($tbl_otherPhone = mysql_fetch_array($r_otherPhone)) {
-			$otherphone_phone = stripslashes( $tbl_otherPhone['phone'] );
+        if(is_array($r_otherPhone[0])) {
 
-            $body["otherphone"][$otherphonecnt] .="<br />". stripslashes( $tbl_otherPhone['type'] ) .": ".stripslashes( $tbl_otherPhone['phone'] );
-            $otherphonecnt++;
-		}
+            foreach ($r_otherPhone as $tbl_otherPhone) {
+                $otherphone_phone = stripslashes($tbl_otherPhone['phone']);
+
+                $body["otherphone"][$otherphonecnt] .= "<br />" . stripslashes($tbl_otherPhone['type']) . ": " . stripslashes($tbl_otherPhone['phone']);
+                $otherphonecnt++;
+            }
+        }
+        else{
+            $otherphone_phone = stripslashes($r_otherPhone['phone']);
+            $body["otherphone"][$otherphonecnt] ="<br />" . stripslashes($r_otherPhone['type']) .": ". stripslashes($r_otherPhone['phone']);
+        }
 	}
 
 	// ** MESSAGING **
@@ -223,29 +183,39 @@
 	// Would like it to be:
 	//         <BR>AIM: name1, name2
 	//         <BR>ICQ: something
-    $globalSqlLink->SelectQuery( '*', TABLE_MESSAGING, 'messaging.id='.$id, NULL);
+    $globalSqlLink->SelectQuery( '*', TABLE_MESSAGING, 'id='.$contact->getid(), NULL);
     $r_messaging = $globalSqlLink->FetchQueryResult();
     //$r_messaging = mysql_query("SELECT * FROM " . TABLE_MESSAGING . " AS messaging WHERE messaging.id=$id", $db_link);
 	//$tbl_messaging = mysql_fetch_array($r_messaging);
     $message = $globalSqlLink->GetRowCount();
 	if ($message) {
         $otherphonecnt = 0;
-	    foreach($r_messaging as $tbl_messaging){
-		//while ($tbl_messaging = mysql_fetch_array($r_messaging)) {
-		   	$messaging_handle = stripslashes( $tbl_messaging['handle'] );
-		   	$messaging_type = stripslashes( $tbl_messaging['type'] );
-            $body["message"][$otherphonecnt] = "<br />".stripslashes( $tbl_messaging['type'] ) .": ". stripslashes( $tbl_messaging['handle'] );
-		   	$otherphonecnt++;
-		}
+        if(is_array($r_messaging[0])) {
+            foreach ($r_messaging as $tbl_messaging) {
+                //while ($tbl_messaging = mysql_fetch_array($r_messaging)) {
+                $messaging_handle = stripslashes($tbl_messaging['handle']);
+                $messaging_type = stripslashes($tbl_messaging['type']);
+                $body["message"][$otherphonecnt] = "<br />" . removeSlashes($tbl_messaging['type']) . ": " . removeSlashes($tbl_messaging['handle']);
+                $otherphonecnt++;
+            }
+        }
+        else{
+            $messaging_handle = stripslashes($r_messaging['handle']);
+            $messaging_type = stripslashes($r_messaging['type']);
+            $body["message"][$otherphonecnt] = "<br />" . removeSlashes($r_messaging['type']) . ": " . removeSlashes($r_messaging['handle']);
+        }
 	}
+    else{
+        $body["message"] = "";
+    }
 
 	// ** BIRTHDAY **
-	if ($contact->birthday) {
-        $body["birthday"] ="                 <tr VALIGN=\"top\">\
+	if ($contact->getBirthday()) {
+        $body["birthday"] ="                 <tr VALIGN=\"top\">
                    <td WIDTH=120 CLASS=\"data\">
-                        <b>". $lang[LBL_BIRTHDATE] ."</b>
+                        <b>". $lang['LBL_BIRTHDATE'] ."</b>
                     </td>
-                   <td WIDTH=440 CLASS=\"data\"> ". $contact->birthday ."</td>
+                   <td WIDTH=440 CLASS=\"data\"> ". $contact->getBirthday() ."</td>
                  </tr>";
 	}
 	else {
@@ -253,64 +223,103 @@
 	}
 
 	// ** ADDITIONAL DATA **
-    $globalSqlLink->SelectQuery('*', TABLE_ADDITIONALDATA,  'additionaldata.id='.$id, NULL);
+    $globalSqlLink->SelectQuery('*', TABLE_ADDITIONALDATA,  'id='.$contact->getid(), NULL);
     $r_additionalData =$globalSqlLink->FetchQueryResult();
     $additioncnt =0;
-	foreach ($r_additionalData as $tbl_additionalData){
-    //while ( $tbl_additionalData = mysql_fetch_array($r_additionalData) ) {
-        $body["additional"][$additioncnt] ="                 <tr VALIGN=\"top\">
+    if($r_additionalData != -1) {
+        if(is_array($r_additionalData[0])) {
+            foreach ($r_additionalData as $tbl_additionalData) {
+                //while ( $tbl_additionalData = mysql_fetch_array($r_additionalData) ) {
+                $body["additional"][$additioncnt] = "                 <tr VALIGN=\"top\">
                    <td WIDTH=120 CLASS=\"data\">
-                        <b>".stripslashes( $tbl_additionalData['type'])."</b>
+                        <b>" . stripslashes($tbl_additionalData['type']) . "</b>
                    </td>
                    <td WIDTH=440 CLASS=\"data\">
-                        ".stripslashes( $tbl_additionalData['value'] )."
+                        " . stripslashes($tbl_additionalData['value']) . "
                     </td>
                  </tr>";
-	}
+                $additioncnt++;
+            }
+        }
+        else{
+            $body["additional"][$additioncnt] = "                 <tr VALIGN=\"top\">
+                   <td WIDTH=120 CLASS=\"data\">
+                        <b>" . stripslashes($r_additionalData['type']) . "</b>
+                   </td>
+                   <td WIDTH=440 CLASS=\"data\">
+                        " . stripslashes($r_additionalData['value']) . "
+                    </td>
+                 </tr>";
+        }
+    }
+    else{
+        $body["additional"] = "";
+    }
 
 	// ** WEBSITES **
-    $globalSqlLink->SelectQuery('*', TABLE_WEBSITES, 'websites.id='.$id, NULL);
+    $globalSqlLink->SelectQuery('*', TABLE_WEBSITES, 'id='.$contact->getid(), NULL);
     $r_websites = $globalSqlLink->FetchQueryResult();
     //$r_websites = mysql_query("SELECT * FROM " . TABLE_WEBSITES . " AS websites WHERE websites.id=$id", $db_link);
 	//$tbl_websites = mysql_fetch_array($r_websites);
 	//$websiteURL = stripslashes( $tbl_websites['webpageURL'] );
 	//$websiteName = stripslashes( $tbl_websites['webpageName'] );
-	if ($globalSqlLink->GetRowCount() > 0) {
+
+if ($globalSqlLink->GetRowCount() > 0) {
         $x = 0;
 		$body['Websites'][$x] ="                 <TR VALIGN=\"top\">
 		                   <td WIDTH=120 CLASS=\"data\">
-		                        <b>". $lang[LBL_WEBSITES] ."</b>
+		                        <b>". $lang['LBL_WEBSITES'] .":</b>
 		                   </td>
 		                   <TD WIDTH=440 CLASS=\"data\">\n";
-		//echo("                      <A HREF=\"$websiteURL\" TARGET=\"out\">");
-			// Displays URL if no name is given
-		//	if ($websiteName) {
-				//echo($websiteName);
-			//} else {
-//				echo($websiteURL);
-//			}
-//			echo("</A>\n");
-        foreach($r_websites as $r_websites){
-		// while ($tbl_websites = mysql_fetch_array($r_websites)) {
-			$websiteURL = stripslashes( $tbl_websites['webpageURL'] );
-			$websiteName = stripslashes( $tbl_websites['webpageName'] );
-            $body['Websites'][$x] .="                      <BR><A HREF=\"$websiteURL\" TARGET=\"out\">
-				". ($websiteName)? websiteName : $websiteURL ."</A>";
-		}
-        $body['Websites'][$x] .="                   </TD>
+        $x++;
+        if(is_array($r_websites[0])) {
+            foreach ($r_websites as $r_website) {
+                $websiteURL = stripslashes($r_website['webpageURL']);
+                $websiteName = stripslashes($r_website['webpageName']);
+                $body['Websites'][$x] = "                      </br><a href=\"$websiteURL\" TARGET=\"out\">
+				" . getsiteNorU($websiteName, $websiteURL) . "</a>";
+                $x++;
+            }
+        }
+        else{
+            $websiteURL = stripslashes($r_websites['webpageURL']);
+            $websiteName = stripslashes($r_websites['webpageName']);
+            $body['Websites'][$x] = "                      </br><a href=\"$websiteURL\" TARGET=\"out\">
+				" . getsiteNorU($websiteName, $websiteURL) . "</a>";
+
+        }
+        $body['Websites'][$x-1] .="                   </TD>
 		                 </TR>";
 	}
+    else{
+        $body['Websites'] = "";
+    }
+
 
 
 
 	// ** NOTES **
-	if ($contact->notes) {
-        $body['note'] = $contact->notes;
-        $body['LBL_NOTES'] = $lang[LBL_NOTES];
+	if ($contact->getnotes()) {
+        $body['note'] = $contact->getnotes();
+        $body['LBL_NOTES'] = $lang['LBL_NOTES'];
 	}
+    else{
+        $body['note'] = "";
+    }
 
-    $body['lastUpdatetxt'] = $lang[LAST_UPDATE];
-    $body['lastupdate'] = $contact->last_update;
 
-    $output .=  addressBodyStart($body);
+    $body['lastUpdatetxt'] = $lang['LAST_UPDATE'];
+    $body['lastupdate'] = $contact->getlast_update();
+
+    $output .=  addressBodyStart($body, $lang);
     display($output);
+
+
+
+function getsiteNorU(string $websiteName, string $websiteURL)
+{
+    if(isset($websiteName) && $websiteName !=""){
+       return $websiteName;
+    }
+    return $websiteURL;
+}

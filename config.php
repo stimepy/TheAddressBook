@@ -26,7 +26,7 @@
 // host name.
 // If you leave the variable empty it will default to "localhost"
 
-$db_hostname = "localhost";   //"";
+$db_hostname = "";
 
 
 // DATABASE NAME (REQUIRED)
@@ -42,7 +42,7 @@ $db_name = "stimepy_addressbook";
 // MYSQL USER NAME (REQUIRED)
 // This is the user name that you use to log in to MySQL.
 
-$db_username = "root";
+$db_username = "stimepy_stimepy";
 
 
 // MYSQL PASSWORD
@@ -50,7 +50,8 @@ $db_username = "root";
 // which you use to log in to MySQL.
 // Passwords may be left blank if you do not have one.
 
-$db_password = "";
+$db_password = "1rFFJp,E}gdk!bleu";
+//$db_password = "holycowz";
 
 
 // DATABASE TABLE PREFIX
