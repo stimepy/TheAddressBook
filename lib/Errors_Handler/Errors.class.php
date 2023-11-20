@@ -29,16 +29,16 @@ class Errors extends \Exception
     }
 
     public function GeneralError(){
-        global $lang;
+        global $lang, $error_Lang;
 
-        $output = $this->myErrorTemplate->webheader($lang['ERROR_ENCOUNTERED'], $lang['CHARSET'], -1, true);
+        $output = $this->myErrorTemplate->webheader($error_Lang['ERROR_ENCOUNTERED'], $lang['CHARSET'], -1, true);
         $output.= $this->myErrorTemplate->displaygeneralbody($this, $lang);
         // $this->log->Write()
     }
 
     public function SqlError(){
-        global $lang;
-        $output = $this->myErrorTemplate->webheader($lang['ERROR_ENCOUNTERED'], $lang['CHARSET'], -1, true);
+        global $lang, $error_Lang;
+        $output = $this->myErrorTemplate->webheader($error_Lang['ERROR_ENCOUNTERED'], $lang['CHARSET'], -1, true);
         $output.= $this->myErrorTemplate->prepareSqlBody($this, $lang);
         $this->myErrorTemplate->Display($output);
         // $this->log->Write()

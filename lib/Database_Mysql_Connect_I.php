@@ -128,7 +128,7 @@ class Mysql_Connect_I
      * TODO: Make better error handling
      */
     private function openDatabase() {
-        global $lang;
+        global $error_Lang;
         // Default to local host if a hostname is not provided
         if (!$this->myHost) {
             $this->SetHost("localhost") ;
@@ -142,7 +142,7 @@ class Mysql_Connect_I
         }
         catch(Errors $e){
             // need more
-            $e->addAdditionalMessage($lang['ERR_DATABASE_CONNECT']);
+            $e->addAdditionalMessage($error_Lang['ERR_DATABASE_CONNECT']);
             $e->SqlError();
         }
 
@@ -157,13 +157,13 @@ class Mysql_Connect_I
      * Using the existing databse connection changes the database we are currently connected to.
      */
     public function ChangeDatabase($databasename){
-        global $lang;
+        global $error_Lang;
         if($databasename != $this->myDatabase){
             $this->SetDatabaseName($databasename);
         }
         try {
             if (!mysqli_select_db($this->mySQLConnection, $databasename)) {
-                throw new Errors($lang['ERR_DATABASE_NOT_FOUND'], 0);
+                throw new Errors($error_Lang['ERR_DATABASE_NOT_FOUND'], 0);
             }
         }
         catch(Errors $e){
@@ -183,25 +183,21 @@ class Mysql_Connect_I
      */
     public Function SelectQuery($select, $table, $where, $orderby = null)
     {
-        global $lang;
+
         try {
             $query = $this->buildquery($select, $table, $where, $orderby, 'SELECT');
-            if ($query == -1) {
-                throw new \Errors_Handler\Errors($lang['ERR_SQL_MALFORM'], 101);
+            if (!$query) {
+                $this->malformError($query,101);
             }
+
             $this->mySQLresults = $this->mySQLConnection->query($query);
-            if(!$this->mySQLresults){
-                throw new \Errors_Handler\Errors($lang['ERR_SQL_MALFORM'], 201);
+            if (!$this->mySQLresults) {
+                $this->malformError($query,201);
             }
         }
         catch(Errors $e){
-            $e->setSqlQuery($query);
             $e->SqlError();
         }
-
-        // debug
-        // echo $query;
-
     }
 
     /**
@@ -213,17 +209,33 @@ class Mysql_Connect_I
      * TODO: Better error handling
      */
     public function UpdateQuery($toUpdate, $table, $where){
-        $query = $this->buildquery($toUpdate, $table, $where, '', 'UPDATE');
-        if($query == -1){
-            die('Badly Formed Query in Database_Mysql_Connect_I.');
+
+        try {
+            $query = $this->buildquery($toUpdate, $table, $where, '', 'UPDATE');
+            if (!$query) {
+                $this->malformError($query,101);
+            }
+
+            $this->mySQLresults = $this->mySQLConnection->query($query);
+            if ($this->mySQLresults == false) {
+                $this->malformError($query,201);
+            }
         }
-        //echo $query;
-        $this->mySQLresults=$this->mySQLConnection->query($query);
-        if($this->mySQLresults == false){
-            die('query error.');
+        catch(Errors $e){
+            $e->SqlError();
         }
+
         $this->SetRowCount($this->mySQLConnection->affected_rows);
     }
+    private function malformError($query,$errNum){
+        global $error_Lang;
+        $error = new Errors($error_Lang['ERR_SQL_MALFORM'], $errNum);
+        if (!$query) {
+            $error->setSqlQuery($query);
+        }
+        throw $error;
+    }
+
 
     /**
      * @return array
@@ -248,13 +260,18 @@ class Mysql_Connect_I
      * TODO: Better error handling
      */
     public function InsertQuery($insert, $table){
-        $query = $this->buildquery($insert, $table, '','', 'INSERT');
-        $this->mySQLresults=$this->mySQLConnection->query($query);
-        if($this->mySQLresults == false){
-            die('query error.');
+        try {
+            $query = $this->buildquery($insert, $table, '', '', 'INSERT');
+            $this->mySQLresults = $this->mySQLConnection->query($query);
+            if (!$query) {
+                $this->malformError($query,201);
+            }
         }
-        $this->MySQLLastInsertID =
-            $this->SetLastInsertID($this->mySQLConnection->insert_id);
+        catch(Errors $e){
+            $e->SqlError();
+        }
+
+        $this->MySQLLastInsertID = $this->SetLastInsertID($this->mySQLConnection->insert_id);
         $this->SetRowCount($this->mySQLConnection->affected_rows);
     }
 
@@ -267,10 +284,16 @@ class Mysql_Connect_I
      * TODO: Better error handling
      */
     public function DeleteQuery($where, $table){
-        $query = $this->buildquery($where, $table, '','', 'DELETE');
-        $this->mySQLresults=$this->mySQLConnection->query($query);
-        if($this->mySQLresults == false){
-            die('query error.');
+
+        try {
+            $query = $this->buildquery($where, $table, '', '', 'DELETE');
+            $this->mySQLresults = $this->mySQLConnection->query($query);
+            if ($this->mySQLresults == false) {
+                $this->malformError($query,201);
+            }
+        }
+        catch(Errors $e){
+            $e->SqlError();
         }
         $this->SetRowCount($this->mySQLConnection->affected_rows);
         //Clear Results;
@@ -349,27 +372,27 @@ class Mysql_Connect_I
         switch($type){
             case 'SELECT':
                     if($wants == '' || $wants == NULL || $table == '' || $table == NULL){
-                        return -1;
+                        return false;
                     }
                     return $this->buildSelect ($wants, $table, $where, $other);
                     break;
             case 'UPDATE':
                 if(!is_array($wants) || count($wants) == 0 || $wants == NULL || $table == '' || $table == NULL){
-                    return -1;
+                    return false;
                 }
                 return $this->buildUpdate ($wants, $table, $where);
             case 'INSERT':
                 if(!is_array($wants) || count($wants) == 0 || $wants == NULL || $table == '' || $table == NULL){
-                    return -1;
+                    return false;
                 }
                 return $this->buildInsert($wants, $table);
             case 'DELETE':
                 if($wants == "" || $wants == NULL || $table == '' || $table == NULL){
-                    return -1;
+                    return false;
                 }
                 return $this->buildDelete($wants, $table);
             default:
-                return -1;
+                return false;
                 break;
 
         }

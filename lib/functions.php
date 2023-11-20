@@ -67,52 +67,46 @@ function account_pwvalid($pw) {
 }
 
 function account_namevalid($name) {
-	global $feedback;
+	global $feedback, $error_Lang;
 	// no spaces
 	if (strrpos($name,' ') > 0) {
-		$feedback .= "ERR_LOGIN_SPACE";
+		$feedback .= $error_Lang['ERR_LOGIN_SPACE'];
 		return false;
 	}
 	// must have at least one character
 	if (strspn($name,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") == 0) {
-		$feedback .= "ERR_ALPHA";
+		$feedback .= $error_Lang['ERR_ALPHA'];
 		return false;
 	}
 	// must contain all legal characters
 	if (strspn($name,"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_")
 		!= strlen($name)) {
-		$feedback .= "ERR_CHAR_ILLEGAL";
+		$feedback .= $error_Lang['ERR_CHAR_ILLEGAL'];
 		return false;
 	}
 	// min and max length
 	if (strlen($name) < 1) {
-		$feedback .= "ERR_NAME_SHORT";
+		$feedback .= $error_Lang['ERR_NAME_SHORT'];
 		return false;
 	}
 	if (strlen($name) > 15) {
-		$feedback .= "ERR_NAME_LONG";
+		$feedback .= $error_Lang['ERR_NAME_LONG'];
 		return false;
 	}
 	// illegal names
 	if (preg_match("/^((root)|(bin)|(daemon)|(adm)|(lp)|(sync)|(shutdown)|(halt)|(mail)|(news)/i"
 		. "|(uucp)|(operator)|(games)|(mysql)|(httpd)|(nobody)|(dummy)"
 		. "|(www)|(cvs)|(shell)|(ftp)|(irc)|(debian)|(ns)|(download))$",$name)) {
-		$feedback .= "ERR_RSRVD";
+		$feedback .= $error_Lang['ERR_RSRVD'];
 		return 0;
 	}
 	if (preg_match("/^(anoncvs_)/i",$name)) {
-		$feedback .= "ERR_RSRVD_CVS";
+		$feedback .= $error_Lang['ERR_RSRVD_CVS'];
 		return false;
 	}
-
 	return true;
 }
 
-//Deprecated. 5-2-2023 Email validation in general is SUPER hard. This looks super general so....
-/*function validate_email ($address) {
-	return (preg_match('/^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$/', $address));
-}*/
-## end registration/mail functions
 
 
 
