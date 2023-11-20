@@ -11,8 +11,8 @@
  *************************************************************/
 
 // ** GET CONFIGURATION DATA **
-require_once('.\Core.php');
-require_once('.\lib\Templates\scratchpad.template.php');
+require_once('./Core.php');
+require_once('./lib/Templates/scratchpad.template.php');
 
 global $globalSqlLink, $globalUsers, $lang;
 

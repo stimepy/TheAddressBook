@@ -36,13 +36,13 @@ $db_hostname = "";
 // a database if one does not already exist, so make sure you
 // have one.
 
-$db_name = "stimepy_addressbook";
+$db_name = "root";
 
 
 // MYSQL USER NAME (REQUIRED)
 // This is the user name that you use to log in to MySQL.
 
-$db_username = "stimepy_stimepy";
+$db_username = "root";
 
 
 // MYSQL PASSWORD
@@ -50,8 +50,8 @@ $db_username = "stimepy_stimepy";
 // which you use to log in to MySQL.
 // Passwords may be left blank if you do not have one.
 
-$db_password = "1rFFJp,E}gdk!bleu";
-//$db_password = "holycowz";
+//$db_password = "";
+$db_password = "holycowz";
 
 
 // DATABASE TABLE PREFIX

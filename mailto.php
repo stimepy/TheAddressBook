@@ -16,8 +16,8 @@
 // BUG: Mailing List displays entries without email addresses.
 
 
-require_once('.\Core.php');
-require_once ('.\lib\Templates\mail.Template.php');
+require_once('./Core.php');
+require_once ('./lib/Templates/mail.Template.php');
 
 global $globalSqlLink, $globalUsers, $lang;
 

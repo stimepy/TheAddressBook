@@ -10,7 +10,7 @@
  *************************************************************/
 
 
-require_once('Core.php');
+require_once('./Core.php');
 require_once ('./lib/Templates/edit.Template.php');
 
 // ** OPEN CONNECTION TO THE DATABASE **

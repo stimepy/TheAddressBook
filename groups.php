@@ -12,7 +12,7 @@
 
 
 // ** GET CONFIGURATION DATA **
-    require_once('constants.inc');
+    require_once('./constants.inc');
     require_once(FILE_FUNCTIONS);
 
 // ** OPEN CONNECTION TO THE DATABASE **

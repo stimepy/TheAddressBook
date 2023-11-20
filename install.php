@@ -17,7 +17,7 @@
 error_reporting  (E_ERROR | E_WARNING | E_PARSE);
 $upgrade = true;
 $permission=1091;
-require_once('.\lib\Core.php');
+require_once('./lib/Core.php');
 
 
 global $globalSqlLink;

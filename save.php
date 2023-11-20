@@ -11,8 +11,8 @@
  *************************************************************/
 
 // ** GET CONFIGURATION DATA **
-require_once('.\Core.php');
-require_once('.\lib\class-modifyAddress.php');
+require_once('./Core.php');
+require_once('./lib/class-modifyAddress.php');
 
 
 global $globalSqlLink, $id, $globalUsers, $lang;
