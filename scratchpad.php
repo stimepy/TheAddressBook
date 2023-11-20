@@ -41,9 +41,9 @@ $body['FILE_LIST'] = FILE_LIST;
 
 // Retrieve data
 $globalSqlLink->SelectQuery('notes',TABLE_SCRATCHPAD, NULL, "limit 1" );
-$notes = stripslashes($globalSqlLink->fetchQueryResult()[0]);
+$notes = $globalSqlLink->fetchQueryResult()[0];
 
 if($notes != -1){
-    $body['notes']= $notes;
+    $body['notes']= stripslashes($notes);
 }
 
