@@ -51,7 +51,7 @@ $db_username = "root";
 // Passwords may be left blank if you do not have one.
 
 //$db_password = "";
-$db_password = "holycowz";
+$db_password = "";
 
 
 // DATABASE TABLE PREFIX
