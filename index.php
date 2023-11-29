@@ -74,6 +74,8 @@ $forceLoginScreen = -1;
 	// END SWITCH
 	}
 
+
+
 	$output = webheader($lang['TITLE_WELCOME'] ." - ". $lang['TITLE_TAB'], $lang['CHARSET']);
 
 

@@ -25,14 +25,14 @@ require_once(FILE_CLASSES);
 require_once(FILE_CONFIG);
 require_once(FILE_FUNCTIONS);
 
+
 // require_once(FILE_LIB_MAIL);
 require_once('./lib/Templates/Common.Template.php');// Deprecated To go away....
-require_once ('./lib/plugins/autoload.php')
+
 
 // Note: That is not appropriate.  Must move to individual calls.
 require_once('./lib/Templates/address.Template.php');
 require_once('./lib/Templates/index.Template.php');
-require_once ('./lib/plugins/autoload.php');
 require_once('./lib/Database_Mysql_Connect_I.php');
 require_once('./lib/class.users.php');
 

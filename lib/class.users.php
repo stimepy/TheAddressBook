@@ -78,11 +78,11 @@ class users
     }
 
     function Authorization(){
-        global $globalSqlLink, $lang;
+        global $globalSqlLink, $lang, $error_Lang;
         // LOOK FOR USERNAME AND PASSWORD IN THE DATABASE.
         $globalSqlLink->SelectQuery('username, usertype, is_confirmed', TABLE_USERS, "username='" . $_POST['username'] . "' AND password=MD5('" . $_POST['password'] . "')", NULL);
         $t_getUser = $globalSqlLink->FetchQueryResult();
-
+        print_r($error_Lang);
         // THE USERNAME IS FOUND AND ACCOUNT IS CONFIRMED
         if (($globalSqlLink->GetRowCount() != 0) && ($t_getUser[0]['is_confirmed'] == 1)) {
             // REGISTER SESSION VARIABLES
@@ -101,7 +101,7 @@ class users
             // END SESSION
             session_destroy();
             // PRINT ERROR MESSAGE AND LOGIN SCREEN
-            $errorMsg = $lang['ERR_USER_CONFIRMED_NOT'];
+            $errorMsg = $error_Lang['ERR_USER_CONFIRMED_NOT'];
         }
 
         // WRONG USERNAME

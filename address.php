@@ -11,8 +11,8 @@
  *************************************************************/
 
 
-require_once('.\Core.php');
-require_once(".\lib\ContactInformation.php");
+require_once('./Core.php');
+require_once("./lib/ContactInformation.php");
 
 global $globalSqlLink, $globalUsers, $lang;
 

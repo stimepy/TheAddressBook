@@ -255,11 +255,9 @@ class Options {
 	}
 		
 	function load_lang($file) {
-		global $php_ext;
-		// The following variables are loaded from country files. Make these global scope
-		global $lang;
-		global $country;
-		
+        // The following variables are loaded from country files. Make these global scope
+		global $php_ext,$lang, $error_Lang, $country;
+
 		$fullpath = dirname($_SERVER['SCRIPT_FILENAME']) . '/' . PATH_LANGUAGES . $file . '.' . $php_ext;
 		// This function takes the value returned by the 'language' column in global or user options table,
 		// and checks to make sure that the file exists in the /language directory. If it exists, it loads

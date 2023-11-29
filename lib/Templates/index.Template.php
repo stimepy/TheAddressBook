@@ -24,7 +24,7 @@ function indexBodyStart($body)
             <FORM NAME = \"login\" METHOD = \"post\" ACTION = \"index.php?mode=auth\" >";
 
 
-    if($body['msgLogin']){
+    if(hasValueOrBlank($body,'msgLogin') !=''){
         $output .= "<p>". $body['msgLogin'] ."</p>";
     }
     if(isset($body['errorMsg'])){
