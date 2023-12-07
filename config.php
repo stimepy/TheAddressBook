@@ -36,7 +36,7 @@ $db_hostname = "";
 // a database if one does not already exist, so make sure you
 // have one.
 
-$db_name = "root";
+$db_name = "stimepy_addressbook";
 
 
 // MYSQL USER NAME (REQUIRED)

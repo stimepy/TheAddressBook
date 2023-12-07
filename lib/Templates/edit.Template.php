@@ -84,6 +84,7 @@ class editTemplate{
 
         $this->countrySorted = sortandSetCountry($country);
         if($body['mode'] == 'new'){
+            echo 'bpb';
             $output .= $this->createAddress(null, $lang, -1);
         }
         else{

@@ -41,22 +41,22 @@ class ContactInformation {
 
         $this->id = $id; // Assume the ID given is legit. No checks are performed.
         $globalSqlLink->SelectQuery('*', TABLE_CONTACT, "id=" . $this->id, NULL);
-        $contact = $globalSqlLink->FetchQueryResult();
+        $contact = $globalSqlLink->FetchQueryResult()[0];
 
         // Fill in variables from database
-        $this->firstname        = hasValueOrBlank( $contact['firstname'] );
-        $this->lastname         = hasValueOrBlank( $contact['lastname'] );
-        $this->middlename       = hasValueOrBlank( $contact['middlename'] );
-        $this->primary_address  = hasValueOrBlank( $contact['primaryAddress'] );
-        $this->birthday         = $contact['birthday'];
-        $this->nickname         = hasValueOrBlank( $contact['nickname'] );
-        $this->picture_url      = hasValueOrBlank( $contact['pictureURL'] );
-        $this->notes            = nl2br( hasValueOrBlank( $contact['notes'] ));
-        $this->last_update      = new DateTime( $contact['lastUpdate']);   //  );
-        $this->hidden           = $contact['hidden'];
-        $this->who_added        = hasValueOrBlank( $contact['whoAdded'] );
+        $this->firstname        = hasValueOrBlank( $contact,'firstname' );
+        $this->lastname         = hasValueOrBlank( $contact,'lastname' );
+        $this->middlename       = hasValueOrBlank( $contact,'middlename' );
+        $this->primary_address  = hasValueOrBlank( $contact,'primaryAddress' );
+        $this->birthday         = hasValueOrBlank($contact, 'birthday');
+        $this->nickname         = hasValueOrBlank( $contact,'nickname' );
+        $this->picture_url      = hasValueOrBlank( $contact,'pictureURL' );
+        $this->notes            = nl2br( hasValueOrBlank( $contact,'notes' ));
+        $this->last_update      = new DateTime( hasValueOrBlank($contact,'lastUpdate'));   //  );
+        $this->hidden           = hasValueOrBlank($contact,'hidden');
+        $this->who_added        = hasValueOrBlank( $contact,'whoAdded' );
         $this->fullname       = $this->lastname . ", " . $this->firstname;
-        $this->currentID    =  hasValueOrBlank($contact['id']);
+        $this->currentID    =  hasValueOrBlank($contact,'id');
 
         $this->FindAllAddress();
 

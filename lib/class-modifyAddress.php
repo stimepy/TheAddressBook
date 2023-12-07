@@ -146,7 +146,7 @@ class modifyAddress
 
         $refId = $this->createNewAddress($this->setUpdateInsertAddressData(0, $isInsert=true));
         $this->isPrimaryAddress(0, $refId);
-        $this->UpdatePrimaryAddress();
+         $this->UpdatePrimaryAddress();
     }
 
     private function isPrimaryAddress($x, $refId)

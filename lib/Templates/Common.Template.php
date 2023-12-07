@@ -90,13 +90,14 @@ function createTextArea($width, $rows, $title, $data, $wrap = 'off'){
 
 function hasValueOrBlank($value, $identifier = NULL){
     if(isset($identifier)) {
-        $returner =  ((isset($value[$identifier])) ? stripslashes($value[$identifier]) : '');
+        return  ((isset($value[$identifier])) ? stripslashes($value[$identifier]) : '');
     }
-    else {
-        $returner = ((isset($value)) ? stripslashes($value) : '');
-    }
-    return $returner;
+    return ((isset($value)) ? stripslashes($value) : '');
 }
+
+
+
+
 
 function sortandSetCountry($country){
     foreach ($country as $country_id=>$val) {
