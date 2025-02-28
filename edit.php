@@ -39,6 +39,7 @@ $body['TABLE_ADDITIONALDATA'] = TABLE_ADDITIONALDATA;
 if ($body['mode'] == 'new') {
     $body['id'] = '0';
     $body['cancelUrl'] = FILE_LIST;
+    $body['allowPicUpload'] = allowppic($options);
 }  // end New address
 else {
     $body['mode'] = 'edit';
@@ -121,10 +122,7 @@ else {
     }
 
     // Display Upload link if allowed by options
-    $body['allowPicUpload'] = 0;
-    if (($options->getpicAllowUpload() == 1) || ($_SESSION['usertype'] == "admin")) {
-        $body['allowPicUpload'] = FILE_UPLOAD;
-    }
+    $body['allowPicUpload'] = allowppic($options);
 
     //////////////////   start here////////////////////////////
 
@@ -161,3 +159,9 @@ $output .= $myAddressDetailsTemplate->editbody($body, $lang, $country,$options->
 Display($output);
 
 
+function allowppic($options){
+    if (($options->getpicAllowUpload() == 1) || ($_SESSION['usertype'] == "admin")) {
+        return FILE_UPLOAD;
+    }
+    return 0;
+}

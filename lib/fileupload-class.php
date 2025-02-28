@@ -405,8 +405,8 @@ class uploader {
 			// Norwegian
 			case 'no':
 				$error_message[0] = "Ingen fil ble lastet opp.";
-				$error_message[1] = "Max filst&oslash;rrelse ble oversteget. Filen kan ikke v¾re st&oslash;rre ennn " . $this->max_filesize/1000 . " KB (" . $this->max_filesize . " byte).";
-				$error_message[2] = "Max bildest&oslash;rrelse ble oversteget. Bildet kan ikke v¾re st&oslash;rre enn " . $this->max_image_width . " x " . $this->max_image_height . " piksler.";
+				$error_message[1] = "Max filst&oslash;rrelse ble oversteget. Filen kan ikke vï¿½re st&oslash;rre ennn " . $this->max_filesize/1000 . " KB (" . $this->max_filesize . " byte).";
+				$error_message[2] = "Max bildest&oslash;rrelse ble oversteget. Bildet kan ikke vï¿½re st&oslash;rre enn " . $this->max_image_width . " x " . $this->max_image_height . " piksler.";
 				$error_message[3] = "Bare " . str_replace("|", " tai ", $this->acceptable_file_types) . " kan lastes opp.";
 				$error_message[4] = "Filen '" . $this->path . $this->file["name"] . "' finnes fra f&oslash;r.";
 				$error_message[5] = "Tilgang nektet. Kan ikke kopiere filen til '" . $this->path . "'";
@@ -415,21 +415,21 @@ class uploader {
 			// Danish
 			case 'da':
 				$error_message[0] = "Ingen fil blev uploaded";
-				$error_message[1] = "Den maksimale filst¿rrelse er overskredet. Filerne mŒ ikke v¾re st¿rre end " . $this->max_filesize/1000 . " KB (" . $this->max_filesize . " bytes).";
-				$error_message[2] = "Den maksimale billedst¿rrelse er overskredet. Billeder mŒ ikke v¾re st¿rre end " . $this->max_image_width . " x " . $this->max_image_height . " pixels.";
+				$error_message[1] = "Den maksimale filstï¿½rrelse er overskredet. Filerne mï¿½ ikke vï¿½re stï¿½rre end " . $this->max_filesize/1000 . " KB (" . $this->max_filesize . " bytes).";
+				$error_message[2] = "Den maksimale billedstï¿½rrelse er overskredet. Billeder mï¿½ ikke vï¿½re stï¿½rre end " . $this->max_image_width . " x " . $this->max_image_height . " pixels.";
 				$error_message[3] = "Kun " . str_replace("|", " or ", $this->acceptable_file_types) . " kan uploades.";
 				$error_message[4] = "Filen '" . $this->path . $this->file["name"] . "' eksisterer allerede.";
-				$error_message[5] = "Adgang n¾gtet! Er ikke i stand til at kopiere filen til '" . $this->path . "'";
+				$error_message[5] = "Adgang nï¿½gtet! Er ikke i stand til at kopiere filen til '" . $this->path . "'";
 			break;
 			
 			//Greek (written in iso-8859-7)
 			case 'gr':
-				$error_message[0] = "Êáíİíá áñ÷åßï äåí áíİâçêå";
-				$error_message[1] = "ÎåğåñÜóôçêå ôï ìİãéóôï ìİãåèïò áñ÷åßïõ. Ôï áñ÷åßï äå ìğïñåß íá åßíáé ìåãáëıôåñï áğü " . $this->max_filesize/1000 . " KB (" . $this->max_filesize . " byte).";
-				$error_message[2] = "ÎåğåñÜóôçêå ôï ìİãéóôï ìİãåèïò åéêüíáò. Ç åéêüíá äå ìğïñåß íá åßíáé ìåãáëıôåñç áğü " . $this->max_image_width . " x " . $this->max_image_height . " pixel.";
-				$error_message[3] = "Ìüíï áñ÷åßá " . str_replace("|", " Ş ", $this->acceptable_file_types) . " ìğïñïıí íá áíİâïõí.";
-				$error_message[4] = "Ôï áñ÷åßï '" . $this->path . $this->file["name"] . "' õğÜñ÷åé Şäç.";
-				$error_message[5] = "Áğáãïñåıåôáé. Áäõíáìßá áíôéãñáöŞò ôïõ áñ÷åßïõ óôç èİóç '" . $this->path . "'";
+				$error_message[0] = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
+				$error_message[1] = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ " . $this->max_filesize/1000 . " KB (" . $this->max_filesize . " byte).";
+				$error_message[2] = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ " . $this->max_image_width . " x " . $this->max_image_height . " pixel.";
+				$error_message[3] = "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ " . str_replace("|", " ï¿½ ", $this->acceptable_file_types) . " ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.";
+				$error_message[4] = "ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ '" . $this->path . $this->file["name"] . "' ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½.";
+				$error_message[5] = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ '" . $this->path . "'";
 			break;
 
 			// English

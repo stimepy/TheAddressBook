@@ -12,7 +12,7 @@
  *
  *************************************************************/
 
-function webheader($title, $language, $javascriptfile = -1){
+function webheader($title, $language, $javascriptfile = -1, $upload = -1){
 
     $output ="<html>
         <head>
@@ -20,6 +20,11 @@ function webheader($title, $language, $javascriptfile = -1){
             <link rel=\"stylesheet\" href=\"./lib/Stylesheet/styles.css\">            
             <meta http-equiv=\"content-type\" content=\"text/html; charset=$language\">
             <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">";
+    if($upload != -1){
+        $output .="         <META HTTP-EQUIV=\"CACHE-CONTROL\" CONTENT=\"NO-CACHE\">
+            <META HTTP-EQUIV=\"PRAGMA\" CONTENT=\"NO-CACHE\">
+            <META HTTP-EQUIV=\"EXPIRES\" CONTENT=\"-1\">";
+    }
     if($javascriptfile != -1){
         $output .="            <script src=\"./lib/Javascript/".$javascriptfile."\"></script>";
     }
@@ -27,8 +32,6 @@ function webheader($title, $language, $javascriptfile = -1){
 
     return $output;
 }
-
-
 
 //
 // PRINT FOOTER - printFooter();
