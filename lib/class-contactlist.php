@@ -74,9 +74,8 @@ class ContactList {
 		else {
 		    $globalSqlLink->SelectQuery( '*', TABLE_GROUPLIST, 'groupid='.$this->group_id, NULL);
             $tbl_grouplist = $globalSqlLink->FetchQueryResult();
-
 //                mysql_fetch_array(mysql_query("SELECT * FROM " . TABLE_GROUPLIST . " AS grouplist WHERE groupid=$this->group_id", $db_link));
-			$this->group_name = $tbl_grouplist['groupname'];
+			$this->group_name = $tbl_grouplist[0]['groupname'];
 			// Reassign to "All Entries" if given a groupid that doesn't exist
 			if ($this->group_name == "") {
 				$this->group_id = 0;
@@ -136,8 +135,7 @@ class ContactList {
 	    }
 	    // group_id >= 3 --> Specified user-defined group
 	    else {
-            $this->tables  = $this->tables.", " . TABLE_GROUPS . " AS groups
-						LEFT JOIN ". TABLE_ADDRESS ." AS address ON contact.id=address.id AND contact.primaryAddress=address.refid";
+            $this->tables  = $this->tables." CROSS JOIN " . TABLE_GROUPS . " AS groups LEFT JOIN ". TABLE_ADDRESS ." AS address ON contact.id=address.id AND contact.primaryAddress=address.refid";
 			$this->where =  "contact.id=groups.id AND groups.groupid=$this->group_id AND contact.hidden != 1";
 	
 	    }

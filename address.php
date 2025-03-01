@@ -54,7 +54,7 @@ $contact = new ContactInformation(check_id());
         $body['sessuser']['BTN_EDIT'] = $lang['BTN_EDIT'];
     }
     else{
-        $body['sessuser'] = 0;
+        $body['sessuser']['is'] = 0;
     }
     $body['FILE_ADDRESS'] = FILE_ADDRESS;
     $body['BTN_PREVIOUS'] = $lang['BTN_PREVIOUS'];
@@ -163,12 +163,13 @@ $contact = new ContactInformation(check_id());
     $body["otherphone"]=null;
 	if ($globalSqlLink->GetRowCount() > 0) {
         $otherphonecnt = 0;
-        if(is_array($r_otherPhone[0])) {
 
+        if(is_array($r_otherPhone[0])) {
             foreach ($r_otherPhone as $tbl_otherPhone) {
+
                 $otherphone_phone = stripslashes($tbl_otherPhone['phone']);
 
-                $body["otherphone"][$otherphonecnt] .= "<br />" . stripslashes($tbl_otherPhone['type']) . ": " . stripslashes($tbl_otherPhone['phone']);
+                $body["otherphone"][$otherphonecnt] = "<br />" . stripslashes($tbl_otherPhone['type']) . ": " . stripslashes($tbl_otherPhone['phone']);
                 $otherphonecnt++;
             }
         }
