@@ -31,13 +31,10 @@ public function uploadSuccessbody($body, $lang){
             <input name=\"" . $body['file'] . "\" type=\"file\">
             </br>
                 " . $lang['BTN_CHOOSE_FILE'] . "
-            <p>(". $options->getpicWidth() .", " . $options->getpicHeight() . "
-        <INPUT TYPE=\"hidden\" VALUE=\"en\">
-        
-        <b>" . $lang['UP_WARN'] . "!</b> </br> " . $this->dupWarning($options->getpicDupeMode(), $lang) . " </br>
-            </p>
+            <INPUT TYPE=\"hidden\" VALUE=\"en\">
+            <p><b>" . $lang['UP_WARN'] . "!</b>  " . $this->dupWarning($options->getpicDupeMode(), $lang) . "</p>
             </br>
-            <input type=\"submit\" value=\"" . $lang['BTN_UP_FILE'] . " CLASS=\"formButton\">
+            <input type=\"submit\" value=\"". $lang['BTN_UP_FILE'] ."\" CLASS=\"formButton\">
     </form>
     </body>   ";
     /*

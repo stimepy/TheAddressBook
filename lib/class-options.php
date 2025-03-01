@@ -89,7 +89,7 @@ class Options {
 		$this->language         = $this->load_lang($this->global_options['language']);
 		$this->defaultLetter    = $this->global_options['defaultLetter'];
 		$this->limitEntries     = $this->global_options['limitEntries'];
-        $this->maxFileSize      = 30000; //bytes   //TODO Add to DB;
+        $this->maxFileSize      = 3000000; //bytes   //TODO Add to DB;
 	}
 	
 	function set_user() {

@@ -68,7 +68,9 @@ $default_extension = "";
 $mode = $options->getpicDupeMode();
 $success = false;
 
-if (isset($_REQUEST['submitted'])) {
+if (isset($_REQUEST['submitted']) && isset($_FILES)) {
+
+
     $my_uploader = new uploader($lang['ThisLanguage']);
     // OPTIONAL: set the max filesize of uploadable files in bytes
     $my_uploader->max_filesize($options->getMaxFileSize());
@@ -76,19 +78,20 @@ if (isset($_REQUEST['submitted'])) {
     // OPTIONAL: if you're uploading images, you can set the max pixel dimensions
     $my_uploader->max_image_size($options->getpicWidth(), $options->getpicHeight()); // max_image_size($width, $height)
 
-    // UPLOAD the file
-    if ($my_uploader->upload($upload_file_name, $acceptable_file_types, $default_extension)) {
-        $my_uploader->save_file($path, $mode);
-    }
+    if($my_uploader->finduploadname()){
+        // UPLOAD the file
+        if ($my_uploader->upload($my_uploader->getUploadName(), $acceptable_file_types, $default_extension)) {
+            $my_uploader->save_file($path, $mode);
+        }
 
-    // RETURN RESULTS
-    if ($my_uploader->error) {
-        reportScriptError($my_uploader->error );
-    }
-    else {
-        // Successful upload!
-        $success = true;
-        $body['file']=$my_uploader->file['name'];
+        // RETURN RESULTS
+        if ($my_uploader->error) {
+            reportScriptError($my_uploader->error);
+        } else {
+            // Successful upload!
+            $success = true;
+            $body['file'] = $my_uploader->file['name'];
+        }
     }
 
 }
