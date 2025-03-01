@@ -92,8 +92,11 @@ function createTextArea($width, $rows, $title, $data, $wrap = 'off'){
 }
 
 function hasValueOrBlank($value, $identifier = NULL){
-    if(isset($identifier)) {
-        return  ((isset($value[$identifier])) ? stripslashes($value[$identifier]) : '');
+    if(isset($identifier) && !is_array($value) ) {
+          return  ((isset($value[$identifier])) ? stripslashes($value[$identifier]) : '');
+    }
+    else if(isset($identifier) && is_array($value)){
+        return  ((isset($value[$identifier])) ? $value[$identifier] : '');
     }
     return ((isset($value)) ? stripslashes($value) : '');
 }

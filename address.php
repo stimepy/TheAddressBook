@@ -115,15 +115,20 @@ $contact = new ContactInformation(check_id());
 	$body['tableColumnWidth'] = $body['tableColumnAmt'];
 
     $allAddresses= $contact->getAlladdress() ;
+
     $addresscnt = 0;
-    if(is_array($allAddresses[0])) {
+
+    if(is_array($allAddresses) && is_array($allAddresses[0]) ) {
         foreach ($contact->getAlladdress() as $tbl_address) {
             $body['address'][$addresscnt] = $list->buildcontact($tbl_address);
             $addresscnt++;
         }
     }
-    else{
+    else if(is_array($allAddresses)){
         $body['address'][$addresscnt] =$list->buildcontact($allAddresses) ;
+    }
+    else {
+        $body['address'][0] = "";
     }
 
 

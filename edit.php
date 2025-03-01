@@ -24,7 +24,7 @@ $options = new Options();
 $globalUsers->checkForLogin('admin', 'user');
 // ** CHECK FOR ID **
 
-$body['mode'] = $_GET['mode'];
+$body['mode'] = hasValueOrBlank($_GET, 'mode');
 
 $body['file_Save'] = FILE_SAVE;
 $body['BTN_SAVE'] = $lang['BTN_SAVE'];
@@ -48,22 +48,22 @@ else {
 
 
     // NOTE: Groups is determined with a special query that will be run at the bottom of the page.
-    $globalSqlLink->SelectQuery('firstname, lastname, middlename, primaryAddress, birthday, nickname, nickname, pictureURL, notes, hidden, whoAdded, DATE_FORMAT(lastUpdate, \"%W, %M %e %Y (%h:%i %p)\") AS lastUpdate',TABLE_CONTACT, " id=".$body['id'], NULL);
+    $globalSqlLink->SelectQuery('firstname, lastname, middlename, primaryAddress, birthday, nickname, nickname, pictureURL, notes, hidden, whoAdded, DATE_FORMAT(lastUpdate, "%W, %M %e %Y (%h:%i %p)") AS lastUpdate',TABLE_CONTACT, " id=".$body['id'], NULL);
     $tbl_contact = $globalSqlLink->FetchQueryResult();
 
     // Put data into variable holders -- taken from arrays that are created from query results.
-    $body['contact_firstname']  = stripslashes( $tbl_contact['firstname'] );
-    $body['contact_lastname'] = stripslashes( $tbl_contact['lastname'] );
-    $body['contact_middlename'] = stripslashes( $tbl_contact['middlename'] );
-    $body['contact_primaryAddress'] = stripslashes( $tbl_contact['primaryAddress'] );
-    $body['contact_birthday'] = ($tbl_contact['birthday'])? stripslashes( $tbl_contact['birthday'] ) : "0000-00-00";
-    $body['contact_nickname'] = stripslashes( $tbl_contact['nickname'] );
-    $body['contact_pictureURL'] = stripslashes( $tbl_contact['pictureURL'] );
-    $body['contact_notes'] = stripslashes( $tbl_contact['notes'] );
-    $body['contact_lastUpdate'] = stripslashes( $tbl_contact['lastUpdate'] );
-    $body['contact_whoAdded'] = stripslashes( $tbl_contact['whoAdded'] );
+    $body['contact_firstname']  = isset($tbl_contact[0]['firstname']) ? stripslashes( $tbl_contact[0]['firstname'] ):"";
+    $body['contact_lastname'] = isset( $tbl_contact[0]['lastname']) ? stripslashes( $tbl_contact[0]['lastname'] ):"";
+    $body['contact_middlename'] = isset($tbl_contact[0]['middlename'] ) ? stripslashes( $tbl_contact[0]['middlename'] ):"";
+    $body['contact_primaryAddress'] = isset($tbl_contact[0]['primaryAddress'] ) ? stripslashes( $tbl_contact[0]['primaryAddress'] ):"";
+    $body['contact_birthday'] = isset($tbl_contact[0]['birthday'])? stripslashes( $tbl_contact[0]['birthday'] ) : "0000-00-00";
+    $body['contact_nickname'] = isset($tbl_contact[0]['nickname']) ? stripslashes( $tbl_contact[0]['nickname'] ):"";
+    $body['contact_pictureURL'] = isset($tbl_contact[0]['pictureURL']) ? stripslashes( $tbl_contact[0]['pictureURL'] ):"";
+    $body['contact_notes'] = isset($tbl_contact[0]['notes']) ? stripslashes( $tbl_contact[0]['notes'] ):"";
+    $body['contact_lastUpdate'] = isset($tbl_contact[0]['lastUpdate']) ? stripslashes( $tbl_contact[0]['lastUpdate'] ):"";
+    $body['contact_whoAdded'] = isset($tbl_contact[0]['whoAdded']) ? stripslashes( $tbl_contact[0]['whoAdded'] ):"";
 
-    $contact_hiddenFlag = $tbl_contact['hidden']; // It's a 1/0 flag so we just need to check here, not else where.
+    $contact_hiddenFlag = $tbl_contact[0]['hidden']; // It's a 1/0 flag so we just need to check here, not else where.
 
     // Check to see if the person who got to this edit record is the person whoAdded it.
     // Without this code, someone could click on a record they are allowed to edit, then change the id in the URL to any other.

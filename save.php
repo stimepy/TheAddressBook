@@ -20,6 +20,7 @@ $globalUsers->checkForLogin();
 // ** CHECK FOR LOGIN **
 $globalUsers->checkForLogin("admin","user");
 
+
 $modifyAddress = new modifyAddress($_GET['mode']);
 // -- DETERMINE SAVE MODE --
 
@@ -29,13 +30,15 @@ if($modifyAddress->mode != 'new')
 }
 // -- VARIABLE PROCESSING --
 $modifyAddress->cleanAndProcessedArray($_POST);
+
 if($modifyAddress->mode == 'new' || $modifyAddress->mode == 'edit'){
-    if (empty($modifyAddress->cleanedValues['lastname'])) {
+    if (empty($modifyAddress->getLastName())) {
         reportScriptError("Last Name or Company Name field is empty. A last name or a company name must be provided for an entry to exist.");
     }
     $modifyAddress->determineHidden();
     if($modifyAddress->mode == 'edit'){
-        $modifyAddress->removeAddress();
+
+        //$modifyAddress->removeAddress();
         $modifyAddress->editAddresses();
         $modifyAddress->editAddContact();
     }
@@ -51,6 +54,7 @@ if($modifyAddress->mode == 'new' || $modifyAddress->mode == 'edit'){
     $modifyAddress->parseUpdateInsertTextArea(TABLE_MESSAGING, array("id", "handle", "type"));
     $modifyAddress->parseUpdateInsertTextArea(TABLE_WEBSITES, array("id", "webpageURL", "webpageName"));
     $modifyAddress->parseUpdateInsertTextArea(TABLE_ADDITIONALDATA, array("id", "type", "value"));
+
 }
 
 if ($modifyAddress->mode == 'delete') {
@@ -60,9 +64,10 @@ if ($modifyAddress->mode == 'delete') {
     echo("<B>".$lang['EDIT_REMOVED']."</B>\n");
     echo("<P><B><A HREF=\"" . FILE_LIST . "\">".$lang['BTN_LIST']."</B>\n");
     exit();
-    //runQuery("DELETE FROM " . TABLE_ADDRESS . " WHERE id=$id");
+
 }
-header("Location: " . FILE_ADDRESS . "?id=$id");
+
+header("Location: " . FILE_ADDRESS . "?id=".$modifyAddress->getId()."");
 
 
 

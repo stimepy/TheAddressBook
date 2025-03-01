@@ -316,6 +316,7 @@ class ContactList {
     //deprecated going to list.... ?
     function buildcontact($tbl_contact){
         global $country;
+
         $output = $tbl_contact['line1']."<br />";
         if ($tbl_contact['line2']) {
             $output .= $tbl_contact['line2']."<br />";

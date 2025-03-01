@@ -22,7 +22,7 @@ class editTemplate{
     public function editbody($body, $lang, $country, $countryDefault){
         $this->myCountryDefault = $countryDefault;
         $row6 = 6;
-        echo  $body['id'] ;
+
         $output = "        <BODY>
     <FORM NAME=\"EditEntry\" ACTION=\"" . $body["file_Save"] . "?mode=" . $body['mode'] . "\" method=\"post\" autocomplete=\"on\">
     <INPUT TYPE=\"hidden\" NAME=\"id\" VALUE=\"" . $body['id'] . "\">
@@ -91,8 +91,7 @@ class editTemplate{
 
 
             if(isset($body['r_address'])){
-                $primaryAddress = hasValueOrBlank($body['$contact_primaryAddress']);
-
+                $primaryAddress = hasValueOrBlank($body, '$contact_primaryAddress');
                 foreach($body['r_address'] as $tbl_address) {
                     $output .= $this->createAddress($tbl_address, $lang ,$primaryAddress ,$addnum);
                     $addnum++;
@@ -106,7 +105,9 @@ class editTemplate{
          </tr>
         <tr VALIGN=\"top\">
             <td WIDTH=190 CLASS=\"data\">";
+
        $output.="			    ".createTextArea(150, $row6, $body['TABLE_EMAIL'], hasValueOrBlank($body,'r_email'));
+
        $output .= "			  </td>
 			  <td WIDTH=370 CLASS=\"data\" COLSPAN=2>
 			  ".$lang['EDIT_HELP_EMAIL']."
