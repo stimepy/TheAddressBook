@@ -177,8 +177,9 @@ class Options {
 		$updates['limitEntries']      = $this->limitEntries;
 
 		$globalSqlLink->UpdateQuery( $updates , TABLE_OPTIONS, '');
+        echo $globalSqlLink->GetRowCount();
 		if($globalSqlLink->GetRowCount() == 0){
-			die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
+			die(reportScriptError($lang['ERR_OPTIONS_NO_SAVE']));
 		}
 		//mysql_query($sql, $db_link)
 			//or die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));

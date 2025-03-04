@@ -61,15 +61,18 @@ $body['FILE_MAILSEND'] = FILE_MAILSEND;
 $body['userName'] = $_SESSION['username'];
 
 // ** RETRIEVE USER CONTACT INFORMATION **
-	$globalSqlLink->SelectQuery('email', TABLE_USERS, "username='". $_SESSION['username'] ."'", "LIMIT 1");
-    $r_user = $globalSqlLink->FetchQueryResult();
+$globalSqlLink->SelectQuery('email', TABLE_USERS, "username='". $_SESSION['username'] ."'", "LIMIT 1");
+$r_user = $globalSqlLink->FetchQueryResult();
 
-	$body['mail_from'] = $r_user['email'];
-	$body['SendMailButton'] = 1;//Yes
-	if(!$body['mail_from']){
-		$body['mail_from'] = $lang['ERR_NO_EMAIL1']."<A HREF =\"".FILE_USERS."\"> ".$lang['ERR_NO_EMAIL2'];
-		$body['SendMailButton'] = 0;//no
-	}
+if(is_array($r_user)) {
+    $body['mail_from'] = $r_user[0]['email'];
+}
+
+$body['SendMailButton'] = 1;//Yes
+if(!$body['mail_from']){
+    $body['mail_from'] = $lang['ERR_NO_EMAIL1']."<A HREF =\"".FILE_USERS."\"> ".$lang['ERR_NO_EMAIL2'];
+    $body['SendMailButton'] = 0;//no
+}
 
 
 

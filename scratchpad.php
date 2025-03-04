@@ -26,7 +26,7 @@ $output = $myTemplate->webheader("$lang[TITLE_TAB] - $lang[TITLE_SCRATCH]", $lan
 
 
 // CHECK TO SEE IF A FORM HAS BEEN SUBMITTED, AND SAVE THE SCRATCHPAD.
-if ($_POST['saveNotes'] == "YES") {
+if (hasValueOrBlank($_POST,'saveNotes') == "YES") {
 
     $notes = addslashes( trim($_POST['notes']) );
 
@@ -44,6 +44,8 @@ $globalSqlLink->SelectQuery('notes',TABLE_SCRATCHPAD, NULL, "limit 1" );
 $notes = $globalSqlLink->fetchQueryResult()[0];
 
 if($notes != -1){
-    $body['notes']= stripslashes($notes);
+    $body['notes']= stripslashes($notes['notes']);
 }
 
+$output .= $myTemplate->writeBody($body, $lang);
+Display($output);

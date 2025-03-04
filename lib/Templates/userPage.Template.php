@@ -60,8 +60,8 @@ class UserPage
            </TR>
            <TR VALIGN=\"top\">
               <TD CLASS=\"data\">";
-        if ($body[0]['r_user']['email']) {
-            $output .= $lang['USR_HELP_EMAIL_NEW']."<B> $body[0]['r_user']['email'] </B>. ".$lang['USR_HELP_EMAIL_NEW2'];
+        if ($body['r_user'][0]['email']) {
+            $output .= $lang['USR_HELP_EMAIL_NEW']."<B> ".$body['r_user'][0]['email']." </B>. ".$lang['USR_HELP_EMAIL_NEW2'];
         }
         else {
             $output .=$lang['USR_HELP_EMAIL_NONE'];
@@ -92,7 +92,7 @@ class UserPage
            </TD>
 			<TD WIDTH=300 CLASS=\"data\">
 				".$lang['OPT_BIRTHDAY_DISPLAY_HELP']."<br><b>
-				".$lang['LBL_DEFAULT'].":</B> </b>". $lang['OPT_ON']."
+				".$lang['LBL_DEFAULT'].":</B> </b>". $lang['OPT-ON']."
 			</TD>
 			</TR>
 			<TR VALIGN=\"top\">
@@ -102,7 +102,7 @@ class UserPage
 			</TD>
 			<TD WIDTH=300 CLASS=\"data\">
 					". $lang['OPT_BIRTHDAY_DAYS_HELP'] ."<br><b>
-					". $lang['LBL_DEFAULT'] .":</B> </b> 21 ". $lang['OPT_DAYS']."
+					". $lang['LBL_DEFAULT'] .":</B> </b> 21 ". $lang['OPT-DAYS']."
 			</TR>				
 			<TR VALIGN=\"top\">
 			<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><B>". $lang['OPT_OPEN_POPUP_LBL'] ."</B></TD>

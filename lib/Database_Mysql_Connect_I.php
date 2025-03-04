@@ -178,6 +178,7 @@ class Mysql_Connect_I
         }
         // debug
         // echo $query;
+
         $this->mySQLresults = $this->mySQLConnection->query($query);
         if($this->mySQLresults == false){
             die('query error:' . $query);
