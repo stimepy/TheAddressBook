@@ -1,15 +1,10 @@
 <?php
-/*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2.2
- *
- * Author: stimepy@aodhome.com
- * Original Authors: See LANGUAGE_TRANSLATOR_NAME below
- * Last Modified: 5-10-2023
- ****************************************************************
- *  Note: Original file was generated from information stored in babelkit.  This
- *  no longer exists
- *
- ****************************************************************/
+/*This file was generated from information stored in babelkit
+*  babelkit is the database in which our translator's actually do the translation
+*  The link to the babelkit database is: http://sallyanddavid.com/cgi-bin/BabelKit/php/bk_admin.php
+***************************************
+*  THE ADDRESS BOOK  :  version 2.0  or higher
+*/
 define('LANGUAGE_NAME', "English"); 	
 define('LANGUAGE_CODE', "en"); 	
 define('LANGUAGE_TRANSLATOR_NAME', "Lou Huang, David Howe "); 
@@ -17,6 +12,11 @@ define('LANGUAGE_TRANSLATOR_EMAIL', "lou@corvalis.net, folkart@berkshire.net ");
 define('LANGUAGE_LAST_UPDATE', "July 31, 2005, 5:56 pm Hong Kong time ");
 
 $lang= array(							
+    'Author' =>"Lou Huang, David Howe",
+    'AuthorEmail' =>"lou@corvalis.net, folkart@berkshire.net",
+    'BIRTHDAY_UPCOMING1' =>"Upcoming Birthdays (Next",
+    'BIRTHDAY_UPCOMING2' =>"Days)",
+    'BIRTHDAY_YEAR_UNIT' =>"yrs",
     'BTN_ADD' =>"add new user",
     'BTN_CANCEL' =>"cancel",
     'BTN_CHANGE_OPT' =>"change options",
@@ -39,13 +39,13 @@ $lang= array(
     'BTN_CLOSE' =>"Close",
     'BTN_UP_FILE' =>"Upload File",
     'CHARSET' =>"iso-8859-1",
-    /*'DAY_FRI' =>"Friday",
+    'DAY_FRI' =>"Friday",
     'DAY_MON' =>"Monday",
     'DAY_SAT' =>"Saturday",
     'DAY_SUN' =>"Sunday",
     'DAY_THU' =>"Thursday",
     'DAY_TUE' =>"Tuesday",
-    'DAY_WED' =>"Wednesday", */
+    'DAY_WED' =>"Wednesday",
     'DELETE_CONFIRM' =>"Are you sure you want to delete this entry?  This record will be removed from the database and this cannot be undone.",
     'EDIT_ADD_NEW_GROUP' =>"Add new group",
     'EDIT_DEL_ADD' =>"delete this address",
@@ -64,6 +64,60 @@ $lang= array(
     'EDIT_TITLE_EDIT' =>"Edit entry for",
     'EMAIL_CHANGE' =>"Your email address was recently changed. Please confirm by clicking on the following link to The Address Book.",
     'EMAIL_CHANGE_SUBJ' =>"Confirmation of E-mail Change",
+    'ERROR' =>"Error",
+    'ERROR_ENCOUNTERED' =>"The Address Book has encountered a problem.",
+    'ERROR_INSTALL_DBNAME_WRONG' =>"If no username or password message above, then check database name<br>",
+    'ERROR_INTRO_MYSQL' =>"<p>MySQL returned the following error information:  (error #)",
+    'ERROR_OUTTRO' =>"If necessary, please press the BACK button on your browser to return to the previous screen and correct any possible mistakes.<br>If you still need help, or you believe this to be a bug, please consult the <a href=\"http://www.corvalis.net/phpBB2/\" target='_blank'>forum</a>",
+    'ERROR_RETURN_LINK' =>"Click here to return.",
+    'ERROR_UPGRADE_ABORT' =>"<p><b> Upgrade aborted !!</b><br> config.php has incorrect or missing information.<p>",
+    'ERROR_UPGRADE_HELP' =>"<p>Please fix your config.php file, then <a href=\"FILE_UPGRADE\">try again</a>.",
+    'ERROR_UPGRADE_PREFIX' =>"The prefix you have chosen in config has no tables <br>in your database.  <A HREF=FILE_INSTALL> Choose install</A><P>or<P>",
+    'ERROR_UPGRADE_TITLE' =>"- Upgrade Error",
+    'ERR_ACCESS_DENIED' =>"<b>Access denied.</b> You do not have permission to conduct this operation.",
+    'ERR_ALPHA' =>"There must be at least one alpha character.",
+    'ERR_CHAR_ILLEGAL' =>"Illegal character in name.",
+    'ERR_DATABASE_CONNECT' =>"<b>An error occurred while trying to connect to the MySQL server.</b> MySQL returned the following error information:  (error #)",
+    'ERR_DATABASE_NOT_FOUND' =>"<b>Unable to locate the database.</b> Please double check <i>config.php</i> to make sure the <i>db_name</i> variable is set correctly.",
+    'ERR_ENTRY_ID_INVALID' =>"<b>Invalid entry ID.</b> ID must be a positive integer.",
+    'ERR_ENTRY_ID_NOT_FOUND' =>"<b>No ID is provided.</b>",
+    'ERR_ENTRY_NOT_EXIST' =>"<b>Invalid entry ID.</b> No entry exists with that ID number.",
+    'ERR_ENTRY_NOT_FOUND' =>"<b>Entry does not exist.</b>",
+    'ERR_LOGIN_SPACE' =>"There cannot be any spaces in the login name.",
+    'ERR_MAIL_NOT_SENT' =>"<b>Message could not be sent.</b><p>PHPMailer Error:",
+    'ERR_MAIL_NO_RECIPIENT' =>"<b>No recipient e-mail address(es) provided.</b>",
+    'ERR_MAIL_NO_SENDER' =>"<b>No sender e-mail address provided.</b>",
+    'ERR_NAME_LONG' =>"Name is too long. It must be less than 15 characters.",
+    'ERR_NAME_SHORT' =>"Name is too short. It must be at least 1 characters.",
+    'ERR_NO_EMAIL1' =>"Sorry, since  you have no valid e-mail address, you may NOT send mail using this method. Please change your",
+    'ERR_NO_EMAIL2' =>"user settings</A> to use your browser email setting or to add a valid e-mail address to your account.",
+    'ERR_OPTIONS_NOT_RETRIEVED' =>"Unable to retrieve options.",
+    'ERR_OPTIONS_NOT_RETRIEVED_AUTH' =>"Unable to retrieve options in authorization check.",
+    'ERR_OPTIONS_NO_SAVE' =>"Unable to save options",
+    'ERR_PSWD_SHORT' =>"Password must be at least 3 characters",
+    'ERR_RSRVD' =>"Name is reserved.",
+    'ERR_RSRVD_CVS' =>"Name is reserved for CVS.",
+    'ERR_USERNAME_DUPL' =>"We already have a user with that name.",
+    'ERR_USERNAME_ILLEGAL_CHARS' =>"Username is blank or contains non-alphanumeric characters.",
+    'ERR_USERNAME_NONE' =>"There is no user specified for deletion.",
+    'ERR_USERNAME_NON_EXIST' =>"The user you tried to delete does not exist.",
+    'ERR_USERNAME_RESERVED' =>"Username already exists",
+    'ERR_USER_CONFIRMED_NOT' =>"You have not yet clicked on the link in the email sent to you when you signed up.",
+    'ERR_USER_CONFIRM_PASSWORD' =>"An e-mail containing a confirmation URL has been sent to ***. Please click on the confirmation URL to complete the change.",
+    'ERR_USER_EMAIL_INVALID' =>"Invalid e-mail address",
+    'ERR_USER_EMAIL_PROBLEM' =>"There was a problem updating your e-mail address.",
+    'ERR_USER_HASH_CONFIRMED' =>"User account confirmed. You may <a href=\"FILE_INDEX?mode=login\">log in now</a>.",
+    'ERR_USER_HASH_INVALID' =>"HASH INVALID - UPDATE FAILED",
+    'ERR_USER_HASH_NOT_FOUND' =>"<b>Confirmation hash not found.</b>",
+    'ERR_USER_INCORRECT_NAME_OR_EMAIL' =>"ERROR: Incorrect user name or e-mail address.",
+    'ERR_USER_LAST_ADMIN' =>"The user is the last remaining administrator, and cannot be deleted.",
+    'ERR_USER_NEW_PASSWORD' =>"Your new password has been emailed to you.  You may log in when you receive it, then change it in your account settings.",
+    'ERR_USER_PASSWORD_CHANGED' =>"Your password has been changed.",
+    'ERR_USER_PASSWORD_SHORT' =>"Password and password confirmation did not match.",
+    'ERR_USER_PASSWORD_WRONG' =>"You have provided an Incorrect password",
+    'ERR_USER_REGISTER_MISSING_DATA' =>"ERROR: You must fill in username, matching passwords, and provide a valid e-mail address.",
+    'ERR_USER_REGISTER_SUCCESS' =>"You have successfully registered. You should have a confirmation e-mail waiting. Click the link in the mail to be confirmed",
+    'ERR_USER_REQUIRED_NAME_OR_EMAIL' =>"ERROR: Username and e-mail address are required.",
     'EXP_CONVERT' =>"A good address book converter (although a little old):",
     'EXP_CSV' =>"CSV File</A> Name, Address, Phonenumber,",
     'EXP_GMAIL' =>"Gmail</A> (Importable contact list)",
@@ -180,9 +234,9 @@ $lang= array(
     'MSG_PREF_RESET' =>"Your user preferences have been cleared.",
     'MSG_REGISTER_LOST' =>"register/lost password",
     'NO_ENTRIES' =>"No entries.",
-    'OPT_DAYS' =>"DAYS",
-    'OPT_OFF' =>"OFF",
-    'OPT_ON' =>"ON",
+    'OPT-DAYS' =>"DAYS",
+    'OPT-OFF' =>"OFF",
+    'OPT-ON' =>"ON",
     'OPT_ALLOW_REGISTER_HELP' =>"Check this option to allow visitors to register their own accounts. Disable this for maximum security and privacy of information. Disabling this also prevents users from recovering lost passwords.",
     'OPT_ALLOW_REGISTER_LBL' =>"Allow User Self-Registration",
     'OPT_ASST_PERS_HELP' =>"These Personal Options will override the global site options when you are signed on.",
@@ -543,61 +597,4 @@ $country= array(
     'za' =>"South Africa",
     'zm' =>"Zambia",
     'zw' =>"Zimbabwe"
-);
-
-$error_Lang = array(
-    'ERROR' =>"Error",
-    'ERROR_ENCOUNTERED' =>"The Address Book has encountered a problem.",
-    'ERROR_INSTALL_DBNAME_WRONG' =>"If no username or password message above, then check database name<br>",
-    'ERROR_INTRO_MYSQL' =>"<p>MySQL returned the following error information:  (error #)",
-    'ERROR_OUTTRO' =>"If necessary, please press the BACK button on your browser to return to the previous screen and correct any possible mistakes.<br>If you still need help, or you believe this to be a bug, please consult the <a href=\"http://www.corvalis.net/phpBB2/\" target='_blank'>forum</a>",
-    'ERROR_RETURN_LINK' =>"Click here to return.",
-    'ERROR_UPGRADE_ABORT' =>"<p><b> Upgrade aborted !!</b><br> config.php has incorrect or missing information.<p>",
-    'ERROR_UPGRADE_HELP' =>"<p>Please fix your config.php file, then <a href=\"FILE_UPGRADE\">try again</a>.",
-    'ERROR_UPGRADE_PREFIX' =>"The prefix you have chosen in config has no tables <br>in your database.  <A HREF=FILE_INSTALL> Choose install</A><P>or<P>",
-    'ERROR_UPGRADE_TITLE' =>"- Upgrade Error",
-    'ERR_ACCESS_DENIED' =>"<b>Access denied.</b> You do not have permission to conduct this operation.",
-    'ERR_ALPHA' =>"There must be at least one alpha character.",
-    'ERR_CHAR_ILLEGAL' =>"Illegal character in name.",
-    'ERR_DATABASE_CONNECT' =>"<b>An error occurred while trying to connect to the MySQL server.</b> MySQL returned the following error information:  (error #)",
-    'ERR_DATABASE_NOT_FOUND' =>"<b>Unable to locate the database.</b> Please double check <i>config.php</i> to make sure the <i>db_name</i> variable is set correctly.",
-    'ERR_ENTRY_ID_INVALID' =>"<b>Invalid entry ID.</b> ID must be a positive integer.",
-    'ERR_ENTRY_ID_NOT_FOUND' =>"<b>No ID is provided.</b>",
-    'ERR_ENTRY_NOT_EXIST' =>"<b>Invalid entry ID.</b> No entry exists with that ID number.",
-    'ERR_ENTRY_NOT_FOUND' =>"<b>Entry does not exist.</b>",
-    'ERR_LOGIN_SPACE' =>"There cannot be any spaces in the login name.",
-    'ERR_MAIL_NOT_SENT' =>"<b>Message could not be sent.</b><p>PHPMailer Error:",
-    'ERR_MAIL_NO_RECIPIENT' =>"<b>No recipient e-mail address(es) provided.</b>",
-    'ERR_MAIL_NO_SENDER' =>"<b>No sender e-mail address provided.</b>",
-    'ERR_NAME_LONG' =>"Name is too long. It must be less than 15 characters.",
-    'ERR_NAME_SHORT' =>"Name is too short. It must be at least 1 characters.",
-    'ERR_NO_EMAIL1' =>"Sorry, since  you have no valid e-mail address, you may NOT send mail using this method. Please change your",
-    'ERR_NO_EMAIL2' =>"user settings</A> to use your browser email setting or to add a valid e-mail address to your account.",
-    'ERR_OPTIONS_NOT_RETRIEVED' =>"Unable to retrieve options.",
-    'ERR_OPTIONS_NOT_RETRIEVED_AUTH' =>"Unable to retrieve options in authorization check.",
-    'ERR_OPTIONS_NO_SAVE' =>"Unable to save options",
-    'ERR_PSWD_SHORT' =>"Password must be at least 3 characters",
-    'ERR_RSRVD' =>"Name is reserved.",
-    'ERR_RSRVD_CVS' =>"Name is reserved for CVS.",
-    'ERR_USERNAME_DUPL' =>"We already have a user with that name.",
-    'ERR_USERNAME_ILLEGAL_CHARS' =>"Username is blank or contains non-alphanumeric characters.",
-    'ERR_USERNAME_NONE' =>"There is no user specified for deletion.",
-    'ERR_USERNAME_NON_EXIST' =>"The user you tried to delete does not exist.",
-    'ERR_USERNAME_RESERVED' =>"Username already exists",
-    'ERR_USER_CONFIRMED_NOT' =>"You have not yet clicked on the link in the email sent to you when you signed up.",
-    'ERR_USER_CONFIRM_PASSWORD' =>"An e-mail containing a confirmation URL has been sent to ***. Please click on the confirmation URL to complete the change.",
-    'ERR_USER_EMAIL_INVALID' =>"Invalid e-mail address",
-    'ERR_USER_EMAIL_PROBLEM' =>"There was a problem updating your e-mail address.",
-    'ERR_USER_HASH_CONFIRMED' =>"User account confirmed. You may <a href=\"FILE_INDEX?mode=login\">log in now</a>.",
-    'ERR_USER_HASH_INVALID' =>"HASH INVALID - UPDATE FAILED",
-    'ERR_USER_HASH_NOT_FOUND' =>"<b>Confirmation hash not found.</b>",
-    'ERR_USER_INCORRECT_NAME_OR_EMAIL' =>"ERROR: Incorrect user name or e-mail address.",
-    'ERR_USER_LAST_ADMIN' =>"The user is the last remaining administrator, and cannot be deleted.",
-    'ERR_USER_NEW_PASSWORD' =>"Your new password has been emailed to you.  You may log in when you receive it, then change it in your account settings.",
-    'ERR_USER_PASSWORD_CHANGED' =>"Your password has been changed.",
-    'ERR_USER_PASSWORD_SHORT' =>"Password and password confirmation did not match.",
-    'ERR_USER_PASSWORD_WRONG' =>"You have provided an Incorrect password",
-    'ERR_USER_REGISTER_MISSING_DATA' =>"ERROR: You must fill in username, matching passwords, and provide a valid e-mail address.",
-    'ERR_USER_REGISTER_SUCCESS' =>"You have successfully registered. You should have a confirmation e-mail waiting. Click the link in the mail to be confirmed",
-    'ERR_USER_REQUIRED_NAME_OR_EMAIL' =>"ERROR: Username and e-mail address are required."
 );

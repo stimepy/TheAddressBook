@@ -1,16 +1,10 @@
 <?php
-/*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2.2
- *
- * Author: stimepy@aodhome.com
- * Original Authors: See LANGUAGE_TRANSLATOR_NAME below
- * Last Modified: 5-10-2023
- ****************************************************************
- *  Note: Original file was generated from information stored in babelkit.  This
- *  no longer exists
- *
- ****************************************************************/
-
+/*This file was generated from information stored in babelkit
+*  babelkit is the database in which our translator's actually do the translation
+*  The link to the babelkit database is: http://sallyanddavid.com/cgi-bin/BabelKit/php/bk_admin.php
+***************************************
+*  THE ADDRESS BOOK  :  version 1.04  or higher 
+*/
 define('LANGUAGE_NAME', "Nederlands"); 	
 define('LANGUAGE_CODE', "nl"); 	
 define('LANGUAGE_TRANSLATOR_NAME', "Wilko Miletic, Kees Dommisse, Hannelore "); 
@@ -18,6 +12,12 @@ define('LANGUAGE_TRANSLATOR_EMAIL', "wilko@miletic.nl, dommisse@users.sourceforg
 , hannelore@gmail.com "); 
 define('LANGUAGE_LAST_UPDATE', "July 31, 2005, 5:56 pm Hong Kong time ");
 $lang= array(							
+'Author' =>"Wilko Miletic, Kees Dommisse, Hannelore",
+'AuthorEmail' =>"wilko@miletic.nl, dommisse@users.sourceforge.net 
+, hannelore@gmail.com",
+'BIRTHDAY_UPCOMING1' =>"Verjaardagen (in de komende",
+'BIRTHDAY_UPCOMING2' =>"dagen)",
+'BIRTHDAY_YEAR_UNIT' =>"jaar",
 'BTN_ADD' =>"Nieuwe gebruiker",
 'BTN_CANCEL' =>"Annuleer",
 'BTN_CHANGE_OPT' =>"Opties wijzigen",
@@ -38,7 +38,6 @@ $lang= array(
 'BTN_SAVE' =>"Opslaan",
 'BTN_SEND' =>"Stuur E-mail",
 'BTN_UP_FILE' =>"Bestand Uploaden",
-'BTN_CLOSE' =>"Close",
 'CHARSET' =>"iso-8859-1",
 'DAY_FRI' =>"Vrijdag",
 'DAY_MON' =>"Maandag",
@@ -50,22 +49,22 @@ $lang= array(
 'DELETE_CONFIRM' =>"Weet je zeker dat je deze contactpersoon wil verwijderen? De contactpersoon wordt definitief verwijderd uit de databank. Deze actie ongedaan maken is niet mogelijk.",
 'EDIT_ADD_NEW_GROUP' =>"Nieuwe groep maken",
 'EDIT_DEL_ADD' =>"Verwijder dit adres",
-'EDIT_HELP_ADDRESS' =>"Alle velden zijn optioneel. Een adres wordt opgeslagen als ��n van de volgende velden is ingevuld: type, adres (1 of 2 regels), plaats, provincie, postcode of een telefoonnummer. Het adres dat als hoofdadres geselecteerd wordt, verschijnt ook in de contactenlijst. Om nog meer adressen toe te voegen, sla de contactpersoon op en kies opnieuw voor wijzigen. Telkens je wijzigt, krijg je plaats voor een nieuw adres.",
+'EDIT_HELP_ADDRESS' =>"Alle velden zijn optioneel. Een adres wordt opgeslagen als ??n van de volgende velden is ingevuld: type, adres (1 of 2 regels), plaats, provincie, postcode of een telefoonnummer. Het adres dat als hoofdadres geselecteerd wordt, verschijnt ook in de contactenlijst. Om nog meer adressen toe te voegen, sla de contactpersoon op en kies opnieuw voor wijzigen. Telkens je wijzigt, krijg je plaats voor een nieuw adres.",
 'EDIT_HELP_EMAIL' =>"Formaat:<br>
 <b>jan@jansen.nl|type (optioneel)</b><br>
-E�n e-mail adres per regel.<p>
-\"Type\" kan van alles zijn om het adres te beschijven, bv. priv�, werk.",
+E?n e-mail adres per regel.<p>
+\"Type\" kan van alles zijn om het adres te beschijven, bv. priv?, werk.",
 'EDIT_HELP_FORMAT' =>"Formaat:<br>
 <b>jan@jansen.be|type (optioneel)</b><br>
-E�n e-mail adres per regel.<p>
-\"Type\" kan van alles zijn om het adres te beschijven, bv. priv�, werk.",
+E?n e-mail adres per regel.<p>
+\"Type\" kan van alles zijn om het adres te beschijven, bv. priv?, werk.",
 'EDIT_HELP_MESSAGING' =>"Formaat:<br><b>gebruikersnaam|type</b><br>
-E�n account per regel.<br>
+E?n account per regel.<br>
 \"Type\" geeft de messenger service aan, bv. MSN, ICQ of AIM",
 'EDIT_HELP_NAME' =>"Een achternaam of bedrijfsnaam is verplicht",
 'EDIT_HELP_NOTES' =>"Je aantekeningen worden precies zo weergegeven zoals je ze intypt.",
 'EDIT_HELP_OTHERINFO' =>"Formaat:<br><b>veldnaam|invoer</b><br>
-E�n veld per regel.<br>
+E?n veld per regel.<br>
 Gebruik deze ruimte om informatie toe te voegen die niet in de andere velden thuishoren, bv. school, beroep.",
 'EDIT_HELP_OTHERPHONE' =>"Formaat:<BR><b>(xxx) xxx-xxxx|type (optioneel)</b><BR>Voer verschillende telefoonnummers in op aparte regels.<P>\"Type\" mag alles zijn wat het telefoonnummer beschrijft. Voorbeelden: fax, semafoon, GSM, mobiel, kantoor, etc.",
 'EDIT_HELP_WEBSITES' =>"Formaat:<BR><b>URL|naam (optioneel)</b> <BR>Voer verschillende websites in op afzonderlijke regels.",
@@ -75,16 +74,70 @@ Gebruik deze ruimte om informatie toe te voegen die niet in de andere velden thu
 'EDIT_TITLE_EDIT' =>"Gegevens bewerken van",
 'EMAIL_CHANGE' =>"Je e-mail adres is onlangs veranderd. Bevestig dat door op de volgende link naar het AdresBoek te klikken.",
 'EMAIL_CHANGE_SUBJ' =>"Bevestiging van de wijziging van het e-mail adres",
+'ERROR' =>"Fout",
+'ERROR_ENCOUNTERED' =>"Het Adresboek is een fout tegengekomen.",
+'ERROR_INSTALL_DBNAME_WRONG' =>"Als er geen gebruikersnaam of wachtwoord hierboven staat, controleer dan de naam van de databank.",
+'ERROR_INTRO_MYSQL' =>"<p>MySQL stuurde de volgende foutmelding:  (error #)",
+'ERROR_OUTTRO' =>"Indien nodig, druk op de \"terug\"-knop van je browser om naar het vorige scherm terug te keren en corrigeer alle mogelijke vergissingen.<br>Indien je meer hulp nodig hebt, of indien je denkt dat dit een programmafout is, raadpleeg dan dan op <a href=\"http://www.corvalis.net/phpBB2/\" target='_blank'>het forum</a>.",
+'ERROR_RETURN_LINK' =>"Klik hier om terug te keren.",
+'ERROR_UPGRADE_ABORT' =>"<p><b> Upgrade afgebroken !!</b><br>Informatie ontbreekt in config.php of is incorrect.<p>",
+'ERROR_UPGRADE_HELP' =>"<p>Pas het bestand config.php aan en probeer <a href=\"FILE_UPGRADE\">dan opnieuw</a>.",
+'ERROR_UPGRADE_PREFIX' =>"Voor de prefix die je hebt gekozen in config bestaan geen tabellen <br>in je databank.  <A HREF=FILE_INSTALL> Kies installeren</A><P>of<P>",
+'ERROR_UPGRADE_TITLE' =>"- Fout bij de <i>upgrade</i>",
+'ERR_ACCESS_DENIED' =>"<b>Toegang geweigerd.</b> Je hebt geen autorisatie om deze handeling te verrichten.",
+'ERR_ALPHA' =>"Je moet minimum ??n letter uit het alfabet gebruiken.",
+'ERR_CHAR_ILLEGAL' =>"De gebruikersnaam bevat een niet toegelaten karakter.",
+'ERR_DATABASE_CONNECT' =>"<b>Er is een fout opgetreden bij het maken van een verbinding met de MySQL server.</b> MySQL gaf de volgende foutcode terug:  (error #)",
+'ERR_DATABASE_NOT_FOUND' =>"<b>Kan de database niet vinden.</b> Controleer  <i>config.php</i> opnieuw om er zeker van te zijn dat de <i>$db_name</i> variabele correct is ingevoerd.",
+'ERR_ENTRY_ID_INVALID' =>"<b>Er is geen contactpersoon met dit ID-nummer.</b> Het ID-nummer moet een positief geheel getal zijn.",
+'ERR_ENTRY_ID_NOT_FOUND' =>"<b>Er is geen ID-nummer voorhanden.</b>",
+'ERR_ENTRY_NOT_EXIST' =>"<b>Ongeldig contactpersoon ID.</b> Er bestaat geen contactpersoon met dit ID nummer.",
+'ERR_ENTRY_NOT_FOUND' =>"<b>Contactpersoon bestaat niet.</b>",
+'ERR_LOGIN_SPACE' =>"Je gebruikersnaam mag geen spaties bevatten.",
+'ERR_MAIL_NOT_SENT' =>"<b>Het bericht kon niet verzonden worden.</b><p>PHPMailer Fout:",
+'ERR_MAIL_NO_RECIPIENT' =>"<b>Er is/zijn geen e-mail adres(sen) voor de geadresseerde(n) aangegeven.</b>",
+'ERR_MAIL_NO_SENDER' =>"<b>Geen e-mail van de afzender opgegeven.</b>",
+'ERR_NAME_LONG' =>"Je gebruikersnaam is te lang.  Je mag maximaal 15 karakters gebruiken.",
+'ERR_NAME_SHORT' =>"Je gebruikersnaam is te kort. Je moet minimum 1 karakter gebruiken.",
+'ERR_NO_EMAIL1' =>"Sorry, omdat je geen geldig e-mailadres hebt opgegeven mag je deze methode niet gebruiken om e-mail te sturen. Gelieve de instellingen van je",
+'ERR_NO_EMAIL2' =>"gebruikersaccount</a> aan te passen om je standaard mailprogramma (gedefinieerd in je browser) te gebruiken of vul een geldig e-mailadres in.",
+'ERR_OPTIONS_NOT_RETRIEVED' =>"Niet in staat de opties op te halen.",
+'ERR_OPTIONS_NOT_RETRIEVED_AUTH' =>"Niet in staat opties terug te vinden tijdens de autorisatie controle.",
+'ERR_OPTIONS_NO_SAVE' =>"Niet in staat opties op te slaan.",
+'ERR_PSWD_SHORT' =>"Je wachtwoord moet minimum 3 karakters lang zijn.",
+'ERR_RSRVD' =>"Deze gebruikersnaam is gereserveerd.",
+'ERR_RSRVD_CVS' =>"Deze gebruikersnaam is gereserveerd voor CVS.",
+'ERR_USERNAME_DUPL' =>"Er bestaat al een gebruiker met die naam.",
+'ERR_USERNAME_ILLEGAL_CHARS' =>"De gebruikersnaam is niet ingevuld of bevat niet alfanummerieke tekens",
+'ERR_USERNAME_NONE' =>"Er is geen gebruiker aangegeven om te verwijderen.",
+'ERR_USERNAME_NON_EXIST' =>"De gebruiker die je wil verwijderen bestaat niet.",
+'ERR_USERNAME_RESERVED' =>"Gebruikersnaam bestaat al.",
+'ERR_USER_CONFIRMED_NOT' =>"Je hebt nog niet geklikt op de link in de e-mail die naar je is toegestuurd toen je je aanmeldde.",
+'ERR_USER_CONFIRM_PASSWORD' =>"Er is een e-mail met daarin een bevestigings URL verstuurd naar ***. Klik op de bevestigings URL om de verandering te voltooien.",
+'ERR_USER_EMAIL_INVALID' =>"Ongeldig e-mail adres",
+'ERR_USER_EMAIL_PROBLEM' =>"Er was een probleem bij het bijwerken van je e-mail adres",
+'ERR_USER_HASH_CONFIRMED' =>"Gebruikersaccount bevestigd. Je kan <a href=\"FILE_INDEX?mode=login\">nu inloggen</a>.",
+'ERR_USER_HASH_INVALID' =>"ONGELDIGE HASH - UPDATE MISLUKT",
+'ERR_USER_HASH_NOT_FOUND' =>"<b>Bevestigingshash niet gevonden.</b>",
+'ERR_USER_INCORRECT_NAME_OR_EMAIL' =>"FOUT: Verkeerde gebruikersnaam of e-mail adres.",
+'ERR_USER_LAST_ADMIN' =>"De gebruiker is de laatst overgebleven administrator en kan niet worden verwijderd.",
+'ERR_USER_NEW_PASSWORD' =>"Je nieuwe wachtwoord wordt per e-mail naar je toegestuurd. Je kan inloggen als je het ontvangen hebt, daarna kan je het in je account veranderen naar een wachtwoord van jouw keuze.",
+'ERR_USER_PASSWORD_CHANGED' =>"Je wachtwoord is veranderd.",
+'ERR_USER_PASSWORD_SHORT' =>"Het wachtwoord en de bevestiging van het wachtwoord zijn niet gelijk.",
+'ERR_USER_PASSWORD_WRONG' =>"Je hebt een ongeldig wachtwoord opgegeven.",
+'ERR_USER_REGISTER_MISSING_DATA' =>"FOUT: Je moet een gebruikersnaam, overeenstemmende wachtwoorden en een geldig e-mailadres opgeven.",
+'ERR_USER_REGISTER_SUCCESS' =>"Je bent succesvol geregistreerd. Er moet nu ter bevestiging een e-mail voor jou klaar staan. Klik op de link in de mail om je inschrijving te bevestigen.",
+'ERR_USER_REQUIRED_NAME_OR_EMAIL' =>"FOUT: gebruikersnaam en e-mail adres zijn verplicht.",
 'EXP_CONVERT' =>"Een goed omzettingsprogramma voor adresboeken (hoewel enigszins verouderd):",
 'EXP_CSV' =>"CSV bestand</A>",
-'EXP_EUDORA' =>"Eudora Nicknames bestand </A> (kopi�er de output naar /Eudora/NNdbase.txt)",
+'EXP_EUDORA' =>"Eudora Nicknames bestand </A> (kopi?er de output naar /Eudora/NNdbase.txt)",
 'EXP_GMAIL' =>"Gmail</A> (Importeerbare contactpersonen lijst)",
 'EXP_MYSQL' =>"mySQL Dump File</A> (voor backup doeleinden)",
 'EXP_MYSQL_1' =>"Dit is een batch dump file voor MySQL, voor gebruik in geval van verlies van de volledige databank.",
 'EXP_MYSQL_10' =>"Noot: Dit backup formaat is ongetest; echter, het moet vrij eenvoudig zijn om met de hand",
 'EXP_MYSQL_11' =>"fouten in het bestand aan te passen.",
 'EXP_MYSQL_2' =>"Alle informatie die hierin zit kan automatisch opnieuw worden ingevoegd in de",
-'EXP_MYSQL_3' =>"databank met ��n commando",
+'EXP_MYSQL_3' =>"databank met ??n commando",
 'EXP_MYSQL_4' =>"Kopieer dit bestand naar een map op de server. Vanuit de shell commandoregel typ:",
 'EXP_MYSQL_5' =>"mysql -h host -u user -p dbname < thisfile.txt",
 'EXP_MYSQL_7' =>"Je zal dan gevraagd worden naar je wachtwoord en dan zal de gehele inhoud van deze",
@@ -92,9 +145,9 @@ Gebruik deze ruimte om informatie toe te voegen die niet in de andere velden thu
 'EXP_MYSQL_9' =>"Deze backup werd gegenereerd op:",
 'EXP_TO_FILE' =>"Dit zal de adresboekdatabank naar een bestand exporteren. Als er geen \"Opslaan als\" dialoogvenster verschijnt, klik dan met de rechter muisknop op de link en kies dan \"Opslaan Als....\"",
 'EXP_TXT' =>"Platte tekst</a> (met scheidingsteken) (kapot)",
-'EXP_VCARD' =>"vCard</a> (opgelet: dit wordt automatisch gedownload en ge�nstalleerd in je adresboek zonder verdere waarschuwingen!)",
+'EXP_VCARD' =>"vCard</a> (opgelet: dit wordt automatisch gedownload en ge?nstalleerd in je adresboek zonder verdere waarschuwingen!)",
 'EXP_XML' =>"XML</A>",
-'FOOTER_COPYRIGHT' =>"� 2001-2005 Infinity Plus One Productions. All rights reserved.",
+'FOOTER_COPYRIGHT' =>"? 2001-2005 Infinity Plus One Productions. All rights reserved.",
 'FOOTER_HOMEPAGE_LINK' =>"homepage",
 'FOOTER_SOURCEFORGE_LINK' =>"sourceforge",
 'FOOTER_VERSION' =>"versie:",
@@ -216,7 +269,7 @@ gebruikerslijst met een link &lsquo;Bevestigen?&rsquo; naast hun naam.",
 'OPT_LANGUAGE_LBL' =>"Huidige taal",
 'OPT_LANGUAGE_MISSING' =>"Waarschuwing: Het benodigde taalbestand kan niet gevonden worden, er wordt teruggeschakeld naar \"Engels\"",
 'OPT_LIMIT_ENTRIES_HELP' =>"<BR>Deze optie geeft de mogelijkheid om het aantal adressen per pagina te beperken. Dit kan samen met de \"toon per letter\" optie gebruikt worden of apart. 
-<BR>Om alle adressen op ��n bladzijde te tonen dient \"0\" ingegeven te worden.",
+<BR>Om alle adressen op ??n bladzijde te tonen dient \"0\" ingegeven te worden.",
 'OPT_LIMIT_ENTRIES_LBL' =>"Maximum aantal adressen per pagina",
 'OPT_MSG_ALLOWED_HTML' =>"<b>Toegestane HTML tags:</b> <a><b><i><u><p><br>",
 'OPT_MSG_LOGIN_HELP' =>"Stelt de introductie boodschap op het inlogscherm in",
@@ -248,7 +301,7 @@ gebruikerslijst met een link &lsquo;Bevestigen?&rsquo; naast hun naam.",
 'OPT_TITLE' =>"Opties",
 'OPT_USE_MAIL_SCRIPT_HELP' =>"Selecteer deze optie om de interne e-mail mogelijkheid van Het Adres Boek te gebruiken. Uitzetten zal vertrouwen op het standaard e-mail programma van de browser van de gebruiker.",
 'OPT_USE_MAIL_SCRIPT_LBL' =>"Gebruik Intern Mail Script",
-'OPT_VIEW_LTR_HELP' =>"<br>In plaats van het tonen van alle adressen op ��n bladzijde, kunnen de adressen getoond worden per letter. Kies om dat te doen een standaard letter die bij startup getoond wordt. Let op dat de \"tonen per letter\" optie op dit moment niet toepasbaar is wanneer op groepsniveau wordt gekeken.<br>Om alle adressen weer op een enkele bladzijde te tonen selecteer deze optie: (off)",
+'OPT_VIEW_LTR_HELP' =>"<br>In plaats van het tonen van alle adressen op ??n bladzijde, kunnen de adressen getoond worden per letter. Kies om dat te doen een standaard letter die bij startup getoond wordt. Let op dat de \"tonen per letter\" optie op dit moment niet toepasbaar is wanneer op groepsniveau wordt gekeken.<br>Om alle adressen weer op een enkele bladzijde te tonen selecteer deze optie: (off)",
 'OPT_VIEW_LTR_LABEL' =>"Groepeer adressen per letter",
 'REG_CONFIRMED' =>"Gebruikersaccount bevestigd. Je kan <A HREF=\"index.php?mode=login\">nu
 inloggen</A>.",
@@ -265,9 +318,9 @@ Bedankt voor het gebruik van het Adresboek.",
 'SEARCH_IN_NAME' =>"naam.",
 'SEARCH_LBL' =>"Zoekresultaten",
 'SEARCH_MATCH' =>"Zoektermen: Contactpersonen zoeken op",
-'SEARCH_MULTIPLE' =>"Er werden verschillende contactpersonen gevonden. Gelieve er ��n te selecteren uit de lijst.",
+'SEARCH_MULTIPLE' =>"Er werden verschillende contactpersonen gevonden. Gelieve er ??n te selecteren uit de lijst.",
 'SEARCH_NONE' =>"Geen contactpersoon gevonden.",
-'SEARCH_TERMS' =>"Gelieve ��n of meerdere zoektermen te defini�ren",
+'SEARCH_TERMS' =>"Gelieve ??n of meerdere zoektermen te defini?ren",
 'TAB' =>"Het Adresboek",
 'TITLE-ADDRESS' =>"Gegevens van",
 'TITLE_ADDRESS' =>"Adres van",
@@ -298,9 +351,9 @@ Bedankt voor het gebruik van het Adresboek.",
 'UP_OK' =>"De upload is gelukt.",
 'UP_USE_MUG' =>"Klik hier om deze pasfoto te gebruiken</A> (het venster zal worden gesloten)",
 'UP_WARN' =>"Waarschuwing",
-'USR_ADDED' =>"�is toegevoegd",
+'USR_ADDED' =>"?is toegevoegd",
 'USR_DEL' =>"Verwijder dit bericht",
-'USR_DELETED' =>"�is verwijderd",
+'USR_DELETED' =>"?is verwijderd",
 'USR_HELP_ADD' =>"Om een nieuwe gebruiker toe te voegen, dient hier hun logininformatie te worden ingevoerd. Geef alleen administrator rechten aan personen die je vertrouwd. Alle gebruikers kunnen hun eigen wachtwoord veranderen wanneer ze eenmaal zijn ingelogd. Gebruikersnamen mogen uitsluitend alfanummerieke tekens bevatten: dat zijn a-z (kleine- en hoofdletters), de cijfers 0-9, en het lage \"_\" verbindingsstreepje.",
 'USR_HELP_EMAIL_CONFIRM' =>"Er zal een bevestigingsmail gestuurd worden naar het e-mail adres dat je opgegeven hebt. Daarin staan verdere instructies over hoe je de wijziging van je e-mail adres kan voltooien.",
 'USR_HELP_EMAIL_NEW' =>"Je huidige e-mail adres is",
@@ -555,60 +608,4 @@ $country= array(
 'zm' =>"Zambia",
 'zw' =>"Zimbabwe"
 );
-
-$error_Lang = array(
-    'ERROR' =>"Fout",
-    'ERROR_ENCOUNTERED' =>"Het Adresboek is een fout tegengekomen.",
-    'ERROR_INSTALL_DBNAME_WRONG' =>"Als er geen gebruikersnaam of wachtwoord hierboven staat, controleer dan de naam van de databank.",
-    'ERROR_INTRO_MYSQL' =>"<p>MySQL stuurde de volgende foutmelding:  (error #)",
-    'ERROR_OUTTRO' =>"Indien nodig, druk op de \"terug\"-knop van je browser om naar het vorige scherm terug te keren en corrigeer alle mogelijke vergissingen.<br>Indien je meer hulp nodig hebt, of indien je denkt dat dit een programmafout is, raadpleeg dan dan op <a href=\"http://www.corvalis.net/phpBB2/\" target='_blank'>het forum</a>.",
-    'ERROR_RETURN_LINK' =>"Klik hier om terug te keren.",
-    'ERROR_UPGRADE_ABORT' =>"<p><b> Upgrade afgebroken !!</b><br>Informatie ontbreekt in config.php of is incorrect.<p>",
-    'ERROR_UPGRADE_HELP' =>"<p>Pas het bestand config.php aan en probeer <a href=\"FILE_UPGRADE\">dan opnieuw</a>.",
-    'ERROR_UPGRADE_PREFIX' =>"Voor de prefix die je hebt gekozen in config bestaan geen tabellen <br>in je databank.  <A HREF=FILE_INSTALL> Kies installeren</A><P>of<P>",
-    'ERROR_UPGRADE_TITLE' =>"- Fout bij de <i>upgrade</i>",
-    'ERR_ACCESS_DENIED' =>"<b>Toegang geweigerd.</b> Je hebt geen autorisatie om deze handeling te verrichten.",
-    'ERR_ALPHA' =>"Je moet minimum ��n letter uit het alfabet gebruiken.",
-    'ERR_CHAR_ILLEGAL' =>"De gebruikersnaam bevat een niet toegelaten karakter.",
-    'ERR_DATABASE_CONNECT' =>"<b>Er is een fout opgetreden bij het maken van een verbinding met de MySQL server.</b> MySQL gaf de volgende foutcode terug:  (error #)",
-    'ERR_DATABASE_NOT_FOUND' =>"<b>Kan de database niet vinden.</b> Controleer  <i>config.php</i> opnieuw om er zeker van te zijn dat de <i>$db_name</i> variabele correct is ingevoerd.",
-    'ERR_ENTRY_ID_INVALID' =>"<b>Er is geen contactpersoon met dit ID-nummer.</b> Het ID-nummer moet een positief geheel getal zijn.",
-    'ERR_ENTRY_ID_NOT_FOUND' =>"<b>Er is geen ID-nummer voorhanden.</b>",
-    'ERR_ENTRY_NOT_EXIST' =>"<b>Ongeldig contactpersoon ID.</b> Er bestaat geen contactpersoon met dit ID nummer.",
-    'ERR_ENTRY_NOT_FOUND' =>"<b>Contactpersoon bestaat niet.</b>",
-    'ERR_LOGIN_SPACE' =>"Je gebruikersnaam mag geen spaties bevatten.",
-    'ERR_MAIL_NOT_SENT' =>"<b>Het bericht kon niet verzonden worden.</b><p>PHPMailer Fout:",
-    'ERR_MAIL_NO_RECIPIENT' =>"<b>Er is/zijn geen e-mail adres(sen) voor de geadresseerde(n) aangegeven.</b>",
-    'ERR_MAIL_NO_SENDER' =>"<b>Geen e-mail van de afzender opgegeven.</b>",
-    'ERR_NAME_LONG' =>"Je gebruikersnaam is te lang.  Je mag maximaal 15 karakters gebruiken.",
-    'ERR_NAME_SHORT' =>"Je gebruikersnaam is te kort. Je moet minimum 1 karakter gebruiken.",
-    'ERR_NO_EMAIL1' =>"Sorry, omdat je geen geldig e-mailadres hebt opgegeven mag je deze methode niet gebruiken om e-mail te sturen. Gelieve de instellingen van je",
-    'ERR_NO_EMAIL2' =>"gebruikersaccount</a> aan te passen om je standaard mailprogramma (gedefinieerd in je browser) te gebruiken of vul een geldig e-mailadres in.",
-    'ERR_OPTIONS_NOT_RETRIEVED' =>"Niet in staat de opties op te halen.",
-    'ERR_OPTIONS_NOT_RETRIEVED_AUTH' =>"Niet in staat opties terug te vinden tijdens de autorisatie controle.",
-    'ERR_OPTIONS_NO_SAVE' =>"Niet in staat opties op te slaan.",
-    'ERR_PSWD_SHORT' =>"Je wachtwoord moet minimum 3 karakters lang zijn.",
-    'ERR_RSRVD' =>"Deze gebruikersnaam is gereserveerd.",
-    'ERR_RSRVD_CVS' =>"Deze gebruikersnaam is gereserveerd voor CVS.",
-    'ERR_USERNAME_DUPL' =>"Er bestaat al een gebruiker met die naam.",
-    'ERR_USERNAME_ILLEGAL_CHARS' =>"De gebruikersnaam is niet ingevuld of bevat niet alfanummerieke tekens",
-    'ERR_USERNAME_NONE' =>"Er is geen gebruiker aangegeven om te verwijderen.",
-    'ERR_USERNAME_NON_EXIST' =>"De gebruiker die je wil verwijderen bestaat niet.",
-    'ERR_USERNAME_RESERVED' =>"Gebruikersnaam bestaat al.",
-    'ERR_USER_CONFIRMED_NOT' =>"Je hebt nog niet geklikt op de link in de e-mail die naar je is toegestuurd toen je je aanmeldde.",
-    'ERR_USER_CONFIRM_PASSWORD' =>"Er is een e-mail met daarin een bevestigings URL verstuurd naar ***. Klik op de bevestigings URL om de verandering te voltooien.",
-    'ERR_USER_EMAIL_INVALID' =>"Ongeldig e-mail adres",
-    'ERR_USER_EMAIL_PROBLEM' =>"Er was een probleem bij het bijwerken van je e-mail adres",
-    'ERR_USER_HASH_CONFIRMED' =>"Gebruikersaccount bevestigd. Je kan <a href=\"FILE_INDEX?mode=login\">nu inloggen</a>.",
-    'ERR_USER_HASH_INVALID' =>"ONGELDIGE HASH - UPDATE MISLUKT",
-    'ERR_USER_HASH_NOT_FOUND' =>"<b>Bevestigingshash niet gevonden.</b>",
-    'ERR_USER_INCORRECT_NAME_OR_EMAIL' =>"FOUT: Verkeerde gebruikersnaam of e-mail adres.",
-    'ERR_USER_LAST_ADMIN' =>"De gebruiker is de laatst overgebleven administrator en kan niet worden verwijderd.",
-    'ERR_USER_NEW_PASSWORD' =>"Je nieuwe wachtwoord wordt per e-mail naar je toegestuurd. Je kan inloggen als je het ontvangen hebt, daarna kan je het in je account veranderen naar een wachtwoord van jouw keuze.",
-    'ERR_USER_PASSWORD_CHANGED' =>"Je wachtwoord is veranderd.",
-    'ERR_USER_PASSWORD_SHORT' =>"Het wachtwoord en de bevestiging van het wachtwoord zijn niet gelijk.",
-    'ERR_USER_PASSWORD_WRONG' =>"Je hebt een ongeldig wachtwoord opgegeven.",
-    'ERR_USER_REGISTER_MISSING_DATA' =>"FOUT: Je moet een gebruikersnaam, overeenstemmende wachtwoorden en een geldig e-mailadres opgeven.",
-    'ERR_USER_REGISTER_SUCCESS' =>"Je bent succesvol geregistreerd. Er moet nu ter bevestiging een e-mail voor jou klaar staan. Klik op de link in de mail om je inschrijving te bevestigen.",
-    'ERR_USER_REQUIRED_NAME_OR_EMAIL' =>"FOUT: gebruikersnaam en e-mail adres zijn verplicht."
-);
+?>
