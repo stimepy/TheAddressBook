@@ -10,7 +10,7 @@
  *  
  *************************************************************/
 
-require_once('.\Core.php');
+require_once('./Core.php');
 
 // ** OPEN CONNECTION TO THE DATABASE **
 //	$db_link = openDatabase($db_hostname, $db_username, $db_password, $db_name);

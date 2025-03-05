@@ -7,8 +7,8 @@
  *	Sets options for address book.
  *
  *************************************************************/
-require_once('.\Core.php');
-require_once (".\lib\Templates\option.Template.php");
+require_once('./Core.php');
+require_once ("./lib/Templates/option.Template.php");
 
 global $globalSqlLink, $globalUsers, $country, $lang;
 

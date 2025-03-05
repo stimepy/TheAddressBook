@@ -11,7 +11,7 @@
  *************************************************************/
 
 // ** GET CONFIGURATION DATA **
-require_once('.\Core.php');
+require_once('./Core.php');
 
 global $globalUsers, $lang, $globalSqlLink;
 

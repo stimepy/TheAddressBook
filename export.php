@@ -10,8 +10,8 @@
  *
  *************************************************************/
 
-require_once('.\Core.php');
-require_once ("lib\class-export.php");
+require_once('./Core.php');
+require_once ("./lib/class-export.php");
 
 global $globalSqlLink, $lang, $globalUsers;
  $myExport = new export();

@@ -9,7 +9,7 @@
  *
  *************************************************************/
 
-require_once('.\Core.php');
+require_once('./Core.php');
 include(FILE_CLASS_BIRTHDAY);
 require_once('./lib/Templates/list.Template.php');
 

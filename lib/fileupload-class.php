@@ -61,6 +61,7 @@
 class uploader {
 
 	var $file;
+    private $filename;
 	var $path;
 	var $language;
 	var $acceptable_file_types;
@@ -140,13 +141,14 @@ class uploader {
 	function upload($filename='', $accept_type='', $extention='') {
 		
 		$this->acceptable_file_types = trim($accept_type); // used by error messages
-		
-		if (!isset($_FILES) || !is_array($_FILES[$filename]) || !$_FILES[$filename]['name']) {
-			$this->error = $this->get_error(0);
-			$this->accepted  = FALSE;
-			return FALSE;
-		}
-				
+        if(!isset($_FILES) || !is_array($_FILES[$filename]) || !$_FILES[$filename]['name']) {
+            if (!is_array($_FILES[$filename]) || !$_FILES[$filename]['name']) {
+                $this->error = $this->get_error(0);
+                $this->accepted = FALSE;
+                return FALSE;
+            }
+        }
+
 		// Copy PHP's global $_FILES array to a local array
 		$this->file = $_FILES[$filename];
 		$this->file['file'] = $filename;
@@ -478,6 +480,24 @@ class uploader {
 		}
 	}
 
+    /**
+     * boolean setuploadname
+     *
+     * Grabs the firstname of the upload.
+     * @return boolean
+     */
+    public function finduploadname(){
+        if(isset($_FILES)){
+            $filnames = array_keys($_FILES);
+            $this->filename = $filnames[0];
+            return true;
+        }
+        return false;
+    }
+
+    public function getUploadName(){
+        return $this->filename;
+    }
 }
 
 
@@ -583,4 +603,3 @@ class uploader {
 </license>
 
 */
-?>

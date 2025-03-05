@@ -11,8 +11,8 @@
  *************************************************************/
 
 // ** GET CONFIGURATION DATA **
-require_once('.\Core.php');
-require_once('.\lib\Templates\scratchpad.template.php');
+require_once('./Core.php');
+require_once('./lib/Templates/scratchpad.template.php');
 
 global $globalSqlLink, $globalUsers, $lang;
 
@@ -26,7 +26,7 @@ $output = $myTemplate->webheader("$lang[TITLE_TAB] - $lang[TITLE_SCRATCH]", $lan
 
 
 // CHECK TO SEE IF A FORM HAS BEEN SUBMITTED, AND SAVE THE SCRATCHPAD.
-if ($_POST['saveNotes'] == "YES") {
+if (hasValueOrBlank($_POST,'saveNotes') == "YES") {
 
     $notes = addslashes( trim($_POST['notes']) );
 
@@ -41,9 +41,11 @@ $body['FILE_LIST'] = FILE_LIST;
 
 // Retrieve data
 $globalSqlLink->SelectQuery('notes',TABLE_SCRATCHPAD, NULL, "limit 1" );
-$notes = stripslashes($globalSqlLink->fetchQueryResult()[0]);
+$notes = $globalSqlLink->fetchQueryResult()[0];
 
 if($notes != -1){
-    $body['notes']= $notes;
+    $body['notes']= stripslashes($notes['notes']);
 }
 
+$output .= $myTemplate->writeBody($body, $lang);
+Display($output);

@@ -10,7 +10,7 @@
  *************************************************************/
 
 
-require_once('Core.php');
+require_once('./Core.php');
 require_once ('./lib/Templates/edit.Template.php');
 
 // ** OPEN CONNECTION TO THE DATABASE **
@@ -24,7 +24,7 @@ $options = new Options();
 $globalUsers->checkForLogin('admin', 'user');
 // ** CHECK FOR ID **
 
-$body['mode'] = $_GET['mode'];
+$body['mode'] = hasValueOrBlank($_GET, 'mode');
 
 $body['file_Save'] = FILE_SAVE;
 $body['BTN_SAVE'] = $lang['BTN_SAVE'];
@@ -39,6 +39,7 @@ $body['TABLE_ADDITIONALDATA'] = TABLE_ADDITIONALDATA;
 if ($body['mode'] == 'new') {
     $body['id'] = '0';
     $body['cancelUrl'] = FILE_LIST;
+    $body['allowPicUpload'] = allowppic($options);
 }  // end New address
 else {
     $body['mode'] = 'edit';
@@ -47,8 +48,8 @@ else {
 
 
     // NOTE: Groups is determined with a special query that will be run at the bottom of the page.
-    $globalSqlLink->SelectQuery('firstname, lastname, middlename, primaryAddress, birthday, nickname, nickname, pictureURL, notes, hidden, whoAdded, DATE_FORMAT(lastUpdate, \"%W, %M %e %Y (%h:%i %p)\") AS lastUpdate',TABLE_CONTACT, " id=".$body['id'], NULL);
-    $tbl_contact = $globalSqlLink->FetchQueryResult();
+    $globalSqlLink->SelectQuery('firstname, lastname, middlename, primaryAddress, birthday, nickname, nickname, pictureURL, notes, hidden, whoAdded, DATE_FORMAT(lastUpdate, "%W, %M %e %Y (%h:%i %p)") AS lastUpdate',TABLE_CONTACT, " id=".$body['id'], NULL);
+    $tbl_contact = $globalSqlLink->FetchQueryResult()[0];
 
     // Put data into variable holders -- taken from arrays that are created from query results.
     $body['contact_firstname']  = stripslashes( $tbl_contact['firstname'] );
@@ -121,10 +122,7 @@ else {
     }
 
     // Display Upload link if allowed by options
-    $body['allowPicUpload'] = 0;
-    if (($options->getpicAllowUpload() == 1) || ($_SESSION['usertype'] == "admin")) {
-        $body['allowPicUpload'] = FILE_UPLOAD;
-    }
+    $body['allowPicUpload'] = allowppic($options);
 
     //////////////////   start here////////////////////////////
 
@@ -161,3 +159,9 @@ $output .= $myAddressDetailsTemplate->editbody($body, $lang, $country,$options->
 Display($output);
 
 
+function allowppic($options){
+    if (($options->getpicAllowUpload() == 1) || ($_SESSION['usertype'] == "admin")) {
+        return FILE_UPLOAD;
+    }
+    return 0;
+}
