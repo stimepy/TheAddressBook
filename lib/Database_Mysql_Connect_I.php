@@ -437,7 +437,7 @@ class Mysql_Connect_I
      * Literally builds the delete query.
      */
     private function buildDelete($where, $table){
-        echo 'Delete From '.$table.' where '.$where;
+        // echo 'Delete From '.$table.' where '.$where;
         $query = 'Delete From '.$table.' where '.$where;
         return $query;
     }

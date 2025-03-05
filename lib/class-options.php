@@ -38,6 +38,7 @@ class Options {
 	private $global_options;
 	private $user_options;
 	private $message;
+    private $maxFileSize;
 
 	
 	// CONSTRUCTOR FUNCTION
@@ -88,6 +89,7 @@ class Options {
 		$this->language         = $this->load_lang($this->global_options['language']);
 		$this->defaultLetter    = $this->global_options['defaultLetter'];
 		$this->limitEntries     = $this->global_options['limitEntries'];
+        $this->maxFileSize      = 3000000; //bytes   //TODO Add to DB;
 	}
 	
 	function set_user() {
@@ -176,7 +178,7 @@ class Options {
 
 		$globalSqlLink->UpdateQuery( $updates , TABLE_OPTIONS, '');
 		if($globalSqlLink->GetRowCount() == 0){
-			die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
+			die(reportScriptError($lang['ERR_OPTIONS_NO_SAVE']));
 		}
 		//mysql_query($sql, $db_link)
 			//or die(reportSQLError($lang['ERR_OPTIONS_NO_SAVE']));
@@ -401,6 +403,10 @@ class Options {
             $output .= "<OPTION VALUE=\"$letter\" ".$checked.">$letter</OPTION>\n";
         }
         return $output;
+    }
+
+    function getMaxFileSize(){
+        return $this->maxFileSize;
     }
 
 }

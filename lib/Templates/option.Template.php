@@ -62,7 +62,7 @@ class optionTemplate
 			<TR VALIGN=\"top\">
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_BIRTHDAY_DISPLAY_LBL']."</b></TD>
 				<TD WIDTH=60 CLASS=\"data\">
-				<INPUT TYPE=\"checkbox\" NAME=\"bdayDisplay\" VALUE=\"1\" ".hasValueOrBlank($body['optionsBdayDisplay']).">
+				<INPUT TYPE=\"checkbox\" NAME=\"bdayDisplay\" VALUE=\"1\" ".hasValueOrBlank($body,'optionsBdayDisplay').">
 				</TD>
 				<TD WIDTH=300 CLASS=\"data\">
 					".$lang['OPT_BIRTHDAY_DISPLAY_HELP']."<br>
@@ -116,7 +116,7 @@ class optionTemplate
 			<TR VALIGN=\"top\">
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_MUG_ALLOW_UPLOAD_LBL']."</b></TD>
 				<TD WIDTH=60 CLASS=\"data\">
-				    <INPUT TYPE=\"checkbox\" NAME=\"picAllowUpload\" VALUE=\"1\" ".hasValueOrBlank($body['picAllowUpload']).">
+				    <INPUT TYPE=\"checkbox\" NAME=\"picAllowUpload\" VALUE=\"1\" ".hasValueOrBlank($body, 'picAllowUpload').">
 				</TD>
 				<TD WIDTH=300 CLASS=\"data\">
 					".$lang['OPT_MUG_ALLOW_UPLOAD_HELP']."
@@ -129,7 +129,7 @@ class optionTemplate
 			<TR VALIGN=\"top\">
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_OPEN_POPUP_LBL']."</b></TD>
 				<TD WIDTH=60 CLASS=\"data\">
-				    <INPUT TYPE=\"checkbox\" NAME=\"displayAsPopup\" VALUE=\"1\" ".hasValueOrBlank($body['displayAsPopup']).">
+				    <INPUT TYPE=\"checkbox\" NAME=\"displayAsPopup\" VALUE=\"1\" ".hasValueOrBlank($body, 'displayAsPopup').">
 				</TD>
 				<TD WIDTH=300 CLASS=\"data\">
 					".$lang['OPT_OPEN_POPUP_HELP']."
@@ -138,7 +138,7 @@ class optionTemplate
 			<TR VALIGN=\"top\">
 				<TD WIDTH=200 CLASS=\"data\" ALIGN=\"right\"><b>".$lang['OPT_USE_MAIL_SCRIPT_LBL']."</b></TD>
 				<TD WIDTH=60 CLASS=\"data\">
-				    <INPUT TYPE=\"checkbox\" NAME=\"useMailScript\" VALUE=\"1\" ".hasValueOrBlank($body['useMailScript']).">
+				    <INPUT TYPE=\"checkbox\" NAME=\"useMailScript\" VALUE=\"1\" ".hasValueOrBlank($body, 'useMailScript').">
                 </TD>
 				<TD WIDTH=300 CLASS=\"data\">
 					".$lang['OPT_USE_MAIL_SCRIPT_HELP']."

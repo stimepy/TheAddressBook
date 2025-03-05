@@ -122,7 +122,7 @@ class users
 
     function getUserInfoByUsername($username = null, $orderBy = null){
         global $globalSqlLink;
-        $globalSqlLink->SelectQuery('*', TABLE_USERS, '\'$username\'', $orderBy);
+        $globalSqlLink->SelectQuery('*', TABLE_USERS, "username = '". $username ."'", $orderBy);
         return $globalSqlLink->FetchQueryResult();
     }
 
@@ -131,12 +131,12 @@ class users
         global $globalSqlLink, $lang;
         $newuserName = "";
         if ((!empty($_POST['newuserName'])) && (isAlphaNumeric($_POST['newuserName']))) {
-            $insert[username] = $_POST['newuserName'];
+            $insert['username'] = $_POST['newuserName'];
             if ($_POST['newuserPass'] == $_POST['newuserConfirmPass']) {
-                $insert[password] = MD5($_POST['newuserPass']);
-                $insert[usertype] = $_POST['newuserType'];
-                $insert[email] = $_POST['newuserEmail'];   // NOT VALIDATED
-                $insert[is_confirmed] = 1;
+                $insert['password'] = MD5($_POST['newuserPass']);
+                $insert['usertype'] = $_POST['newuserType'];
+                $insert['email'] = $_POST['newuserEmail'];   // NOT VALIDATED
+                $insert['is_confirmed'] = 1;
                 $globalSqlLink->InsertQuery(TABLE_USERS, $insert);
                 // $sql = "INSERT INTO ". TABLE_USERS ." (username, usertype, password, email, is_confirmed) VALUES ('$newuserName', '$newuserType', MD5('$newuserPass'), '$newuserEmail', 1)";
 
@@ -193,7 +193,7 @@ class users
 
     function changePass(){
         global $globalSqlLink, $lang;
-        if ($_POST['passwordNew'] == $_POST['passwordNewRetype']) {
+        if ($_POST['passwordNewRetype'] != "" && $_POST['passwordNew'] == $_POST['passwordNewRetype']) {
             // SQL query checks to make sure username and old password is corrrect.
             $update['password']=MD5("'". $_POST['passwordNew']."'");
             $globalSqlLink->UpdateQuery($update, TABLE_USERS, "username='". $_SESSION['username'] ."' AND password= '".MD5( $_POST['passwordOld'])."'");

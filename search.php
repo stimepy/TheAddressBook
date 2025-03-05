@@ -17,7 +17,7 @@
  *************************************************************/
 
 
-require_once('.\lib\Core.php');
+require_once('./Core.php');
 
 
 global $globalSqlLink;

@@ -26,7 +26,7 @@
 // host name.
 // If you leave the variable empty it will default to "localhost"
 
-$db_hostname = "localhost";   //"";
+$db_hostname = "";
 
 
 // DATABASE NAME (REQUIRED)

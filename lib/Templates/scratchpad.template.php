@@ -10,7 +10,7 @@
  *
  *****************************************************************/
 
-require_once ('.\lib\Templates\Templates.php');
+require_once ('./lib/Templates/Templates.php');
 
 class Scratchpad extends Templates
 {

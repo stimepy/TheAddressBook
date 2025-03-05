@@ -13,7 +13,7 @@ class modifyAddress
 
     public $mode;
     private $whoAdded;
-    public $cleanedValues;
+    private $cleanedValues;
     public $lastUpdated;
     private $address_primary;
 
@@ -31,8 +31,9 @@ class modifyAddress
         global $globalSqlLink;
         $id = check_id();
         // Check user for whoAdded
-        $globalSqlLink->SelectQuery('whoAdded', TABLE_CONTACT, "contact.id=" . $id);
-        $tbl_contact = $globalSqlLink->FetchQueryResults();
+        $globalSqlLink->SelectQuery('whoAdded', TABLE_CONTACT, TABLE_CONTACT.".id=" . $id);
+        $tbl_contact = $globalSqlLink->FetchQueryResult();
+        $tbl_contact = $tbl_contact[0];
         $this->whoAdded = stripslashes($tbl_contact['whoAdded']);
 
         if ((($this->whoAdded != $_SESSION['username']) and ($_SESSION['usertype'] != 'admin')) or ($_SESSION['usertype'] == 'guest')) {
@@ -92,10 +93,11 @@ class modifyAddress
     public function removeAddress()
     {
         global $globalSqlLink;
+
         if ($this->cleanedValues['addnum'] > 0) {
             for ($x = 0; $x <= $this->cleanedValues['addnum']; $x++) {
                 if (!empty($this->cleanedValues['address_refid_' . $x]) && $this->cleanedValues['address_remove_' . $x] !== 0) {
-                    $globalSqlLink->DeleteQuery("refid=$this->cleanedValues['address_refid_'.$x]", TABLE_ADDRESS);
+                    $globalSqlLink->DeleteQuery("refid=".$this->cleanedValues['address_refid_'.$x], TABLE_ADDRESS);
                 }
             }
         }
@@ -104,39 +106,49 @@ class modifyAddress
     public function editAddresses()
     {
         global $globalSqlLink;
-
         $globalSqlLink->SelectQuery('*', TABLE_ADDRESS, "id = " . $this->cleanedValues['id']);
         $results = $globalSqlLink->FetchQueryResult();
 
-        for ($x = 0; $x <= $this->cleanedValues['addnum']; $x++) {
-            $isFound = false;
-            for ($y = 0; $y < sizeof($results); $y++) {
-                if ($this->cleanedValues['address_refid_' . $x] == $results[$y]['refid']) {
-                    $tempcheck = $results[$y];
-                    // $y = sizeof($results)+1;
-                    $isFound = true;
-                    break;
+        if(is_array($results) ){
+            for ($x = 0; $x <= $this->cleanedValues['addnum']; $x++) {
+                $isFound = false;
+                for ($y = 0; $y < sizeof($results); $y++) {
+                    if ($this->cleanedValues['address_refid_' . $x] == $results[$y]['refid']) {
+                        $tempcheck = $results[$y];
+                        // $y = sizeof($results)+1;
+                        $isFound = true;
+                        break;
+                    }
                 }
-            }
+                if($isFound) {
+                    if (strcmp($this->cleanedValues['address_type_' . $x], $tempcheck['type']) != 0 ||
+                        strcmp($this->cleanedValues['address_line1_' . $x], $tempcheck['line1']) != 0 ||
+                        strcmp($this->cleanedValues['address_line2_' . $x], $tempcheck['line2']) != 0 ||
+                        strcmp($this->cleanedValues['address_city_' . $x], $tempcheck['city']) != 0 ||
+                        strcmp($this->cleanedValues['address_state_' . $x], $tempcheck['state']) != 0 ||
+                        strcmp($this->cleanedValues['address_zip_' . $x], $tempcheck['zip']) != 0 ||
+                        strcmp($this->cleanedValues['address_phone1_' . $x], $tempcheck['phone1']) != 0 ||
+                        strcmp($this->cleanedValues['address_phone2_' . $x], $tempcheck['phone2']) != 0 ||
+                        strcmp($this->cleanedValues['address_country_' . $x], $tempcheck['country']) != 0) {
 
-            if (strcmp($this->cleanedValues['address_type_' . $x], $tempcheck['type']) != 0 ||
-                strcmp($this->cleanedValues['address_line1_' . $x], $tempcheck['line1']) != 0 ||
-                strcmp($this->cleanedValues['address_line2_' . $x], $tempcheck['line2']) != 0 ||
-                strcmp($this->cleanedValues['address_city_' . $x], $tempcheck['city']) != 0 ||
-                strcmp($this->cleanedValues['address_state_' . $x], $tempcheck['state']) != 0 ||
-                strcmp($this->cleanedValues['address_zip_' . $x], $tempcheck['zip']) != 0 ||
-                strcmp($this->cleanedValues['address_phone1_' . $x], $tempcheck['phone1']) != 0 ||
-                strcmp($this->cleanedValues['address_phone2_' . $x], $tempcheck['phone2']) != 0 ||
-                strcmp($this->cleanedValues['address_country_' . $x], $tempcheck['country']) != 0) {
+                        $this->updateAddress($this->setUpdateInsertAddressData($x), $this->cleanedValues['address_refid_' . $x]);
+                    }
+                }
+                else {
 
-                $this->updateAddress($this->setUpdateInsertAddressData($x),$this->cleanedValues['address_refid_' . $x]);
+                    $refId = $this->createNewAddress($this->setUpdateInsertAddressData($x, $isInsert = true));
+                    $this->isPrimaryAddress($x, $refId);
+                }
+                $this->isPrimaryAddress($x, $this->cleanedValues['address_refid_' . $x]);
             }
-            if ($isFound == false) {
-                $refId = $this->createNewAddress($this->setUpdateInsertAddressData($x, $isInsert=true));
-                $this->isPrimaryAddress($x, $refId);
-            }
-            $this->isPrimaryAddress($x, $this->cleanedValues['address_refid_' . $x]);
         }
+        else if($results == -1 && !$this->cleanedValues['address_line1_0'] == ''  || !$this->cleanedValues['address_phone1_0'] =='' ){
+            $refId = $this->createNewAddress($this->setUpdateInsertAddressData(0, $isInsert = true));
+            $this->isPrimaryAddress(0, $refId);
+            $this->isPrimaryAddress(0, $this->cleanedValues['address_refid_0']);
+        }
+        // what if not array OR -1?
+
 
     }
 
@@ -207,7 +219,6 @@ class modifyAddress
 
     public function editAddContact($insert = false){
         global $globalSqlLink;
-
         $update = $this->setUpdateInsertContactData();
         if($insert == false) {
             $globalSqlLink->UpdateQuery($update, TABLE_CONTACT, "id=" . $this->cleanedValues['id']);
@@ -304,4 +315,11 @@ class modifyAddress
         return $globalSqlLink->FetchQueryResult();
     }
 
+    public function getId(){
+        return $this->cleanedValues['id'];
+    }
+
+    public function getLastName(){
+        return $this->cleanedValues['lastname'];
+    }
 }

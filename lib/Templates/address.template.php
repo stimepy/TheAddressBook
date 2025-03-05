@@ -16,25 +16,15 @@ function addressBodyStart($body, $lang)
    <BODY>
        <div style='text-align: center'>
         <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=570>
-            <TR>
-                <TD CLASS=\"navMenu\"> ";
-
-    if ($body['sessuser'] == 1) {
-        $output .= "
-        <a href=\"javascript:window.print()\"> " . $body['sessuser']['BTN_PRINT'] . " </a>
-        <A HREF=\"" . $body['sessuser']['FILE_EDIT'] . "?id=" . $body['sessuser']['id'] . "\"> " . $body['sessuser']['BTN_EDIT'] . " </A>;
-        ";
-    }
-
-    $output .= "<A HREF=\"" . $body['FILE_ADDRESS'] . "?id= " . $body['prev'] . "\"> " . $body['BTN_PREVIOUS'] . "</A>
-    <A HREF=\"" . $body['FILE_ADDRESS'] . "?id=" . $body['next'] . "\"> " . $body['BTN_NEXT'] . "</A>
-
-    " . $body['displayAsPopup'] . "
-    
-    
-            </TD>
-        </TR>
-        <TR>
+            <tr>
+                <td CLASS=\"navMenu\"> 
+                  ". issessUser($body) ."
+                  <A HREF=\"" . $body['FILE_ADDRESS'] . "?id= " . $body['prev'] . "\"> " . $body['BTN_PREVIOUS'] . "</A>
+                  <A HREF=\"" . $body['FILE_ADDRESS'] . "?id=" . $body['next'] . "\"> " . $body['BTN_NEXT'] . "</A>
+                " . $body['displayAsPopup'] . "
+                </td>
+            </tr>
+            <tr>
             <TD>
                 <TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=570>
                     <TR VALIGN=bottom
@@ -112,5 +102,15 @@ function addressBodyStart($body, $lang)
 
 	 return $output;
 
+}
+
+function issessUser($body)
+{
+    if($body['sessuser']['is'] == 1){
+        return "
+        <a href=\"javascript:window.print()\"> " . $body['sessuser']['BTN_PRINT'] . " </a>
+        <A HREF=\"" . $body['sessuser']['FILE_EDIT'] . "?id=" . $body['sessuser']['id'] . "\"> " . $body['sessuser']['BTN_EDIT'] . " </A>;";
+    }
+   return "";
 }
 
