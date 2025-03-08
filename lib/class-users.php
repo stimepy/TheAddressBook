@@ -1,9 +1,9 @@
 <?php
 /*************************************************************
- *  THE ADDRESS BOOK  :  version 1.2.1
+ *  THE ADDRESS BOOK  :  version 1.2.2
  *
  * Author: stimepy@aodhome.com
- * Last Modified: 5-02-2022
+ * Last Modified: 3-06-2024
  ****************************************************************
  *  class.user.php
  *  Stuff to do with users
@@ -12,6 +12,8 @@
 
 class users
 {
+
+    private userId;
 //
 // CHECK FOR LOGIN - checkForLogin(usertype, ...);
 // This function takes a variable number of arguments which defines what user types are allowed.
@@ -242,7 +244,7 @@ class users
                 $message = $lang['SALUTATION']." $username,\n".
                     $lang['EMAIL_CHANGE'].
                     "\n\n  http://" .$_SERVER['HTTP_HOST'].dirname($_SERVER['REQUEST_URI']). "/register.php?mode=confirm&hash=$hash&email=$new_email";
-                $mail->Subject = $lang[TAB].' - '.$lang['EMAIL_CHANGE_SUBJ'];
+                $mail->Subject = $lang['TAB'].' - '.$lang['EMAIL_CHANGE_SUBJ'];
                 $mail->Body  = $message ;
                 $mail->AddAddress($new_email);
                 if (!$mail->Send()) {
@@ -255,5 +257,9 @@ class users
             $feedback.= $lang['ERR_USER_EMAIL_INVALID'];
         }
         return $feedback;
+    }
+
+    public function getuserId(){
+
     }
 }

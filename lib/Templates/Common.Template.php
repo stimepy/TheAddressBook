@@ -132,6 +132,32 @@ function createGroupOptions($body, $lang){
     return $output;
 }
 
+
+/**
+ * $option[$keys[$x]]
+ * Returns a generic drop down menu.  where option must have and id of ID and name of NAME.
+ *
+ * @param array $options
+ * @param string $title
+ * @param string $selected
+ * @return string
+ */
+function createDropdown($options, $title, $selected){
+    $output = $title ."<select name=\"groupid\" class=\"formSelect\" onChange=\"document.selectGroup.submit();\">"; //to do...
+    $x=0;
+    foreach ($options as $option) {
+        $sel = "";
+        if ($option['ID'] == $selected) {
+            $sel = "Selected";
+        }
+
+        $output .= "                       <option value=" . $option['ID'] . " " . $sel . ">" . $option['NAME'] . "</option>\n";
+        $x++;;
+    }
+    $output .= "</select>";
+    return $output;
+}
+
 function removeSlashes($item){
     if(isset($item)) {
         return stripslashes($item);
